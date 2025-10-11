@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, Home as HomeIcon, DollarSign, Building2, Star } from 'lucide-react';
+import { ArrowRight, Home as HomeIcon, DollarSign, Building2, Star, Key } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SearchBar from '@/components/SearchBar';
@@ -49,7 +49,7 @@ const Index = () => {
         {/* Quick Action CTAs */}
         <section className="py-16 bg-secondary">
           <div className="container mx-auto px-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <Link to="/buy">
                 <div className="group bg-card p-8 rounded-lg shadow-md hover:shadow-elegant transition-smooth text-center cursor-pointer">
                   <div className="w-16 h-16 bg-teal/10 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-teal/20 transition-base">
@@ -76,6 +76,21 @@ const Index = () => {
                   </p>
                   <span className="text-accent font-medium flex items-center justify-center gap-2 group-hover:gap-3 transition-base">
                     Get Started <ArrowRight className="h-4 w-4" />
+                  </span>
+                </div>
+              </Link>
+
+              <Link to="/rent">
+                <div className="group bg-card p-8 rounded-lg shadow-md hover:shadow-elegant transition-smooth text-center cursor-pointer">
+                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/20 transition-base">
+                    <Key className="h-8 w-8 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2">Rent Property</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Find your perfect rental home today
+                  </p>
+                  <span className="text-primary font-medium flex items-center justify-center gap-2 group-hover:gap-3 transition-base">
+                    Browse Rentals <ArrowRight className="h-4 w-4" />
                   </span>
                 </div>
               </Link>
