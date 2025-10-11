@@ -1,3 +1,4 @@
+# properties/models.py
 from django.db import models
 from django.conf import settings
 from django.core.validators import MinValueValidator
@@ -87,7 +88,7 @@ class PropertyImage(models.Model):
 
 class Favorite(models.Model):
     # FIXED: Using your custom user model
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='favorites')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='favorite_properties')
     property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='favorited_by')
     created_at = models.DateTimeField(auto_now_add=True)
     
@@ -100,7 +101,7 @@ class Favorite(models.Model):
 class Inquiry(models.Model):
     property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='inquiries')
     # FIXED: Using your custom user model
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='inquiries')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='property_inquiries')
     name = models.CharField(max_length=100)
     email = models.EmailField()
     phone = models.CharField(max_length=20, blank=True)
@@ -126,13 +127,13 @@ class Inquiry(models.Model):
     def __str__(self):
         return f"Inquiry for {self.property.title} from {self.name}"
 
-class SavedSearch(models.Model):
-    # FIXED: Using your custom user model
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='saved_searches')
-    name = models.CharField(max_length=100)
-    search_params = models.JSONField()  # Store filter criteria
-    is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    
-    def __str__(self):
-        return f"{self.user.username} - {self.name}"
+# REMOVED: SavedSearch model - it already exists in users app
+# class SavedSearch(models.Model):
+#     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='saved_searches')
+#     name = models.CharField(max_length=100)
+#     search_params = models.JSONField()
+#     is_active = models.BooleanField(default=True)
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     
+#     def __str__(self):
+#         return f"{self.user.username} - {self.name}"

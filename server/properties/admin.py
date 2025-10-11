@@ -1,5 +1,7 @@
+# properties/admin.py
 from django.contrib import admin
-from .models import Property, PropertyImage, Favorite, Inquiry, SavedSearch
+from .models import Property, PropertyImage, Favorite, Inquiry
+# Removed SavedSearch from imports since it's now in users app
 
 class PropertyImageInline(admin.TabularInline):
     model = PropertyImage
@@ -37,7 +39,8 @@ class InquiryAdmin(admin.ModelAdmin):
     list_filter = ['inquiry_type', 'status', 'created_at']
     search_fields = ['name', 'email', 'property__title']
 
-@admin.register(SavedSearch)
-class SavedSearchAdmin(admin.ModelAdmin):
-    list_display = ['user', 'name', 'is_active', 'created_at']
-    list_filter = ['is_active', 'created_at']
+# REMOVED: SavedSearch admin registration since it's now in users app
+# @admin.register(SavedSearch)
+# class SavedSearchAdmin(admin.ModelAdmin):
+#     list_display = ['user', 'name', 'is_active', 'created_at']
+#     list_filter = ['is_active', 'created_at']

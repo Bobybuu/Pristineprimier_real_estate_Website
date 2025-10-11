@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .models import Property, PropertyImage, Favorite, Inquiry, SavedSearch
+from .models import Property, PropertyImage, Favorite, Inquiry
 
 # This will automatically use your custom User model from settings.AUTH_USER_MODEL
 User = get_user_model()
@@ -76,8 +76,8 @@ class InquirySerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['user', 'created_at']
 
-class SavedSearchSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = SavedSearch
-        fields = ['id', 'name', 'search_params', 'is_active', 'created_at']
-        read_only_fields = ['user']
+#class SavedSearchSerializer(serializers.ModelSerializer):
+    #class Meta:
+       # model = SavedSearch
+       # fields = ['id', 'name', 'search_params', 'is_active', 'created_at']
+       # read_only_fields = ['user']

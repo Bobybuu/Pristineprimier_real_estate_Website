@@ -2,6 +2,8 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 class User(AbstractUser):
     USER_TYPES = (
@@ -35,9 +37,10 @@ class UserProfile(models.Model):
     zip_code = models.CharField(max_length=20, blank=True)
     country = models.CharField(max_length=100, blank=True)
     
-    # Notification preferences
+    # Notification preferences (enhanced)
     email_notifications = models.BooleanField(default=True)
     sms_notifications = models.BooleanField(default=False)
+    notification_preferences = models.JSONField(default=dict, blank=True)  # Added this
     
     # Buyer preferences (for buyers)
     preferred_locations = models.JSONField(default=list, blank=True)
@@ -47,6 +50,17 @@ class UserProfile(models.Model):
     
     def __str__(self):
         return f"Profile for {self.user.username}"
+
+# Auto-create UserProfile when User is created
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.create(user=instance)
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    if hasattr(instance, 'profile'):
+        instance.profile.save()
 
 class SellerApplication(models.Model):
     STATUS_CHOICES = (
@@ -66,3 +80,52 @@ class SellerApplication(models.Model):
     
     class Meta:
         ordering = ['-submitted_at']
+
+class UserActivity(models.Model):
+    ACTIVITY_TYPES = [
+        ('property_view', 'Property View'),
+        ('search', 'Search'),
+        ('inquiry', 'Inquiry'),
+        ('favorite', 'Favorite'),
+        ('share', 'Share'),
+        ('tour_scheduled', 'Tour Scheduled'),
+    ]
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='activities')
+    activity_type = models.CharField(max_length=50, choices=ACTIVITY_TYPES)
+    property = models.ForeignKey('properties.Property', on_delete=models.CASCADE, null=True, blank=True)  # Update 'properties' to your actual app name
+    search_query = models.JSONField(null=True, blank=True)
+    metadata = models.JSONField(default=dict, blank=True)  # Additional activity data
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name_plural = 'User activities'
+    
+    def __str__(self):
+        return f"{self.user.username} - {self.get_activity_type_display()} - {self.created_at}"
+
+class SavedSearch(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='saved_searches')
+    name = models.CharField(max_length=100)
+    search_params = models.JSONField()
+    is_active = models.BooleanField(default=True)
+    last_notified = models.DateTimeField(null=True, blank=True)
+    notification_frequency = models.CharField(
+        max_length=20,
+        choices=[
+            ('instant', 'Instant'),
+            ('daily', 'Daily'),
+            ('weekly', 'Weekly'),
+        ],
+        default='instant'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+        unique_together = ['user', 'name']  # Prevent duplicate search names per user
+    
+    def __str__(self):
+        return f"{self.user.username}'s Search: {self.name}"

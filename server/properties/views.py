@@ -1,13 +1,15 @@
+# properties/views.py
 from rest_framework import viewsets, status, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Q
-from .models import Property, PropertyImage, Favorite, Inquiry, SavedSearch
+from .models import Property, PropertyImage, Favorite, Inquiry
 from .serializers import (
     PropertyListSerializer, PropertyDetailSerializer, 
-    FavoriteSerializer, InquirySerializer, SavedSearchSerializer
+    FavoriteSerializer, InquirySerializer
+    # Removed SavedSearchSerializer import since it's now in users app
 )
 from .filters import PropertyFilter
 
@@ -75,6 +77,20 @@ class PropertyViewSet(viewsets.ModelViewSet):
         properties = Property.objects.filter(seller=request.user)
         serializer = self.get_serializer(properties, many=True)
         return Response(serializer.data)
+    
+    @action(detail=True, methods=['post'])
+    def inquire(self, request, pk=None):
+        property = self.get_object()
+        serializer = InquirySerializer(data=request.data)
+        
+        if serializer.is_valid():
+            serializer.save(
+                user=request.user,
+                property=property
+            )
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class InquiryViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
@@ -86,12 +102,13 @@ class InquiryViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
-class SavedSearchViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
-    serializer_class = SavedSearchSerializer
-    
-    def get_queryset(self):
-        return SavedSearch.objects.filter(user=self.request.user)
-    
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+# REMOVED: SavedSearchViewSet since it's now in users app
+# class SavedSearchViewSet(viewsets.ModelViewSet):
+#     permission_classes = [IsAuthenticated]
+#     serializer_class = SavedSearchSerializer
+#     
+#     def get_queryset(self):
+#         return SavedSearch.objects.filter(user=self.request.user)
+#     
+#     def perform_create(self, serializer):
+#         serializer.save(user=self.request.user)
