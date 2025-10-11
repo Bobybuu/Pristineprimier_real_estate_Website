@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Bed, Bath, Square, MapPin, Share2, Calendar, Home as HomeIcon } from 'lucide-react';
+import { ArrowLeft, Bed, Bath, Square, MapPin, Share2, Calendar, Home as HomeIcon, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Facebook, Twitter, Mail } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -115,22 +115,53 @@ const PropertyDetails = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Main Content */}
               <div className="lg:col-span-2">
-                {/* Image Gallery */}
+                {/* Image Gallery with Slider */}
                 <div className="mb-8">
-                  <div className="relative rounded-lg overflow-hidden mb-4 h-96 bg-muted">
+                  <div className="relative rounded-lg overflow-hidden mb-4 h-96 bg-muted group">
                     <img
                       src={property.images[selectedImage]}
                       alt={property.title}
                       className="w-full h-full object-cover"
                     />
+                    
+                    {/* Previous Button */}
+                    {property.images.length > 1 && (
+                      <>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="absolute left-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-background/80 backdrop-blur-sm"
+                          onClick={() => setSelectedImage((prev) => (prev === 0 ? property.images.length - 1 : prev - 1))}
+                        >
+                          <ChevronLeft className="h-5 w-5" />
+                        </Button>
+                        
+                        {/* Next Button */}
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-background/80 backdrop-blur-sm"
+                          onClick={() => setSelectedImage((prev) => (prev === property.images.length - 1 ? 0 : prev + 1))}
+                        >
+                          <ChevronRight className="h-5 w-5" />
+                        </Button>
+                        
+                        {/* Image Counter */}
+                        <div className="absolute bottom-4 right-4 bg-background/80 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium">
+                          {selectedImage + 1} / {property.images.length}
+                        </div>
+                      </>
+                    )}
                   </div>
+                  
+                  {/* Thumbnail Navigation */}
                   <div className="grid grid-cols-4 gap-2">
                     {property.images.map((image, index) => (
                       <button
                         key={index}
                         onClick={() => setSelectedImage(index)}
-                        className={`relative rounded-lg overflow-hidden h-24 ${
-                          selectedImage === index ? 'ring-2 ring-primary' : ''
+                        className={`relative rounded-lg overflow-hidden h-24 transition-all ${
+                          selectedImage === index ? 'ring-2 ring-primary' : 'opacity-70 hover:opacity-100'
                         }`}
                       >
                         <img src={image} alt={`View ${index + 1}`} className="w-full h-full object-cover" />

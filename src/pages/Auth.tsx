@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Home, Mail, Lock, User, Phone } from 'lucide-react';
+import { Home, Mail, Lock, User, Phone, Building2, UserCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { toast } from 'sonner';
 
 const Auth = () => {
@@ -19,6 +20,7 @@ const Auth = () => {
     phone: '',
     password: '',
     confirmPassword: '',
+    role: 'user', // 'user' or 'agent'
   });
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -194,6 +196,43 @@ const Auth = () => {
                         required
                       />
                     </div>
+                  </div>
+
+                  {/* Role Selection */}
+                  <div>
+                    <Label>Account Type</Label>
+                    <RadioGroup
+                      value={signupData.role}
+                      onValueChange={(value) => setSignupData({ ...signupData, role: value })}
+                      className="grid grid-cols-2 gap-4 mt-2"
+                    >
+                      <div>
+                        <RadioGroupItem value="user" id="role-user" className="peer sr-only" />
+                        <Label
+                          htmlFor="role-user"
+                          className="flex flex-col items-center justify-between rounded-lg border-2 border-muted bg-background p-4 hover:bg-secondary cursor-pointer peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5"
+                        >
+                          <UserCircle className="mb-2 h-6 w-6" />
+                          <div className="text-center">
+                            <div className="font-semibold">User</div>
+                            <div className="text-xs text-muted-foreground">Buy or rent properties</div>
+                          </div>
+                        </Label>
+                      </div>
+                      <div>
+                        <RadioGroupItem value="agent" id="role-agent" className="peer sr-only" />
+                        <Label
+                          htmlFor="role-agent"
+                          className="flex flex-col items-center justify-between rounded-lg border-2 border-muted bg-background p-4 hover:bg-secondary cursor-pointer peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5"
+                        >
+                          <Building2 className="mb-2 h-6 w-6" />
+                          <div className="text-center">
+                            <div className="font-semibold">Agent</div>
+                            <div className="text-xs text-muted-foreground">List and sell properties</div>
+                          </div>
+                        </Label>
+                      </div>
+                    </RadioGroup>
                   </div>
 
                   <div>

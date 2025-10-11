@@ -1,7 +1,32 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Home, Mail, Phone, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
+import { Home, Mail, Phone, Facebook, Twitter, Instagram, Linkedin, Send } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { toast } from 'sonner';
 
 const Footer = () => {
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      // TODO: Replace with actual API call - POST /api/newsletter/subscribe
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      
+      toast.success('Successfully subscribed to newsletter!');
+      setEmail('');
+    } catch (error) {
+      toast.error('Failed to subscribe. Please try again.');
+      console.error('Newsletter subscription error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <footer className="bg-primary text-primary-foreground mt-auto">
       <div className="container mx-auto px-4 py-12">
@@ -108,6 +133,36 @@ const Footer = () => {
                 Los Angeles, CA 90001
               </li>
             </ul>
+          </div>
+        </div>
+
+        {/* Newsletter Section */}
+        <div className="border-t border-primary-foreground/20 mt-8 pt-8">
+          <div className="max-w-md mx-auto text-center">
+            <h3 className="font-semibold text-lg mb-2">Subscribe to Our Newsletter</h3>
+            <p className="text-sm text-primary-foreground/80 mb-4">
+              Get the latest property listings and real estate news delivered to your inbox.
+            </p>
+            <form onSubmit={handleNewsletterSubmit} className="flex gap-2">
+              <Input
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="bg-background/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/50"
+              />
+              <Button type="submit" variant="teal" disabled={loading}>
+                {loading ? (
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground" />
+                ) : (
+                  <>
+                    <Send className="h-4 w-4 mr-2" />
+                    Subscribe
+                  </>
+                )}
+              </Button>
+            </form>
           </div>
         </div>
 
