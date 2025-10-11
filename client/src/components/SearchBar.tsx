@@ -3,37 +3,49 @@ import { Search, MapPin, DollarSign, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { PropertyFilters } from '@/types/property';
 
 interface SearchBarProps {
-  onSearch?: (filters: SearchFilters) => void;
+  onSearch?: (filters: PropertyFilters) => void;
   variant?: 'hero' | 'inline';
 }
 
-export interface SearchFilters {
-  location: string;
-  minPrice: string;
-  maxPrice: string;
-  propertyType: string;
-  beds: string;
-  baths: string;
-}
-
 const SearchBar = ({ onSearch, variant = 'hero' }: SearchBarProps) => {
-  const [filters, setFilters] = useState<SearchFilters>({
-    location: '',
-    minPrice: '',
-    maxPrice: '',
-    propertyType: 'all',
-    beds: 'any',
-    baths: 'any',
+  const [filters, setFilters] = useState({
+    search: '',
+    city: '',
+    state: '',
+    min_price: '',
+    max_price: '',
+    property_type: '',
+    min_bedrooms: '',
+    min_bathrooms: '',
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSearch?.(filters);
+    
+    // Convert frontend filters to backend PropertyFilters format
+    const backendFilters: PropertyFilters = {
+      search: filters.search,
+      city: filters.city,
+      state: filters.state,
+      min_price: filters.min_price,
+      max_price: filters.max_price,
+      property_type: filters.property_type === 'all' ? '' : filters.property_type,
+      min_bedrooms: filters.min_bedrooms === 'any' ? '' : filters.min_bedrooms,
+      min_bathrooms: filters.min_bathrooms === 'any' ? '' : filters.min_bathrooms,
+    };
+
+    // Clean up empty values
+    const cleanFilters = Object.fromEntries(
+      Object.entries(backendFilters).filter(([_, value]) => value !== '')
+    );
+
+    onSearch?.(cleanFilters);
   };
 
-  const updateFilter = (key: keyof SearchFilters, value: string) => {
+  const updateFilter = (key: keyof typeof filters, value: string) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
@@ -49,15 +61,29 @@ const SearchBar = ({ onSearch, variant = 'hero' }: SearchBarProps) => {
       }`}
     >
       <div className={`grid gap-4 ${isHero ? 'md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-4'}`}>
-        {/* Location */}
+        {/* Search/Location */}
         <div className={isHero ? 'lg:col-span-2' : ''}>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="Search by title, description, or location..."
+              value={filters.search}
+              onChange={(e) => updateFilter('search', e.target.value)}
+              className="pl-10 h-12"
+            />
+          </div>
+        </div>
+
+        {/* City */}
+        <div>
           <div className="relative">
             <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input
               type="text"
-              placeholder="City, State, or ZIP"
-              value={filters.location}
-              onChange={(e) => updateFilter('location', e.target.value)}
+              placeholder="City"
+              value={filters.city}
+              onChange={(e) => updateFilter('city', e.target.value)}
               className="pl-10 h-12"
             />
           </div>
@@ -65,17 +91,18 @@ const SearchBar = ({ onSearch, variant = 'hero' }: SearchBarProps) => {
 
         {/* Property Type */}
         <div>
-          <Select value={filters.propertyType} onValueChange={(value) => updateFilter('propertyType', value)}>
+          <Select value={filters.property_type} onValueChange={(value) => updateFilter('property_type', value)}>
             <SelectTrigger className="h-12">
               <Home className="h-5 w-5 mr-2 text-muted-foreground" />
               <SelectValue placeholder="Property Type" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Types</SelectItem>
-              <SelectItem value="house">House</SelectItem>
-              <SelectItem value="condo">Condo</SelectItem>
-              <SelectItem value="townhouse">Townhouse</SelectItem>
               <SelectItem value="land">Land</SelectItem>
+              <SelectItem value="commercial">Commercial</SelectItem>
+              <SelectItem value="rental">Rental</SelectItem>
+              <SelectItem value="apartment">Apartment</SelectItem>
+              <SelectItem value="sale">For Sale</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -85,20 +112,20 @@ const SearchBar = ({ onSearch, variant = 'hero' }: SearchBarProps) => {
           <div className="relative">
             <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              type="text"
+              type="number"
               placeholder="Min Price"
-              value={filters.minPrice}
-              onChange={(e) => updateFilter('minPrice', e.target.value)}
+              value={filters.min_price}
+              onChange={(e) => updateFilter('min_price', e.target.value)}
               className="pl-9 h-12"
             />
           </div>
           <div className="relative">
             <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              type="text"
+              type="number"
               placeholder="Max Price"
-              value={filters.maxPrice}
-              onChange={(e) => updateFilter('maxPrice', e.target.value)}
+              value={filters.max_price}
+              onChange={(e) => updateFilter('max_price', e.target.value)}
               className="pl-9 h-12"
             />
           </div>
@@ -106,7 +133,7 @@ const SearchBar = ({ onSearch, variant = 'hero' }: SearchBarProps) => {
 
         {/* Beds */}
         <div>
-          <Select value={filters.beds} onValueChange={(value) => updateFilter('beds', value)}>
+          <Select value={filters.min_bedrooms} onValueChange={(value) => updateFilter('min_bedrooms', value)}>
             <SelectTrigger className="h-12">
               <SelectValue placeholder="Beds" />
             </SelectTrigger>
@@ -123,7 +150,7 @@ const SearchBar = ({ onSearch, variant = 'hero' }: SearchBarProps) => {
 
         {/* Baths */}
         <div>
-          <Select value={filters.baths} onValueChange={(value) => updateFilter('baths', value)}>
+          <Select value={filters.min_bathrooms} onValueChange={(value) => updateFilter('min_bathrooms', value)}>
             <SelectTrigger className="h-12">
               <SelectValue placeholder="Baths" />
             </SelectTrigger>

@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Home } from 'lucide-react';
+import { Menu, X, Home, User, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const { user, logout } = useAuth();
 
   const navLinks = [
     { path: '/buy', label: 'Buy a House' },
@@ -17,11 +19,39 @@ const Header = () => {
 
   const isActive = (path: string) => location.pathname === path;
 
+  const handleLogout = async () => {
+    await logout();
+    setMobileMenuOpen(false);
+  };
+
+  const getDashboardPath = () => {
+    if (!user) return '/dashboard';
+    switch (user.user_type) {
+      case 'seller':
+        return '/dashboard/seller';
+      case 'agent':
+        return '/dashboard/seller'; // Agents go to seller dashboard for now
+      case 'admin':
+        return '/dashboard/admin';
+      default:
+        return '/dashboard';
+    }
+  };
+
+  const getUserDisplayName = () => {
+    if (!user) return '';
+    return user.first_name || user.username;
+  };
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
       <nav className="container mx-auto flex h-16 items-center justify-between px-4">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 text-xl font-bold text-primary hover:text-primary/90 transition-base">
+        <Link 
+          to="/" 
+          className="flex items-center gap-2 text-xl font-bold text-primary hover:text-primary/90 transition-base"
+          onClick={() => setMobileMenuOpen(false)}
+        >
           <Home className="h-6 w-6" />
           <span className="hidden sm:inline">PristinePrimier</span>
         </Link>
@@ -43,14 +73,39 @@ const Header = () => {
           ))}
         </div>
 
-        {/* Auth Buttons */}
+        {/* Auth Buttons - Desktop */}
         <div className="hidden lg:flex items-center gap-3">
-          <Button asChild variant="ghost" size="sm">
-            <Link to="/auth">Login</Link>
-          </Button>
-          <Button asChild variant="hero" size="sm">
-            <Link to="/dashboard/seller">Dashboard</Link>
-          </Button>
+          {user ? (
+            <>
+              <span className="text-sm text-muted-foreground">
+                Welcome, {getUserDisplayName()}
+              </span>
+              <Button asChild variant="outline" size="sm">
+                <Link to={getDashboardPath()}>
+                  <User className="h-4 w-4 mr-2" />
+                  Dashboard
+                </Link>
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={handleLogout}
+                className="text-muted-foreground hover:text-primary"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Logout
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button asChild variant="ghost" size="sm">
+                <Link to="/auth">Login</Link>
+              </Button>
+              <Button asChild variant="hero" size="sm">
+                <Link to="/auth">Sign Up</Link>
+              </Button>
+            </>
+          )}
         </div>
 
         {/* Mobile Menu Button */}
@@ -79,17 +134,44 @@ const Header = () => {
                 {link.label}
               </Link>
             ))}
+            
+            {/* Mobile Auth Buttons */}
             <div className="flex flex-col gap-2 pt-4 border-t">
-              <Button asChild variant="outline" size="sm">
-                <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
-                  Login
-                </Link>
-              </Button>
-              <Button asChild variant="hero" size="sm">
-                <Link to="/dashboard/seller" onClick={() => setMobileMenuOpen(false)}>
-                  Dashboard
-                </Link>
-              </Button>
+              {user ? (
+                <>
+                  <div className="text-sm text-muted-foreground text-center py-2">
+                    Welcome, {getUserDisplayName()}
+                  </div>
+                  <Button asChild variant="outline" size="sm">
+                    <Link to={getDashboardPath()} onClick={() => setMobileMenuOpen(false)}>
+                      <User className="h-4 w-4 mr-2" />
+                      Dashboard
+                    </Link>
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={handleLogout}
+                    className="text-muted-foreground hover:text-primary"
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Logout
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button asChild variant="outline" size="sm">
+                    <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
+                      Login
+                    </Link>
+                  </Button>
+                  <Button asChild variant="hero" size="sm">
+                    <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
+                      Sign Up
+                    </Link>
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </div>

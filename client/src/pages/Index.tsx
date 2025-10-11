@@ -5,12 +5,23 @@ import Footer from '@/components/Footer';
 import SearchBar from '@/components/SearchBar';
 import PropertyCard from '@/components/PropertyCard';
 import { Button } from '@/components/ui/button';
-import { mockProperties, mockTestimonials } from '@/lib/mockData';
+import { useFeaturedProperties } from '@/hooks/useProperties';
+import { mockTestimonials } from '@/lib/mockData';
+import { PropertyFilters } from '@/types/property';
 import heroImage from '@/assets/hero-home.jpg';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
-const Index = () => {
-  // TODO: Replace with actual API call - GET /api/properties/featured
-  const featuredProperties = mockProperties.filter((p) => p.isFeatured);
+const Index = (): JSX.Element => {
+  const { featuredProperties, loading, error } = useFeaturedProperties();
+
+  const handleSearch = (filters: PropertyFilters): void => {
+    const queryParams = new URLSearchParams();
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value) queryParams.append(key, value.toString());
+    });
+    
+    window.location.href = `/buy?${queryParams.toString()}`;
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -19,13 +30,11 @@ const Index = () => {
       <main>
         {/* Hero Section */}
         <section className="relative h-[600px] md:h-[700px] flex items-center justify-center overflow-hidden">
-          {/* Background Image with Overlay */}
           <div className="absolute inset-0">
             <img src={heroImage} alt="Luxury real estate" className="w-full h-full object-cover" />
             <div className="absolute inset-0 gradient-overlay" />
           </div>
 
-          {/* Hero Content */}
           <div className="relative z-10 container mx-auto px-4 text-center">
             <h1 className="text-white mb-6 animate-fade-in">
               Find Your Dream Home
@@ -34,14 +43,8 @@ const Index = () => {
               Discover premium properties with PristinePrimier - Your trusted partner in real estate excellence
             </p>
 
-            {/* Search Bar */}
             <div className="flex justify-center animate-fade-in">
-              <SearchBar
-                onSearch={(filters) => {
-                  // TODO: Navigate to /buy with filters
-                  console.log('Search filters:', filters);
-                }}
-              />
+              <SearchBar onSearch={handleSearch} />
             </div>
           </div>
         </section>
@@ -123,19 +126,46 @@ const Index = () => {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-              {featuredProperties.map((property) => (
-                <PropertyCard key={property.id} property={property} />
-              ))}
+            
+          {loading ? (
+            <div className="flex justify-center items-center py-12">
+              <LoadingSpinner size="lg" />
             </div>
-
-            <div className="text-center">
-              <Button asChild variant="outline" size="lg">
-                <Link to="/buy">
-                  View All Properties <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
+          ) : error ? (
+            <div className="text-center py-12">
+              <p className="text-destructive mb-4">Failed to load featured properties</p>
+              <Button onClick={() => window.location.reload()}>
+                Try Again
               </Button>
             </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                {featuredProperties && featuredProperties.length > 0 ? (
+                  featuredProperties.map((property) => (
+                    <PropertyCard key={property.id} property={property} />
+                  ))
+                ) : (
+                  <div className="col-span-full text-center py-12">
+                    <p className="text-muted-foreground text-lg">
+                      No featured properties available at the moment.
+                    </p>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      Check back soon for new listings!
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              <div className="text-center">
+                <Button asChild variant="outline" size="lg">
+                  <Link to="/buy">
+                    View All Properties <ArrowRight className="ml-2 h-5 w-5" />
+                  </Link>
+                </Button>
+              </div>
+            </>
+          )}
           </div>
         </section>
 

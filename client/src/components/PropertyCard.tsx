@@ -1,39 +1,110 @@
 import { Link } from 'react-router-dom';
-import { Bed, Bath, Square, MapPin } from 'lucide-react';
-import { Property } from '@/lib/mockData';
+import { Bed, Bath, Square, MapPin, Heart } from 'lucide-react';
+import { Property } from '@/types/property';
 import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { propertiesAPI } from '@/services/api';
+import { useState, MouseEvent } from 'react';
 
 interface PropertyCardProps {
   property: Property;
 }
 
 const PropertyCard = ({ property }: PropertyCardProps) => {
-  const formatPrice = (price: number) => {
+  const [isFavorited, setIsFavorited] = useState<boolean>(property.is_favorited);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const handleFavoriteToggle = async (e: MouseEvent<HTMLButtonElement>): Promise<void> => {
+  e.preventDefault();
+  e.stopPropagation();
+  
+  if (isLoading) return;
+  
+  setIsLoading(true);
+  try {
+    await propertiesAPI.toggleFavorite(property.id);
+    setIsFavorited(!isFavorited);
+  } catch (error) {
+    console.error('Error toggling favorite:', error);
+  } finally {
+    setIsLoading(false);
+  }
+};
+  const formatPrice = (price: string): string => {
+    const numericPrice = parseFloat(price);
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0,
-    }).format(price);
+    }).format(numericPrice);
   };
 
-  const isLandOnly = property.type === 'land';
+  const getPropertyTypeLabel = (type: Property['property_type']): string => {
+    const typeMap: Record<Property['property_type'], string> = {
+      land: 'Land',
+      commercial: 'Commercial',
+      rental: 'Rental',
+      apartment: 'Apartment',
+      sale: 'For Sale',
+    };
+    return typeMap[type] || type;
+  };
+
+  const getStatusLabel = (status: Property['status'], propertyType: Property['property_type']): string => {
+    if (propertyType === 'rental') return 'For Rent';
+    if (propertyType === 'sale') return 'For Sale';
+    if (status === 'rented') return 'Rented';
+    if (status === 'sold') return 'Sold';
+    return 'Available';
+  };
+
+  const isLandOnly = property.property_type === 'land';
+  const primaryImage = property.primary_image || property.images?.[0];
+  const statusLabel = getStatusLabel(property.status, property.property_type);
 
   return (
     <Link to={`/property/${property.id}`}>
       <Card className="group overflow-hidden hover:shadow-elegant transition-smooth cursor-pointer h-full">
         {/* Image */}
         <div className="relative overflow-hidden h-56">
-          <img
-            src={property.images[0]}
-            alt={property.title}
-            className="w-full h-full object-cover group-hover:scale-110 transition-smooth"
-            loading="lazy"
-          />
-          <div className="absolute top-3 right-3 bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-semibold">
-            {property.status === 'rent' ? 'For Rent' : 'For Sale'}
+          {primaryImage ? (
+            <img
+              src={primaryImage.image}
+              alt={property.title}
+              className="w-full h-full object-cover group-hover:scale-110 transition-smooth"
+              loading="lazy"
+            />
+          ) : (
+            <div className="w-full h-full bg-muted flex items-center justify-center">
+              <span className="text-muted-foreground">No Image Available</span>
+            </div>
+          )}
+          
+          {/* Status Badge */}
+          <div className={`absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-semibold ${
+            property.status === 'sold' || property.status === 'rented' 
+              ? 'bg-destructive text-destructive-foreground' 
+              : 'bg-primary text-primary-foreground'
+          }`}>
+            {statusLabel}
           </div>
-          {property.isFeatured && (
-            <div className="absolute top-3 left-3 bg-gold text-gold-foreground px-3 py-1 rounded-full text-xs font-semibold">
+          
+          {/* Favorite Button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute top-3 left-3 bg-background/80 hover:bg-background"
+            onClick={handleFavoriteToggle}
+            disabled={isLoading}
+          >
+            <Heart 
+              className={`h-5 w-5 ${isFavorited ? 'fill-destructive text-destructive' : ''}`} 
+            />
+          </Button>
+
+          {/* Featured Badge */}
+          {property.featured && (
+            <div className="absolute bottom-3 left-3 bg-gold text-gold-foreground px-3 py-1 rounded-full text-xs font-semibold">
               Featured
             </div>
           )}
@@ -43,7 +114,7 @@ const PropertyCard = ({ property }: PropertyCardProps) => {
           {/* Price */}
           <div className="text-2xl font-bold text-primary mb-2">
             {formatPrice(property.price)}
-            {property.status === 'rent' && <span className="text-base text-muted-foreground">/month</span>}
+            {property.property_type === 'rental' && <span className="text-base text-muted-foreground">/month</span>}
           </div>
 
           {/* Title */}
@@ -62,34 +133,41 @@ const PropertyCard = ({ property }: PropertyCardProps) => {
           {/* Property Details */}
           {!isLandOnly && (
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
-              {property.beds && (
+              {property.bedrooms && (
                 <div className="flex items-center gap-1">
                   <Bed className="h-4 w-4" />
-                  <span>{property.beds} Beds</span>
+                  <span>{property.bedrooms} Beds</span>
                 </div>
               )}
-              {property.baths && (
+              {property.bathrooms && (
                 <div className="flex items-center gap-1">
                   <Bath className="h-4 w-4" />
-                  <span>{property.baths} Baths</span>
+                  <span>{property.bathrooms} Baths</span>
                 </div>
               )}
-              {property.sqft && (
+              {property.square_feet && (
                 <div className="flex items-center gap-1">
                   <Square className="h-4 w-4" />
-                  <span>{property.sqft.toLocaleString()} sqft</span>
+                  <span>{property.square_feet.toLocaleString()} sqft</span>
                 </div>
               )}
             </div>
           )}
 
           {/* Land Details */}
-          {isLandOnly && property.lotSize && (
+          {isLandOnly && property.lot_size && (
             <div className="flex items-center gap-1 text-sm text-muted-foreground">
               <Square className="h-4 w-4" />
-              <span>{property.lotSize}</span>
+              <span>{property.lot_size} acres</span>
             </div>
           )}
+
+          {/* Property Type */}
+          <div className="mt-3 pt-3 border-t border-border">
+            <span className="text-xs text-muted-foreground uppercase tracking-wide">
+              {getPropertyTypeLabel(property.property_type)}
+            </span>
+          </div>
         </CardContent>
       </Card>
     </Link>

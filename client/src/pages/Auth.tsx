@@ -8,19 +8,30 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { toast } from 'sonner';
+import { useAuth } from '@/contexts/AuthContext';
+
+// Define proper types for user roles
+type UserRole = 'buyer' | 'seller' | 'agent' | 'admin' | 'management_client';
 
 const Auth = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { login, register, user } = useAuth();
 
-  const [loginData, setLoginData] = useState({ email: '', password: '' });
+  const [loginData, setLoginData] = useState({ 
+    username: '', 
+    password: '' 
+  });
+  
   const [signupData, setSignupData] = useState({
-    name: '',
+    username: '',
     email: '',
-    phone: '',
+    first_name: '',
+    last_name: '',
+    phone_number: '',
     password: '',
     confirmPassword: '',
-    role: 'user', // 'user' or 'agent'
+    user_type: 'buyer' as UserRole,
   });
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -28,15 +39,33 @@ const Auth = () => {
     setLoading(true);
 
     try {
-      // TODO: Replace with actual API call
-      // await auth.login(loginData);
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
-
-      toast.success('Welcome back!');
-      navigate('/dashboard/seller');
+      await login(loginData);
+      
+      // Use the actual user from auth context for redirection
+      if (user) {
+        switch (user.user_type) {
+          case 'seller':
+            navigate('/dashboard/seller');
+            break;
+          case 'agent':
+            navigate('/dashboard/seller'); // For now, agents go to seller dashboard
+            break;
+          case 'admin':
+            navigate('/dashboard/admin');
+            break;
+          case 'management_client':
+            navigate('/dashboard');
+            break;
+          default:
+            navigate('/dashboard');
+        }
+      } else {
+        // Fallback if user is not immediately available
+        navigate('/dashboard');
+      }
     } catch (error) {
-      toast.error('Login failed. Please check your credentials.');
       console.error('Login error:', error);
+      // Error is already handled in the auth context
     } finally {
       setLoading(false);
     }
@@ -50,21 +79,69 @@ const Auth = () => {
       return;
     }
 
+    // Split username into first and last name
+    const nameParts = signupData.username.trim().split(' ');
+    const first_name = nameParts[0] || '';
+    const last_name = nameParts.slice(1).join(' ') || '';
+
     setLoading(true);
 
     try {
-      // TODO: Replace with actual API call
-      // await auth.signup(signupData);
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
+      const userData = {
+        username: signupData.username,
+        email: signupData.email,
+        password: signupData.password,
+        first_name,
+        last_name,
+        user_type: signupData.user_type,
+        phone_number: signupData.phone_number,
+      };
 
-      toast.success('Account created successfully! Please check your email.');
-      navigate('/dashboard/seller');
+      await register(userData);
+      
+      // Redirect based on user type - the user will be available from auth context after registration
+      switch (signupData.user_type) {
+        case 'seller':
+          navigate('/dashboard/seller');
+          break;
+        case 'agent':
+          navigate('/dashboard/seller'); // For now, agents go to seller dashboard
+          break;
+        case 'admin':
+          navigate('/dashboard/admin');
+          break;
+        case 'management_client':
+          navigate('/dashboard');
+          break;
+        default:
+          navigate('/dashboard');
+      }
     } catch (error) {
-      toast.error('Signup failed. Please try again.');
       console.error('Signup error:', error);
+      // Error is already handled in the auth context
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleRoleChange = (role: string) => {
+    // Map frontend roles to backend user types
+    const userTypeMap: { [key: string]: UserRole } = {
+      'user': 'buyer',
+      'agent': 'seller' // For now, agents are sellers until we add agent-specific registration
+    };
+    
+    const userType = userTypeMap[role] || 'buyer';
+    
+    setSignupData({ 
+      ...signupData, 
+      user_type: userType
+    });
+  };
+
+  // Get the display value for the radio group
+  const getRadioGroupValue = () => {
+    return signupData.user_type === 'buyer' ? 'user' : 'agent';
   };
 
   return (
@@ -96,15 +173,15 @@ const Auth = () => {
               <CardContent>
                 <form onSubmit={handleLogin} className="space-y-4">
                   <div>
-                    <Label htmlFor="login-email">Email</Label>
+                    <Label htmlFor="login-username">Username</Label>
                     <div className="relative mt-1">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
-                        id="login-email"
-                        type="email"
-                        placeholder="john@example.com"
-                        value={loginData.email}
-                        onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
+                        id="login-username"
+                        type="text"
+                        placeholder="johndoe"
+                        value={loginData.username}
+                        onChange={(e) => setLoginData({ ...loginData, username: e.target.value })}
                         className="pl-10"
                         required
                       />
@@ -151,15 +228,15 @@ const Auth = () => {
               <CardContent>
                 <form onSubmit={handleSignup} className="space-y-4">
                   <div>
-                    <Label htmlFor="signup-name">Full Name</Label>
+                    <Label htmlFor="signup-username">Username</Label>
                     <div className="relative mt-1">
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
-                        id="signup-name"
+                        id="signup-username"
                         type="text"
-                        placeholder="John Doe"
-                        value={signupData.name}
-                        onChange={(e) => setSignupData({ ...signupData, name: e.target.value })}
+                        placeholder="johndoe"
+                        value={signupData.username}
+                        onChange={(e) => setSignupData({ ...signupData, username: e.target.value })}
                         className="pl-10"
                         required
                       />
@@ -190,8 +267,8 @@ const Auth = () => {
                         id="signup-phone"
                         type="tel"
                         placeholder="(555) 123-4567"
-                        value={signupData.phone}
-                        onChange={(e) => setSignupData({ ...signupData, phone: e.target.value })}
+                        value={signupData.phone_number}
+                        onChange={(e) => setSignupData({ ...signupData, phone_number: e.target.value })}
                         className="pl-10"
                         required
                       />
@@ -202,8 +279,8 @@ const Auth = () => {
                   <div>
                     <Label>Account Type</Label>
                     <RadioGroup
-                      value={signupData.role}
-                      onValueChange={(value) => setSignupData({ ...signupData, role: value })}
+                      value={getRadioGroupValue()}
+                      onValueChange={handleRoleChange}
                       className="grid grid-cols-2 gap-4 mt-2"
                     >
                       <div>
@@ -214,8 +291,8 @@ const Auth = () => {
                         >
                           <UserCircle className="mb-2 h-6 w-6" />
                           <div className="text-center">
-                            <div className="font-semibold">User</div>
-                            <div className="text-xs text-muted-foreground">Buy or rent properties</div>
+                            <div className="font-semibold">Buyer/Renter</div>
+                            <div className="text-xs text-muted-foreground">Find properties</div>
                           </div>
                         </Label>
                       </div>
@@ -227,8 +304,8 @@ const Auth = () => {
                         >
                           <Building2 className="mb-2 h-6 w-6" />
                           <div className="text-center">
-                            <div className="font-semibold">Agent</div>
-                            <div className="text-xs text-muted-foreground">List and sell properties</div>
+                            <div className="font-semibold">Seller/Agent</div>
+                            <div className="text-xs text-muted-foreground">List properties</div>
                           </div>
                         </Label>
                       </div>
