@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Home, User, LogOut } from 'lucide-react';
+import { Menu, X, User, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -44,16 +44,19 @@ const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
+    <header className="sticky top-0 z-50 w-full border-b bg-[#577A26] backdrop-blur supports-[backdrop-filter]:bg-[#577A26] shadow-sm">
       <nav className="container mx-auto flex h-16 items-center justify-between px-4">
-        {/* Logo */}
+        {/* Logo with PNG */}
         <Link 
           to="/" 
-          className="flex items-center gap-2 text-xl font-bold text-primary hover:text-primary/90 transition-base"
+          className="flex items-center gap-2 hover:opacity-90 transition-opacity"
           onClick={() => setMobileMenuOpen(false)}
         >
-          <Home className="h-6 w-6" />
-          <span className="hidden sm:inline">PristinePrimier</span>
+          <img 
+            src="/logorealestate.png"  
+            alt="PristinePrimier Real Estate" 
+            className="h-8 w-auto"
+          />
         </Link>
 
         {/* Desktop Navigation */}
@@ -64,8 +67,8 @@ const Header = () => {
               to={link.path}
               className={`text-sm font-medium transition-base ${
                 isActive(link.path)
-                  ? 'text-primary border-b-2 border-primary'
-                  : 'text-muted-foreground hover:text-primary'
+                  ? 'text-black border-b-2 border-black font-semibold'
+                  : 'text-black/80 hover:text-black hover:border-b-2 hover:border-black/50'
               }`}
             >
               {link.label}
@@ -77,10 +80,10 @@ const Header = () => {
         <div className="hidden lg:flex items-center gap-3">
           {user ? (
             <>
-              <span className="text-sm text-muted-foreground">
+              <span className="text-sm text-black/80">
                 Welcome, {getUserDisplayName()}
               </span>
-              <Button asChild variant="outline" size="sm">
+              <Button asChild variant="outline" size="sm" className="border-black text-black hover:bg-black hover:text-white">
                 <Link to={getDashboardPath()}>
                   <User className="h-4 w-4 mr-2" />
                   Dashboard
@@ -90,7 +93,7 @@ const Header = () => {
                 variant="ghost" 
                 size="sm" 
                 onClick={handleLogout}
-                className="text-muted-foreground hover:text-primary"
+                className="text-black/80 hover:text-black hover:bg-black/10"
               >
                 <LogOut className="h-4 w-4 mr-2" />
                 Logout
@@ -98,10 +101,10 @@ const Header = () => {
             </>
           ) : (
             <>
-              <Button asChild variant="ghost" size="sm">
+              <Button asChild variant="ghost" size="sm" className="text-black/80 hover:text-black hover:bg-black/10">
                 <Link to="/auth">Login</Link>
               </Button>
-              <Button asChild variant="hero" size="sm">
+              <Button asChild variant="outline" size="sm" className="border-black text-black hover:bg-black hover:text-white">
                 <Link to="/auth">Sign Up</Link>
               </Button>
             </>
@@ -110,7 +113,7 @@ const Header = () => {
 
         {/* Mobile Menu Button */}
         <button
-          className="lg:hidden"
+          className="lg:hidden text-black"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           aria-label="Toggle menu"
         >
@@ -120,14 +123,14 @@ const Header = () => {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden border-t bg-background animate-fade-in">
+        <div className="lg:hidden border-t border-black/20 bg-[#577A26] animate-fade-in">
           <div className="container mx-auto px-4 py-4 flex flex-col gap-4">
             {navLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
                 className={`text-sm font-medium py-2 transition-base ${
-                  isActive(link.path) ? 'text-primary font-semibold' : 'text-muted-foreground'
+                  isActive(link.path) ? 'text-black font-semibold border-l-2 border-black pl-2' : 'text-black/80 hover:text-black'
                 }`}
                 onClick={() => setMobileMenuOpen(false)}
               >
@@ -136,13 +139,13 @@ const Header = () => {
             ))}
             
             {/* Mobile Auth Buttons */}
-            <div className="flex flex-col gap-2 pt-4 border-t">
+            <div className="flex flex-col gap-2 pt-4 border-t border-black/20">
               {user ? (
                 <>
-                  <div className="text-sm text-muted-foreground text-center py-2">
+                  <div className="text-sm text-black/80 text-center py-2">
                     Welcome, {getUserDisplayName()}
                   </div>
-                  <Button asChild variant="outline" size="sm">
+                  <Button asChild variant="outline" size="sm" className="border-black text-black hover:bg-black hover:text-white">
                     <Link to={getDashboardPath()} onClick={() => setMobileMenuOpen(false)}>
                       <User className="h-4 w-4 mr-2" />
                       Dashboard
@@ -152,7 +155,7 @@ const Header = () => {
                     variant="ghost" 
                     size="sm" 
                     onClick={handleLogout}
-                    className="text-muted-foreground hover:text-primary"
+                    className="text-black/80 hover:text-black hover:bg-black/10"
                   >
                     <LogOut className="h-4 w-4 mr-2" />
                     Logout
@@ -160,12 +163,12 @@ const Header = () => {
                 </>
               ) : (
                 <>
-                  <Button asChild variant="outline" size="sm">
+                  <Button asChild variant="ghost" size="sm" className="text-black/80 hover:text-black hover:bg-black/10">
                     <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
                       Login
                     </Link>
                   </Button>
-                  <Button asChild variant="hero" size="sm">
+                  <Button asChild variant="outline" size="sm" className="border-black text-black hover:bg-black hover:text-white">
                     <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
                       Sign Up
                     </Link>

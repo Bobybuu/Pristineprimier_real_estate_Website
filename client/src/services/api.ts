@@ -3,22 +3,23 @@ import { Property, PropertyFilters, Favorite, Inquiry, SavedSearch, PaginatedRes
 
 // Environment-based configuration
 const getApiBaseUrl = (): string => {
-  // For production
-  if (process.env.NODE_ENV === 'production') {
-    return process.env.REACT_APP_API_URL || 'https://api.pristineprimier.com/api';
+  const isProduction = import.meta.env.MODE === 'production';
+
+  if (isProduction) {
+    return import.meta.env.VITE_API_URL || 'https://api.pristineprimier.com/api';
   }
-  // For development
-  return process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
+  return import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 };
 
 const getMediaBaseUrl = (): string => {
-  // For production
-  if (process.env.NODE_ENV === 'production') {
-    return process.env.REACT_APP_MEDIA_URL || 'https://api.pristineprimier.com';
+  const isProduction = import.meta.env.MODE === 'production';
+
+  if (isProduction) {
+    return import.meta.env.VITE_MEDIA_URL || 'https://api.pristineprimier.com';
   }
-  // For development
-  return process.env.REACT_APP_MEDIA_URL || 'http://localhost:8000';
+  return import.meta.env.VITE_MEDIA_URL || 'http://localhost:8000';
 };
+
 
 const API_BASE_URL = getApiBaseUrl();
 export const MEDIA_BASE_URL = getMediaBaseUrl();
