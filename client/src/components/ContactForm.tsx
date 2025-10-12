@@ -4,10 +4,11 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import { inquiryApi, type InquiryData } from '@/services/inquiryApi';
 
 interface ContactFormProps {
   propertyId?: string;
-  formType?: 'inquiry' | 'valuation' | 'management';
+  formType?: 'inquiry' | 'valuation' | 'management' | 'general';
   onSubmit?: (data: any) => void;
 }
 
@@ -35,12 +36,34 @@ const ContactForm = ({ propertyId, formType = 'inquiry', onSubmit }: ContactForm
     setLoading(true);
 
     try {
-      // TODO: Replace with actual API call based on formType
-      // await contactApi.submitInquiry(formData);
-      // await contactApi.submitValuation(formData);
-      // await contactApi.submitManagementRequest(formData);
+      let response;
 
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
+      switch (formType) {
+        case 'inquiry':
+          if (propertyId) {
+            // Property-specific inquiry
+            response = await inquiryApi.submitPropertyInquiry(propertyId, formData);
+          } else {
+            // General inquiry
+            response = await inquiryApi.submitGeneralInquiry(formData);
+          }
+          break;
+
+        case 'valuation':
+          response = await inquiryApi.submitValuationRequest(formData);
+          break;
+
+        case 'management':
+          response = await inquiryApi.submitManagementRequest(formData);
+          break;
+
+        case 'general':
+          response = await inquiryApi.submitGeneralInquiry(formData);
+          break;
+
+        default:
+          throw new Error('Unknown form type');
+      }
 
       toast.success('Form submitted successfully! We\'ll be in touch soon.');
       onSubmit?.(formData);
@@ -55,11 +78,97 @@ const ContactForm = ({ propertyId, formType = 'inquiry', onSubmit }: ContactForm
         sqft: '',
         serviceType: '',
       });
+
     } catch (error) {
-      toast.error('Failed to submit form. Please try again.');
       console.error('Form submission error:', error);
+      toast.error('Failed to submit form. Please try again.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Render form fields based on formType
+  const renderAdditionalFields = () => {
+    switch (formType) {
+      case 'valuation':
+        return (
+          <>
+            <div>
+              <Label htmlFor="address">Property Address *</Label>
+              <Input
+                id="address"
+                name="address"
+                value={formData.address}
+                onChange={handleChange}
+                required
+                placeholder="123 Main St, City, State ZIP"
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label htmlFor="sqft">Square Footage</Label>
+              <Input
+                id="sqft"
+                name="sqft"
+                type="number"
+                value={formData.sqft}
+                onChange={handleChange}
+                placeholder="2000"
+                className="mt-1"
+              />
+            </div>
+          </>
+        );
+
+      case 'management':
+        return (
+          <>
+            <div>
+              <Label htmlFor="address">Property Address *</Label>
+              <Input
+                id="address"
+                name="address"
+                value={formData.address}
+                onChange={handleChange}
+                required
+                placeholder="123 Main St, City, State ZIP"
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label htmlFor="serviceType">Service Type *</Label>
+              <select
+                id="serviceType"
+                name="serviceType"
+                value={formData.serviceType}
+                onChange={handleChange}
+                required
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background mt-1"
+              >
+                <option value="">Select a service</option>
+                <option value="rent-collection">Rent Collection</option>
+                <option value="maintenance">Maintenance</option>
+                <option value="tenant-screening">Tenant Screening</option>
+                <option value="full-management">Full Management</option>
+              </select>
+            </div>
+          </>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  const getSubmitButtonText = () => {
+    if (loading) return 'Submitting...';
+    
+    switch (formType) {
+      case 'inquiry': return 'Send Inquiry';
+      case 'valuation': return 'Get Valuation';
+      case 'management': return 'Request Management';
+      case 'general': return 'Send Message';
+      default: return 'Submit Request';
     }
   };
 
@@ -109,6 +218,7 @@ const ContactForm = ({ propertyId, formType = 'inquiry', onSubmit }: ContactForm
           />
         </div>
 
+        {/* Additional field slots based on form type */}
         {formType === 'valuation' && (
           <div>
             <Label htmlFor="sqft">Square Footage</Label>
@@ -145,20 +255,7 @@ const ContactForm = ({ propertyId, formType = 'inquiry', onSubmit }: ContactForm
         )}
       </div>
 
-      {(formType === 'valuation' || formType === 'management') && (
-        <div>
-          <Label htmlFor="address">Property Address *</Label>
-          <Input
-            id="address"
-            name="address"
-            value={formData.address}
-            onChange={handleChange}
-            required
-            placeholder="123 Main St, City, State ZIP"
-            className="mt-1"
-          />
-        </div>
-      )}
+      {renderAdditionalFields()}
 
       <div>
         <Label htmlFor="message">Message *</Label>
@@ -174,14 +271,16 @@ const ContactForm = ({ propertyId, formType = 'inquiry', onSubmit }: ContactForm
               ? 'Tell us more about your requirements...'
               : formType === 'valuation'
               ? 'Provide additional property details...'
-              : 'Describe your property management needs...'
+              : formType === 'management'
+              ? 'Describe your property management needs...'
+              : 'How can we help you?'
           }
           className="mt-1"
         />
       </div>
 
       <Button type="submit" variant="teal" size="lg" disabled={loading} className="w-full">
-        {loading ? 'Submitting...' : 'Submit Request'}
+        {getSubmitButtonText()}
       </Button>
     </form>
   );
