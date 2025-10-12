@@ -1,6 +1,8 @@
 // services/propertyApi.ts
 
 // Environment-based configuration
+import { Property, PropertyData, PropertyImage } from '@/types/property';
+
 const getApiBaseUrl = (): string => {
   const isProduction = import.meta.env.MODE === 'production';
 
@@ -22,34 +24,35 @@ const getMediaBaseUrl = (): string => {
 const API_BASE_URL = getApiBaseUrl();
 export const MEDIA_BASE_URL = getMediaBaseUrl();
 
-// Placeholder image as data URL to avoid 404
+// EXACT SAME Image URL helper function - FIXED to handle double media issue
+export const getImageUrl = (imagePath: string): string => {
+  if (!imagePath) {
+    return PLACEHOLDER_IMAGE;
+  }
+  
+  // If it's already a full URL, return as is
+  if (imagePath.startsWith('http')) {
+    return imagePath;
+  }
+  
+  // Remove leading slash
+  let cleanPath = imagePath.startsWith('/') ? imagePath.slice(1) : imagePath;
+  
+  // Handle the double media prefix issue
+  // If path already starts with 'media/', remove it to avoid duplication
+  if (cleanPath.startsWith('media/')) {
+    // Remove the 'media/' prefix since we'll add it back
+    cleanPath = cleanPath.replace(/^media\//, '');
+  }
+  
+  // Construct the final URL with single media prefix
+  return `${MEDIA_BASE_URL}/media/${cleanPath}`;
+};
+
+// EXACT SAME Placeholder image as data URL to avoid 404
 export const PLACEHOLDER_IMAGE = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2YzZjRmNiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IiM5YzljOWMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5ObyBJbWFnZTwvdGV4dD48L3N2Zz4=';
 
-export interface PropertyData {
-  title: string;
-  description: string;
-  property_type: string;
-  status: string;
-  address: string;
-  city: string;
-  state: string;
-  zip_code: string;
-  price: number | null;
-  price_unit: string;
-  bedrooms?: number | null;
-  bathrooms?: number | null;
-  square_feet?: number | null;
-  lot_size?: number | null;
-  year_built?: number | null;
-  latitude?: number | null;
-  longitude?: number | null;
-  has_garage: boolean;
-  has_pool: boolean;
-  has_garden: boolean;
-  has_fireplace: boolean;
-  has_central_air: boolean;
-  featured: boolean;
-}
+
 
 class PropertyApi {
   // Helper function to handle API responses with comprehensive error handling
@@ -87,7 +90,6 @@ class PropertyApi {
       .find(row => row.startsWith('csrftoken='))
       ?.split('=')[1];
     
-    console.log('CSRF Token found:', cookieValue ? 'Yes' : 'No');
     return cookieValue || '';
   }
 
@@ -95,9 +97,6 @@ class PropertyApi {
   private async request(endpoint: string, options: RequestInit = {}) {
     const url = `${API_BASE_URL}${endpoint}`;
     const csrfToken = this.getCSRFToken();
-    
-    console.log(`Making API request to: ${url}`);
-    console.log('CSRF Token available:', !!csrfToken);
     
     const config: RequestInit = {
       headers: {
@@ -118,35 +117,43 @@ class PropertyApi {
     }
   }
 
-  // Image URL helper function - handles double media issue
-  getImageUrl(imagePath: string): string {
-    if (!imagePath) {
-      return PLACEHOLDER_IMAGE;
-    }
-    
-    // If it's already a full URL, return as is
-    if (imagePath.startsWith('http')) {
-      return imagePath;
-    }
-    
-    // Remove leading slash
-    let cleanPath = imagePath.startsWith('/') ? imagePath.slice(1) : imagePath;
-    
-    // Handle the double media prefix issue
-    // If path already starts with 'media/', remove it to avoid duplication
-    if (cleanPath.startsWith('media/')) {
-      // Remove the 'media/' prefix since we'll add it back
-      cleanPath = cleanPath.replace(/^media\//, '');
-    }
-    
-    // Construct the final URL with single media prefix
-    return `${MEDIA_BASE_URL}/media/${cleanPath}`;
-  }
+  // Get primary image URL for a property - uses the EXACT SAME getImageUrl function
+ // FIXED: Get primary image URL for a property
+  getPrimaryImageUrl(property: Property): string {
+    console.log('🔍 Getting primary image for property:', {
+      id: property.id,
+      title: property.title,
+      primary_image: property.primary_image,
+      images: property.images,
+    });
 
-  async createProperty(propertyData: PropertyData) {
+    // Try primary_image field first - handle both string and PropertyImage types
+    if (property.primary_image) {
+      if (typeof property.primary_image === 'string') {
+        console.log('📸 Using primary_image as string:', property.primary_image);
+        return getImageUrl(property.primary_image);
+      } else if (property.primary_image && typeof property.primary_image === 'object' && 'image' in property.primary_image) {
+        console.log('📸 Using primary_image.image:', property.primary_image.image);
+        return getImageUrl(property.primary_image.image);
+      }
+    }
+
+    // Try images array - find primary image
+    if (property.images && property.images.length > 0) {
+      const primaryImage = property.images.find(img => img.is_primary) || property.images[0];
+      console.log('🖼️ Using images array - primary image:', primaryImage);
+      // FIX: Pass primaryImage.image (string) instead of primaryImage (object)
+      return getImageUrl(primaryImage.image);
+    }
+
+    // No images available
+    console.log('❌ No images found for property:', property.id);
+    return PLACEHOLDER_IMAGE;
+  }
+  // Property CRUD operations
+  async createProperty(propertyData: PropertyData): Promise<Property> {
     console.log('Creating property with data:', propertyData);
     
-    // Try multiple endpoints - your Django setup might use different patterns
     const endpoints = [
       '/properties/',  // Standard DRF ViewSet endpoint
       '/properties/create/',  // Custom endpoint
@@ -164,15 +171,14 @@ class PropertyApi {
         return result;
       } catch (error: any) {
         console.log(`Endpoint ${endpoint} failed:`, error.message);
-        // Continue to next endpoint
         continue;
       }
     }
     
-    throw new Error('All property creation endpoints failed. Please check your Django URLs configuration.');
+    throw new Error('All property creation endpoints failed.');
   }
 
-  async getProperties(filters?: any) {
+  async getProperties(filters?: any): Promise<{ results: Property[] }> {
     const queryParams = new URLSearchParams();
     if (filters) {
       Object.entries(filters).forEach(([key, value]) => {
@@ -193,39 +199,44 @@ class PropertyApi {
     return this.request(endpoint);
   }
 
-  async getFeaturedProperties() {
+  async getFeaturedProperties(): Promise<{ results: Property[] }> {
     return this.request('/properties/?featured=true&limit=6');
   }
 
-  async getPropertyById(id: string) {
+  async getPropertyById(id: string): Promise<Property> {
     return this.request(`/properties/${id}/`);
   }
 
-  async updateProperty(id: string, propertyData: Partial<PropertyData>) {
+  async updateProperty(id: string, propertyData: Partial<PropertyData>): Promise<Property> {
     return this.request(`/properties/${id}/`, {
       method: 'PATCH',
       body: JSON.stringify(propertyData),
     });
   }
 
-  async deleteProperty(id: string) {
+  async deleteProperty(id: string): Promise<void> {
     return this.request(`/properties/${id}/`, {
       method: 'DELETE',
     });
   }
 
-  async getMyProperties() {
+  async getMyProperties(): Promise<Property[]> {
     return this.request('/properties/my_properties/');
   }
 
-  async toggleFavorite(propertyId: string) {
+  async toggleFavorite(propertyId: string): Promise<{status: string}> {
     return this.request(`/properties/${propertyId}/favorite/`, {
       method: 'POST',
     });
   }
 
-  async getFavorites() {
+  async getFavorites(): Promise<Property[]> {
     return this.request('/properties/my_favorites/');
+  }
+
+  // IMAGE-SPECIFIC ENDPOINTS
+  async getPropertyImages(propertyId: string): Promise<PropertyImage[]> {
+    return this.request(`/properties/${propertyId}/images/`);
   }
 
   async uploadImages(propertyId: string, images: File[], captions: string[] = [], isPrimary: boolean[] = []) {
@@ -267,33 +278,45 @@ class PropertyApi {
     }
   }
 
-  // Test method to check available endpoints
-  async testEndpoints() {
-    console.log('Testing available endpoints...');
-    
-    const endpoints = [
-      '/properties/',
-      '/properties/create/',
-      '/create/',
-      '/properties/my_properties/',
-      '/properties/my_favorites/',
-    ];
+  async setPrimaryImage(propertyId: string, imageId: string): Promise<void> {
+    return this.request(`/properties/${propertyId}/images/${imageId}/set_primary/`, {
+      method: 'POST',
+    });
+  }
 
-    for (const endpoint of endpoints) {
-      try {
-        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-          method: 'OPTIONS',
-          credentials: 'include',
-        });
-        console.log(`Endpoint ${endpoint}: ${response.status} - ${response.statusText}`);
-        
-        if (response.ok) {
-          const data = await response.json();
-          console.log(`Allowed methods for ${endpoint}:`, data);
+  async deleteImage(propertyId: string, imageId: string): Promise<void> {
+    return this.request(`/properties/${propertyId}/images/${imageId}/`, {
+      method: 'DELETE',
+    });
+  }
+
+  async updateImageCaption(propertyId: string, imageId: string, caption: string): Promise<PropertyImage> {
+    return this.request(`/properties/${propertyId}/images/${imageId}/`, {
+      method: 'PATCH',
+      body: JSON.stringify({ caption }),
+    });
+  }
+
+  // Enhanced property fetching with images
+  async getPropertyWithImages(id: string): Promise<Property> {
+    try {
+      // First get the property
+      const property = await this.getPropertyById(id);
+      
+      // Then try to get images if they're not included
+      if (!property.images || property.images.length === 0) {
+        try {
+          const images = await this.getPropertyImages(id);
+          property.images = images;
+        } catch (error) {
+          console.warn('Could not fetch additional images for property:', id);
         }
-      } catch (error) {
-        console.log(`Endpoint ${endpoint} test failed:`, error);
       }
+      
+      return property;
+    } catch (error) {
+      console.error('Error fetching property with images:', error);
+      throw error;
     }
   }
 }

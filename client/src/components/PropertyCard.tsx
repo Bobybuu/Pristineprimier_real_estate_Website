@@ -1,11 +1,10 @@
 import { Link } from 'react-router-dom';
 import { Bed, Bath, Square, MapPin, Heart } from 'lucide-react';
-import { Property, PropertyImage } from '@/types/property';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { propertiesAPI, getImageUrl, PLACEHOLDER_IMAGE } from '@/services/api';
+import { Property } from '@/types/property';
+import { propertyApi, PLACEHOLDER_IMAGE } from '@/services/propertyApi';
 import { useState, MouseEvent } from 'react';
-import { useImageLoader } from '@/hooks/useImageLoader';
 
 interface PropertyCardProps {
   property: Property;
@@ -13,42 +12,22 @@ interface PropertyCardProps {
 }
 
 const PropertyCard = ({ property, viewMode = 'grid' }: PropertyCardProps) => {
-  const [isFavorited, setIsFavorited] = useState<boolean>(property.is_favorited);
+  const [isFavorited, setIsFavorited] = useState<boolean>(property.is_favorited || false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [imageError, setImageError] = useState<boolean>(false);
+  const [imageLoading, setImageLoading] = useState<boolean>(true);
 
-  // Get the image path correctly - check different possible locations
-  const getImagePath = (): string => {
-    // Case 1: Check if primary_image is a string (direct path)
-    if (typeof property.primary_image === 'string') {
-      console.log('📸 Using primary_image as string path:', property.primary_image);
-      return property.primary_image;
-    }
-    
-    // Case 2: Check if primary_image is an object with image property
-    if (property.primary_image && typeof property.primary_image === 'object' && 'image' in property.primary_image) {
-      console.log('📸 Using primary_image.image path:', property.primary_image.image);
-      return property.primary_image.image;
-    }
-    
-    // Case 3: Check first image in images array
-    if (property.images && property.images.length > 0 && property.images[0].image) {
-      console.log('📸 Using first image from images array:', property.images[0].image);
-      return property.images[0].image;
-    }
-    
-    console.log('❌ No valid image path found for property:', property.id);
-    return '';
+  // Use the propertyApi method to get the correct image URL
+  const imageUrl = propertyApi.getPrimaryImageUrl(property);
+
+  const handleImageError = () => {
+    setImageError(true);
+    setImageLoading(false);
   };
 
-  // Get the image path
-  const imagePath = getImagePath();
-  const { 
-    imageUrl, 
-    isLoading: imageLoading, 
-    hasError: imageError, 
-    handleImageError, 
-    handleImageLoad 
-  } = useImageLoader(imagePath);
+  const handleImageLoad = () => {
+    setImageLoading(false);
+  };
 
   const handleFavoriteToggle = async (e: MouseEvent<HTMLButtonElement>): Promise<void> => {
     e.preventDefault();
@@ -58,7 +37,8 @@ const PropertyCard = ({ property, viewMode = 'grid' }: PropertyCardProps) => {
     
     setIsLoading(true);
     try {
-      await propertiesAPI.toggleFavorite(property.id);
+      // Convert id to string for the API
+      await propertyApi.toggleFavorite(property.id.toString());
       setIsFavorited(!isFavorited);
     } catch (error) {
       console.error('Error toggling favorite:', error);
@@ -67,8 +47,9 @@ const PropertyCard = ({ property, viewMode = 'grid' }: PropertyCardProps) => {
     }
   };
 
-  const formatPrice = (price: string): string => {
-    const numericPrice = parseFloat(price);
+  // Handle both string and number prices from your Property type
+  const formatPrice = (price: string | number): string => {
+    const numericPrice = typeof price === 'string' ? parseFloat(price) : price;
     return new Intl.NumberFormat('en-KE', {
       style: 'currency',
       currency: 'KES',
@@ -104,10 +85,7 @@ const PropertyCard = ({ property, viewMode = 'grid' }: PropertyCardProps) => {
     propertyTitle: property.title,
     primary_image: property.primary_image,
     images: property.images,
-    imagePath: imagePath,
-    imageUrl: imageUrl,
-    imageError: imageError,
-    imageLoading: imageLoading
+    finalImageUrl: imageUrl
   });
 
   // Conditional styling based on viewMode
@@ -122,7 +100,7 @@ const PropertyCard = ({ property, viewMode = 'grid' }: PropertyCardProps) => {
         <div className={`relative overflow-hidden ${
           isListView ? 'w-64 h-48 flex-shrink-0' : 'h-56'
         }`}>
-          {imageLoading && (
+          {imageLoading && !imageError && (
             <div className="absolute inset-0 bg-muted flex items-center justify-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
             </div>
@@ -131,7 +109,7 @@ const PropertyCard = ({ property, viewMode = 'grid' }: PropertyCardProps) => {
             src={imageError ? PLACEHOLDER_IMAGE : imageUrl}
             alt={property.title}
             className={`w-full h-full object-cover group-hover:scale-110 transition-smooth ${
-              imageLoading ? 'opacity-0' : 'opacity-100'
+              imageLoading && !imageError ? 'opacity-0' : 'opacity-100'
             }`}
             loading="lazy"
             onError={handleImageError}

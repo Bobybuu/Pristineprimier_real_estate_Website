@@ -4,6 +4,7 @@ export interface PropertyImage {
   caption: string;
   is_primary: boolean;
   order: number;
+  property: number;
 }
 
 export interface User {
@@ -47,6 +48,9 @@ export interface Property {
   views_count: number;
   created_at: string;
   published_at: string | null;
+  seller_name?: string;
+  updated_at?: string;
+  images_count?: number;
 }
 
 export interface PropertyFilters {
@@ -124,3 +128,30 @@ export interface PropertyFilters {
 export interface SearchFilters extends PropertyFilters {
   // Add any additional search-specific filters here
 }
+
+export interface PropertyData {
+  title: string;
+  description: string;
+  property_type: string;
+  status: string;
+  address: string;
+  city: string;
+  state: string;
+  zip_code: string;
+  price: number | null;
+  price_unit: string;
+  bedrooms?: number | null;
+  bathrooms?: number | null;
+  square_feet?: number | null;
+  lot_size?: number | null;
+  year_built?: number | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  has_garage: boolean;
+  has_pool: boolean;
+  has_garden: boolean;
+  has_fireplace: boolean;
+  has_central_air: boolean;
+  featured: boolean;
+}
+

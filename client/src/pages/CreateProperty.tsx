@@ -251,7 +251,7 @@ const CreateProperty = () => {
         const captions = images.map(img => img.caption);
         const isPrimary = images.map(img => img.is_primary);
         
-        await propertyApi.uploadImages(createdProperty.id, imageFiles, captions, isPrimary);
+        await propertyApi.uploadImages(createdProperty.id.toString(), imageFiles, captions, isPrimary);
         console.log('Images uploaded successfully');
         toast.success('Property and images uploaded successfully!');
       } else {
