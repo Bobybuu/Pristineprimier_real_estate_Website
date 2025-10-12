@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Q
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import api_view, permission_classes
 from .models import Property, PropertyImage, Favorite, Inquiry
@@ -123,6 +124,7 @@ def my_favorites(request):
 # Simple property creation endpoint for testing
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
+@csrf_exempt
 def create_property_simple(request):
     """Simple property creation endpoint"""
     try:
@@ -176,7 +178,7 @@ def create_property_simple(request):
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
-# properties/views.py - FIXED VERSION
+# properties/views.py 
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def public_inquiry(request):
