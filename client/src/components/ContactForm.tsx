@@ -36,34 +36,8 @@ const ContactForm = ({ propertyId, formType = 'inquiry', onSubmit }: ContactForm
     setLoading(true);
 
     try {
-      let response;
-
-      switch (formType) {
-        case 'inquiry':
-          if (propertyId) {
-            // Property-specific inquiry
-            response = await inquiryApi.submitPropertyInquiry(propertyId, formData);
-          } else {
-            // General inquiry
-            response = await inquiryApi.submitGeneralInquiry(formData);
-          }
-          break;
-
-        case 'valuation':
-          response = await inquiryApi.submitValuationRequest(formData);
-          break;
-
-        case 'management':
-          response = await inquiryApi.submitManagementRequest(formData);
-          break;
-
-        case 'general':
-          response = await inquiryApi.submitGeneralInquiry(formData);
-          break;
-
-        default:
-          throw new Error('Unknown form type');
-      }
+      // Use the simplified submitForm method that handles all form types
+      const response = await inquiryApi.submitForm(formData, formType, propertyId);
 
       toast.success('Form submitted successfully! We\'ll be in touch soon.');
       onSubmit?.(formData);
@@ -79,9 +53,17 @@ const ContactForm = ({ propertyId, formType = 'inquiry', onSubmit }: ContactForm
         serviceType: '',
       });
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Form submission error:', error);
-      toast.error('Failed to submit form. Please try again.');
+      
+      // More specific error messages
+      if (error.message.includes('403')) {
+        toast.error('Authentication required. Please try again.');
+      } else if (error.message.includes('404')) {
+        toast.error('Service temporarily unavailable. Please contact us directly.');
+      } else {
+        toast.error(error.message || 'Failed to submit form. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -164,11 +146,28 @@ const ContactForm = ({ propertyId, formType = 'inquiry', onSubmit }: ContactForm
     if (loading) return 'Submitting...';
     
     switch (formType) {
-      case 'inquiry': return 'Send Inquiry';
-      case 'valuation': return 'Get Valuation';
+      case 'inquiry': return propertyId ? 'Inquire About Property' : 'Send Inquiry';
+      case 'valuation': return 'Get Free Valuation';
       case 'management': return 'Request Management';
       case 'general': return 'Send Message';
       default: return 'Submit Request';
+    }
+  };
+
+  const getMessagePlaceholder = () => {
+    switch (formType) {
+      case 'inquiry':
+        return propertyId 
+          ? 'Tell us what you love about this property and any questions you have...'
+          : 'Tell us more about your property requirements and preferences...';
+      case 'valuation':
+        return 'Provide additional property details like recent renovations, special features, or neighborhood information...';
+      case 'management':
+        return 'Describe your property management needs, current challenges, or specific services you\'re interested in...';
+      case 'general':
+        return 'How can we help you? Please share any questions or information about our services...';
+      default:
+        return 'How can we help you?';
     }
   };
 
@@ -250,6 +249,8 @@ const ContactForm = ({ propertyId, formType = 'inquiry', onSubmit }: ContactForm
               <option value="maintenance">Maintenance</option>
               <option value="tenant-screening">Tenant Screening</option>
               <option value="full-management">Full Management</option>
+              <option value="marketing">Property Marketing</option>
+              <option value="tenant-placement">Tenant Placement</option>
             </select>
           </div>
         )}
@@ -266,15 +267,7 @@ const ContactForm = ({ propertyId, formType = 'inquiry', onSubmit }: ContactForm
           onChange={handleChange}
           required
           rows={5}
-          placeholder={
-            formType === 'inquiry'
-              ? 'Tell us more about your requirements...'
-              : formType === 'valuation'
-              ? 'Provide additional property details...'
-              : formType === 'management'
-              ? 'Describe your property management needs...'
-              : 'How can we help you?'
-          }
+          placeholder={getMessagePlaceholder()}
           className="mt-1"
         />
       </div>
@@ -282,6 +275,11 @@ const ContactForm = ({ propertyId, formType = 'inquiry', onSubmit }: ContactForm
       <Button type="submit" variant="teal" size="lg" disabled={loading} className="w-full">
         {getSubmitButtonText()}
       </Button>
+      
+      {/* Privacy notice */}
+      <p className="text-xs text-muted-foreground text-center">
+        By submitting this form, you agree to our privacy policy and consent to be contacted by PristinePrimer Real Estate.
+      </p>
     </form>
   );
 };
