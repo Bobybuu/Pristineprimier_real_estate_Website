@@ -14,7 +14,7 @@ SECRET_KEY = 'your-secret-key-here'  # Change this in production!
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'pristineprimer.czq8ae44qs94.us-east-2.rds.amazonaws.com', '18.217.243.193', 'https://main.d35ciakzcz3l11.amplifyapp.com/', 'https://pristineprimier.co.ke/', 'https://www.pristineprimier.com/']
 
 # Application definition
 INSTALLED_APPS = [
@@ -133,6 +133,12 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
     "http://localhost:8080",
     "http://127.0.0.1:8080",
+    'https://pristineprimer.czq8ae44qs94.us-east-2.rds.amazonaws.com',
+    'https://18.217.243.193',
+    'https://main.d35ciakzcz3l11.amplifyapp.com/',
+    'https://pristineprimier.co.ke/',
+    'https://www.pristineprimier.com/'
+    
 ]
 
 CORS_ALLOW_CREDENTIALS = True
