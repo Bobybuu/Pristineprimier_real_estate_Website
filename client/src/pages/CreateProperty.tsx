@@ -27,6 +27,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
+import { propertyApi, type PropertyData } from '@/services/propertyApi';
 
 interface PropertyFormData {
   // Basic Information
@@ -218,148 +219,64 @@ const CreateProperty = () => {
     setCurrentStep(prev => Math.max(prev - 1, 1));
   };
 
-  // Updated handleSubmit to send JSON data
+  // Updated handleSubmit using Property API Service
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      // Prepare the data as JSON with proper type conversion
-      const propertyData = {
+      // Convert form data to API format
+      const propertyData: PropertyData = {
         ...formData,
-        // Convert string numbers to actual numbers/null
         price: formData.price ? parseFloat(formData.price) : null,
         bedrooms: formData.bedrooms ? parseInt(formData.bedrooms) : null,
         bathrooms: formData.bathrooms ? parseFloat(formData.bathrooms) : null,
         square_feet: formData.square_feet ? parseInt(formData.square_feet) : null,
         lot_size: formData.lot_size ? parseFloat(formData.lot_size) : null,
         year_built: formData.year_built ? parseInt(formData.year_built) : null,
-        // Convert coordinates to numbers if provided
         latitude: formData.latitude ? parseFloat(formData.latitude) : null,
         longitude: formData.longitude ? parseFloat(formData.longitude) : null,
-        // Booleans are already handled correctly in form state
       };
 
-      console.log('Submitting property data as JSON:', propertyData);
+      console.log('Creating property:', propertyData);
 
-      const response = await fetch('/api/properties/create/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': getCSRFToken(),
-        },
-        credentials: 'include',
-        body: JSON.stringify(propertyData),
-      });
+      // Use the property API service
+      const createdProperty = await propertyApi.createProperty(propertyData);
+      
+      console.log('Property created successfully:', createdProperty);
 
-      console.log('Response status:', response.status);
-
-      if (!response.ok) {
-        // Handle non-OK responses
-        const errorText = await response.text();
-        let errorData;
-        try {
-          errorData = errorText ? JSON.parse(errorText) : {};
-        } catch {
-          errorData = { error: 'Unknown error occurred' };
-        }
-
-        if (response.status === 400) {
-          toast.error(`Validation error: ${errorData.details || errorData.error || 'Please check your input'}`);
-        } else if (response.status === 401) {
-          toast.error('Please log in to create properties.');
-        } else {
-          toast.error(`Failed to create property: ${errorData.error || 'Unknown error'}`);
-        }
-        console.error('Property creation failed:', response.status, errorData);
-        return;
-      }
-
-      // Handle successful response
-      const data = await response.json();
-      console.log('Property created successfully:', data);
-
-      // Handle image uploads if there are any images
+      // Upload images if any
       if (images.length > 0) {
-        await uploadImages(data.id, images);
+        const imageFiles = images.map(img => img.file);
+        const captions = images.map(img => img.caption);
+        const isPrimary = images.map(img => img.is_primary);
+        
+        await propertyApi.uploadImages(createdProperty.id, imageFiles, captions, isPrimary);
+        console.log('Images uploaded successfully');
+        toast.success('Property and images uploaded successfully!');
+      } else {
+        toast.success('Property created successfully!');
       }
 
-      toast.success('Property created successfully!');
       navigate('/dashboard');
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Property creation error:', error);
-      toast.error('Network error. Please check your connection.');
+      
+      if (error.message.includes('400')) {
+        toast.error('Please check your input data and try again.');
+      } else if (error.message.includes('401')) {
+        toast.error('Please log in to create properties.');
+      } else if (error.message.includes('403')) {
+        toast.error('You do not have permission to create properties.');
+      } else if (error.message.includes('404')) {
+        toast.error('Property creation service unavailable. Please try again later.');
+      } else {
+        toast.error('Failed to create property. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
-  };
-
-  // Separate function for image uploads
-  const uploadImages = async (propertyId: string, images: ImageFile[]) => {
-    try {
-      const imageFormData = new FormData();
-      
-      images.forEach((image, index) => {
-        imageFormData.append('images', image.file);
-        imageFormData.append('captions', image.caption);
-        imageFormData.append('is_primary', image.is_primary.toString());
-        imageFormData.append('order', index.toString());
-      });
-
-      console.log('Uploading images for property:', propertyId);
-
-      const response = await fetch(`/api/properties/${propertyId}/upload_images/`, {
-        method: 'POST',
-        headers: {
-          'X-CSRFToken': getCSRFToken(),
-        },
-        credentials: 'include',
-        body: imageFormData,
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        console.log('Images uploaded successfully:', result);
-        toast.success('Property images uploaded successfully!');
-      } else {
-        console.error('Image upload failed:', response.status);
-        toast.error('Property created but image upload failed. You can add images later.');
-      }
-    } catch (error) {
-      console.error('Image upload error:', error);
-      toast.error('Property created but image upload failed. You can add images later.');
-    }
-  };
-
-  // Test backend connection on component mount
-  const testBackendConnection = async () => {
-    try {
-      const response = await fetch('/api/properties/test/', {
-        credentials: 'include',
-      });
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Backend test successful:', data);
-      } else {
-        console.warn('Backend test failed:', response.status);
-      }
-    } catch (error) {
-      console.error('Backend test error:', error);
-    }
-  };
-
-  // Uncomment to test backend connection on component mount
-  // useEffect(() => {
-  //   testBackendConnection();
-  // }, []);
-
-  const getCSRFToken = () => {
-    const cookieValue = document.cookie
-      .split('; ')
-      .find(row => row.startsWith('csrftoken='))
-      ?.split('=')[1];
-    return cookieValue || '';
   };
 
   const steps = [
