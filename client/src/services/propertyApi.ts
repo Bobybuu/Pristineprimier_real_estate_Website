@@ -28,17 +28,37 @@ export interface PropertyData {
 }
 
 class PropertyApi {
+  private getCSRFToken(): string {
+    // Get CSRF token from cookie
+    const cookieValue = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('csrftoken='))
+      ?.split('=')[1];
+    
+    console.log('CSRF Token found:', cookieValue ? 'Yes' : 'No');
+    return cookieValue || '';
+  }
+
   private async request(endpoint: string, options: RequestInit = {}) {
     const url = `${API_BASE_URL}${endpoint}`;
+    const csrfToken = this.getCSRFToken();
     
     console.log(`Making API request to: ${url}`);
+    console.log('CSRF Token available:', !!csrfToken);
     
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    };
+
+    // Add CSRF token if available
+    if (csrfToken) {
+      headers['X-CSRFToken'] = csrfToken;
+    }
+
     try {
       const response = await fetch(url, {
-        headers: {
-          'Content-Type': 'application/json',
-          ...options.headers,
-        },
+        headers,
         credentials: 'include',  // Important for cookies/session
         ...options,
       });
@@ -73,6 +93,7 @@ class PropertyApi {
     console.log(`Uploading ${images.length} images for property ${propertyId}`);
     
     const formData = new FormData();
+    const csrfToken = this.getCSRFToken();
     
     images.forEach((image, index) => {
       formData.append('images', image);
@@ -80,10 +101,16 @@ class PropertyApi {
       formData.append(`image_is_primary[${index}]`, (isPrimary[index] || index === 0).toString());
     });
 
+    const headers: HeadersInit = {};
+    if (csrfToken) {
+      headers['X-CSRFToken'] = csrfToken;
+    }
+
     try {
       const response = await fetch(`${API_BASE_URL}/properties/${propertyId}/upload_images/`, {
         method: 'POST',
         credentials: 'include',
+        headers,
         body: formData,
       });
 
