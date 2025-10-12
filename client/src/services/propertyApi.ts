@@ -59,7 +59,7 @@ class PropertyApi {
     try {
       const response = await fetch(url, {
         headers,
-        credentials: 'include',  // Important for cookies/session
+        credentials: 'include',
         ...options,
       });
       
@@ -83,10 +83,31 @@ class PropertyApi {
 
   async createProperty(propertyData: PropertyData) {
     console.log('Creating property with data:', propertyData);
-    return this.request('/properties/create/', {
-      method: 'POST',
-      body: JSON.stringify(propertyData),
-    });
+    
+    // Try multiple endpoints - your Django setup might use different patterns
+    const endpoints = [
+      '/properties/',  // Standard DRF ViewSet endpoint
+      '/properties/create/',  // Custom endpoint
+      '/create/',  // Simple endpoint
+    ];
+
+    for (const endpoint of endpoints) {
+      try {
+        console.log(`Trying endpoint: ${endpoint}`);
+        const result = await this.request(endpoint, {
+          method: 'POST',
+          body: JSON.stringify(propertyData),
+        });
+        console.log(`Success with endpoint: ${endpoint}`);
+        return result;
+      } catch (error: any) {
+        console.log(`Endpoint ${endpoint} failed:`, error.message);
+        // Continue to next endpoint
+        continue;
+      }
+    }
+    
+    throw new Error('All property creation endpoints failed. Please check your Django URLs configuration.');
   }
 
   async uploadImages(propertyId: string, images: File[], captions: string[] = [], isPrimary: boolean[] = []) {
@@ -130,6 +151,35 @@ class PropertyApi {
 
   async getMyProperties() {
     return this.request('/properties/my_properties/');
+  }
+
+  // Test method to check available endpoints
+  async testEndpoints() {
+    console.log('Testing available endpoints...');
+    
+    const endpoints = [
+      '/properties/',
+      '/properties/create/',
+      '/create/',
+      '/properties/my_properties/',
+    ];
+
+    for (const endpoint of endpoints) {
+      try {
+        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+          method: 'OPTIONS',
+          credentials: 'include',
+        });
+        console.log(`Endpoint ${endpoint}: ${response.status} - ${response.statusText}`);
+        
+        if (response.ok) {
+          const data = await response.json();
+          console.log(`Allowed methods for ${endpoint}:`, data);
+        }
+      } catch (error) {
+        console.log(`Endpoint ${endpoint} test failed:`, error);
+      }
+    }
   }
 }
 
