@@ -1,6 +1,7 @@
 import { Property, PropertyFilters, Favorite, Inquiry, SavedSearch, PaginatedResponse } from '@/types/property';
 
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://18.217.243.193/api';
+
 
 // Helper function to handle API responses
 async function handleResponse(response: Response) {
