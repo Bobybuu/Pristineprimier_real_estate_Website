@@ -14,7 +14,7 @@ import LoadingSpinner from '@/components/LoadingSpinner';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
-// Set your Mapbox access token (you'll need to get this from mapbox.com)
+// Set your Mapbox access token
 const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN || 'your_mapbox_access_token_here';
 
 // Initialize Mapbox
@@ -24,22 +24,24 @@ mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
 const NAIROBI_CENTER: [number, number] = [36.8219, -1.2921];
 const DEFAULT_ZOOM = 10;
 
-interface SearchFilters {
-  property_type?: string;
-  min_price?: string;
-  max_price?: string;
-  bedrooms?: string;
-  city?: string;
-  state?: string;
-  search?: string;
-}
-
 // Helper function to safely convert string coordinates to numbers
 const parseCoordinate = (coord: string | number | undefined): number | null => {
   if (coord === undefined || coord === null) return null;
   
   const num = typeof coord === 'string' ? parseFloat(coord) : coord;
   return isNaN(num) ? null : num;
+};
+
+// Helper function to safely format price
+const formatPriceForMap = (price: any): string => {
+  if (price === undefined || price === null) return 'Price N/A';
+  
+  try {
+    const numericPrice = typeof price === 'string' ? parseFloat(price) : Number(price);
+    return isNaN(numericPrice) ? 'Price N/A' : `KSh ${numericPrice.toLocaleString()}`;
+  } catch {
+    return 'Price N/A';
+  }
 };
 
 const Buy = () => {
@@ -60,17 +62,24 @@ const Buy = () => {
     setFilters(searchFilters);
   };
 
-  // Initialize Mapbox map with Nairobi as default
+  // Mapbox initialization
   useEffect(() => {
-    if (!mapContainer.current || !MAPBOX_ACCESS_TOKEN || MAPBOX_ACCESS_TOKEN === 'your_mapbox_access_token_here') return;
+    if (!showMap) return;
+
+    if (!mapContainer.current) {
+      return;
+    }
+
+    if (!MAPBOX_ACCESS_TOKEN || MAPBOX_ACCESS_TOKEN === 'your_mapbox_access_token_here') {
+      toast.error('Mapbox token not configured. Please check your environment variables.');
+      return;
+    }
 
     try {
-      console.log('🗺️ Initializing Mapbox with Nairobi center...');
-      
       map.current = new mapboxgl.Map({
         container: mapContainer.current,
         style: 'mapbox://styles/chrispin2005/cmfjcwzm6004s01se01mr59te',
-        center: NAIROBI_CENTER, // Nairobi, Kenya coordinates
+        center: NAIROBI_CENTER,
         zoom: DEFAULT_ZOOM,
         attributionControl: false
       });
@@ -78,17 +87,14 @@ const Buy = () => {
       map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
       
       map.current.on('load', () => {
-        console.log('✅ Map loaded with Nairobi center');
         setMapLoaded(true);
-        updateMapMarkers();
-        
-        // Add a welcome marker for Nairobi
         addNairobiWelcomeMarker();
+        updateMapMarkers();
       });
 
-      // Add error handling
       map.current.on('error', (e) => {
         console.error('Mapbox error:', e);
+        toast.error('Failed to load map. Please try again.');
       });
 
       // Cleanup function
@@ -96,19 +102,22 @@ const Buy = () => {
         if (map.current) {
           map.current.remove();
           map.current = null;
+          setMapLoaded(false);
         }
+        // Clear markers
+        markers.current.forEach(marker => marker.remove());
+        markers.current = [];
       };
     } catch (error) {
       console.error('Error initializing Mapbox:', error);
       toast.error('Failed to load map. Please check your Mapbox configuration.');
     }
-  }, []);
+  }, [showMap]);
 
-  // Add a welcome marker for Nairobi
+  // Add a permanent welcome marker for Nairobi
   const addNairobiWelcomeMarker = () => {
     if (!map.current || !mapLoaded) return;
 
-    // Create a custom welcome marker
     const welcomeEl = document.createElement('div');
     welcomeEl.className = 'welcome-marker';
     welcomeEl.innerHTML = `
@@ -125,21 +134,19 @@ const Buy = () => {
       .setLngLat(NAIROBI_CENTER)
       .addTo(map.current!);
 
-    // Remove welcome marker after 5 seconds
-    setTimeout(() => {
-      welcomeMarker.remove();
-    }, 5000);
+    markers.current.push(welcomeMarker);
   };
 
   // Update map markers when properties change
   useEffect(() => {
-    if (mapLoaded && properties.length > 0) {
+    if (mapLoaded) {
       updateMapMarkers();
       
-      // Fit map bounds to show all markers
-      if (map.current) {
+      if (map.current && properties.length > 0) {
         const bounds = new mapboxgl.LngLatBounds();
         let hasValidCoordinates = false;
+        
+        bounds.extend(NAIROBI_CENTER);
         
         properties.forEach(property => {
           const lng = parseCoordinate(property.longitude);
@@ -151,27 +158,25 @@ const Buy = () => {
           }
         });
         
-        if (hasValidCoordinates && !bounds.isEmpty()) {
-          // If we have properties with coordinates, fit bounds
+        if (hasValidCoordinates) {
           map.current.fitBounds(bounds, {
             padding: 50,
-            maxZoom: 15
+            maxZoom: 15,
+            duration: 1000
           });
         } else {
-          // If no properties with coordinates, reset to Nairobi view
           map.current.flyTo({
             center: NAIROBI_CENTER,
-            zoom: DEFAULT_ZOOM,
+            zoom: 11,
+            duration: 1000,
             essential: true
           });
         }
-      }
-    } else if (mapLoaded && properties.length === 0) {
-      // If no properties, ensure we're showing Nairobi
-      if (map.current) {
+      } else if (map.current) {
         map.current.flyTo({
           center: NAIROBI_CENTER,
-          zoom: DEFAULT_ZOOM,
+          zoom: 11,
+          duration: 1000,
           essential: true
         });
       }
@@ -179,9 +184,18 @@ const Buy = () => {
   }, [properties, mapLoaded]);
 
   const updateMapMarkers = () => {
-    // Clear existing markers
-    markers.current.forEach(marker => marker.remove());
-    markers.current = [];
+    // Clear existing property markers but keep Nairobi marker
+    markers.current.forEach(marker => {
+      const element = marker.getElement();
+      if (element && !element.classList.contains('welcome-marker')) {
+        marker.remove();
+      }
+    });
+    
+    markers.current = markers.current.filter(marker => {
+      const element = marker.getElement();
+      return element && element.classList.contains('welcome-marker');
+    });
 
     if (!map.current || !mapLoaded) return;
 
@@ -191,12 +205,11 @@ const Buy = () => {
       const lat = parseCoordinate(property.latitude);
       
       if (lng !== null && lat !== null) {
-        // Create a custom marker element
         const el = document.createElement('div');
         el.className = 'property-marker';
         el.innerHTML = `
           <div class="bg-white rounded-full p-2 shadow-lg border-2 border-blue-500 hover:border-blue-700 transition-colors cursor-pointer">
-            <div class="text-blue-600 font-semibold text-sm">KSh ${property.price.toLocaleString()}</div>
+            <div class="text-blue-600 font-semibold text-sm">${formatPriceForMap(property.price)}</div>
           </div>
         `;
 
@@ -207,9 +220,7 @@ const Buy = () => {
           .setLngLat([lng, lat])
           .addTo(map.current!);
 
-        // Add click event to marker
         el.addEventListener('click', () => {
-          // Scroll to the property card or show property details
           const propertyElement = document.getElementById(`property-${property.id}`);
           if (propertyElement) {
             propertyElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -224,9 +235,16 @@ const Buy = () => {
       }
     });
 
-    // If no properties with coordinates, add a Nairobi center marker
+    // Ensure Nairobi marker is visible if no properties
     if (properties.length === 0 || !properties.some(p => p.latitude && p.longitude)) {
-      addNairobiWelcomeMarker();
+      const hasNairobiMarker = markers.current.some(marker => {
+        const element = marker.getElement();
+        return element && element.classList.contains('welcome-marker');
+      });
+      
+      if (!hasNairobiMarker) {
+        addNairobiWelcomeMarker();
+      }
     }
   };
 
@@ -394,10 +412,10 @@ const Buy = () => {
                   <div className="mb-6">
                     <div 
                       ref={mapContainer} 
-                      className="bg-muted rounded-lg h-96 border relative"
+                      className="rounded-lg h-96 border border-border relative bg-muted"
                     >
                       {!mapLoaded && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-muted/50 rounded-lg">
+                        <div className="absolute inset-0 flex items-center justify-center bg-background/80 rounded-lg">
                           <div className="text-center">
                             <LoadingSpinner size="sm" />
                             <p className="text-muted-foreground mt-2">Loading Nairobi map...</p>
@@ -405,9 +423,27 @@ const Buy = () => {
                         </div>
                       )}
                     </div>
-                    <p className="text-xs text-muted-foreground mt-2 text-center">
-                      💡 Map centered on Nairobi. Click property markers to view details.
-                    </p>
+                    
+                    <div className="flex justify-between items-center mt-2">
+                      <p className="text-xs text-muted-foreground">
+                        Click property markers to view details
+                      </p>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          if (map.current) {
+                            map.current.flyTo({
+                              center: NAIROBI_CENTER,
+                              zoom: DEFAULT_ZOOM,
+                              duration: 1000
+                            });
+                          }
+                        }}
+                      >
+                        Reset to Nairobi
+                      </Button>
+                    </div>
                   </div>
                 )}
 
@@ -488,7 +524,7 @@ const Buy = () => {
                       <p className="text-muted-foreground mb-4">
                         {Object.keys(filters).length > 0 
                           ? 'Try adjusting your search filters to see more results.'
-                          : 'No properties are currently available in Nairobi. Check back later!'
+                          : 'No properties are currently available. Check back later!'
                         }
                       </p>
                       {Object.keys(filters).length > 0 && (

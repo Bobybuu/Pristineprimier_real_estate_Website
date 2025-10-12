@@ -1,4 +1,4 @@
-
+@import 'mapbox-gl/dist/mapbox-gl.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -159,6 +159,8 @@ All colors MUST be HSL.
     transition: var(--transition-smooth);
   }
 }
+
+
 
 
 
