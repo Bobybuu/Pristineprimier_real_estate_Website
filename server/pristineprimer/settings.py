@@ -161,6 +161,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://main.d35ciakzcz3l11.amplifyapp.com",
     "https://pristineprimier.co.ke",
     "https://www.pristineprimier.com",
+    "https://api.pristineprimier.com",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
