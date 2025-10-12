@@ -69,7 +69,7 @@ const Buy = () => {
       
       map.current = new mapboxgl.Map({
         container: mapContainer.current,
-        style: 'mapbox://styles/mapbox/streets-v12',
+        style: 'mapbox://styles/chrispin2005/cmfjcwzm6004s01se01mr59te',
         center: NAIROBI_CENTER, // Nairobi, Kenya coordinates
         zoom: DEFAULT_ZOOM,
         attributionControl: false
