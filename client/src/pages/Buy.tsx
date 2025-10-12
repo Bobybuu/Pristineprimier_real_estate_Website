@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Grid, List, Map } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -10,7 +10,19 @@ import { useProperties } from '@/hooks/useProperties';
 import { PropertyFilters } from '@/types/property';
 import LoadingSpinner from '@/components/LoadingSpinner';
 
-// Remove the local Property interface and use the one from '@/types/property'
+// Mapbox imports
+import mapboxgl from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
+
+// Set your Mapbox access token (you'll need to get this from mapbox.com)
+const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN || 'your_mapbox_access_token_here';
+
+// Initialize Mapbox
+mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
+
+// Nairobi, Kenya coordinates [longitude, latitude]
+const NAIROBI_CENTER: [number, number] = [36.8219, -1.2921];
+const DEFAULT_ZOOM = 10;
 
 interface SearchFilters {
   property_type?: string;
@@ -22,15 +34,200 @@ interface SearchFilters {
   search?: string;
 }
 
+// Helper function to safely convert string coordinates to numbers
+const parseCoordinate = (coord: string | number | undefined): number | null => {
+  if (coord === undefined || coord === null) return null;
+  
+  const num = typeof coord === 'string' ? parseFloat(coord) : coord;
+  return isNaN(num) ? null : num;
+};
+
 const Buy = () => {
   const [filters, setFilters] = useState<PropertyFilters>({});
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [showMap, setShowMap] = useState(false);
+  const [mapLoaded, setMapLoaded] = useState(false);
   
+  // Map references
+  const mapContainer = useRef<HTMLDivElement>(null);
+  const map = useRef<mapboxgl.Map | null>(null);
+  const markers = useRef<mapboxgl.Marker[]>([]);
+
   // Use the custom hook instead of local state management
   const { properties, loading, error } = useProperties(filters);
 
   const handleSearch = (searchFilters: PropertyFilters) => {
     setFilters(searchFilters);
+  };
+
+  // Initialize Mapbox map with Nairobi as default
+  useEffect(() => {
+    if (!mapContainer.current || !MAPBOX_ACCESS_TOKEN || MAPBOX_ACCESS_TOKEN === 'your_mapbox_access_token_here') return;
+
+    try {
+      console.log('🗺️ Initializing Mapbox with Nairobi center...');
+      
+      map.current = new mapboxgl.Map({
+        container: mapContainer.current,
+        style: 'mapbox://styles/mapbox/streets-v12',
+        center: NAIROBI_CENTER, // Nairobi, Kenya coordinates
+        zoom: DEFAULT_ZOOM,
+        attributionControl: false
+      });
+
+      map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+      
+      map.current.on('load', () => {
+        console.log('✅ Map loaded with Nairobi center');
+        setMapLoaded(true);
+        updateMapMarkers();
+        
+        // Add a welcome marker for Nairobi
+        addNairobiWelcomeMarker();
+      });
+
+      // Add error handling
+      map.current.on('error', (e) => {
+        console.error('Mapbox error:', e);
+      });
+
+      // Cleanup function
+      return () => {
+        if (map.current) {
+          map.current.remove();
+          map.current = null;
+        }
+      };
+    } catch (error) {
+      console.error('Error initializing Mapbox:', error);
+      toast.error('Failed to load map. Please check your Mapbox configuration.');
+    }
+  }, []);
+
+  // Add a welcome marker for Nairobi
+  const addNairobiWelcomeMarker = () => {
+    if (!map.current || !mapLoaded) return;
+
+    // Create a custom welcome marker
+    const welcomeEl = document.createElement('div');
+    welcomeEl.className = 'welcome-marker';
+    welcomeEl.innerHTML = `
+      <div class="bg-blue-600 text-white px-3 py-2 rounded-lg shadow-lg border-2 border-white">
+        <div class="font-semibold text-sm">🏠 Nairobi</div>
+        <div class="text-xs">Property Hub</div>
+      </div>
+    `;
+
+    const welcomeMarker = new mapboxgl.Marker({
+      element: welcomeEl,
+      anchor: 'bottom'
+    })
+      .setLngLat(NAIROBI_CENTER)
+      .addTo(map.current!);
+
+    // Remove welcome marker after 5 seconds
+    setTimeout(() => {
+      welcomeMarker.remove();
+    }, 5000);
+  };
+
+  // Update map markers when properties change
+  useEffect(() => {
+    if (mapLoaded && properties.length > 0) {
+      updateMapMarkers();
+      
+      // Fit map bounds to show all markers
+      if (map.current) {
+        const bounds = new mapboxgl.LngLatBounds();
+        let hasValidCoordinates = false;
+        
+        properties.forEach(property => {
+          const lng = parseCoordinate(property.longitude);
+          const lat = parseCoordinate(property.latitude);
+          
+          if (lng !== null && lat !== null) {
+            bounds.extend([lng, lat]);
+            hasValidCoordinates = true;
+          }
+        });
+        
+        if (hasValidCoordinates && !bounds.isEmpty()) {
+          // If we have properties with coordinates, fit bounds
+          map.current.fitBounds(bounds, {
+            padding: 50,
+            maxZoom: 15
+          });
+        } else {
+          // If no properties with coordinates, reset to Nairobi view
+          map.current.flyTo({
+            center: NAIROBI_CENTER,
+            zoom: DEFAULT_ZOOM,
+            essential: true
+          });
+        }
+      }
+    } else if (mapLoaded && properties.length === 0) {
+      // If no properties, ensure we're showing Nairobi
+      if (map.current) {
+        map.current.flyTo({
+          center: NAIROBI_CENTER,
+          zoom: DEFAULT_ZOOM,
+          essential: true
+        });
+      }
+    }
+  }, [properties, mapLoaded]);
+
+  const updateMapMarkers = () => {
+    // Clear existing markers
+    markers.current.forEach(marker => marker.remove());
+    markers.current = [];
+
+    if (!map.current || !mapLoaded) return;
+
+    // Add markers for each property
+    properties.forEach(property => {
+      const lng = parseCoordinate(property.longitude);
+      const lat = parseCoordinate(property.latitude);
+      
+      if (lng !== null && lat !== null) {
+        // Create a custom marker element
+        const el = document.createElement('div');
+        el.className = 'property-marker';
+        el.innerHTML = `
+          <div class="bg-white rounded-full p-2 shadow-lg border-2 border-blue-500 hover:border-blue-700 transition-colors cursor-pointer">
+            <div class="text-blue-600 font-semibold text-sm">KSh ${property.price.toLocaleString()}</div>
+          </div>
+        `;
+
+        const marker = new mapboxgl.Marker({
+          element: el,
+          anchor: 'bottom'
+        })
+          .setLngLat([lng, lat])
+          .addTo(map.current!);
+
+        // Add click event to marker
+        el.addEventListener('click', () => {
+          // Scroll to the property card or show property details
+          const propertyElement = document.getElementById(`property-${property.id}`);
+          if (propertyElement) {
+            propertyElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            propertyElement.classList.add('ring-2', 'ring-blue-500');
+            setTimeout(() => {
+              propertyElement.classList.remove('ring-2', 'ring-blue-500');
+            }, 2000);
+          }
+        });
+
+        markers.current.push(marker);
+      }
+    });
+
+    // If no properties with coordinates, add a Nairobi center marker
+    if (properties.length === 0 || !properties.some(p => p.latitude && p.longitude)) {
+      addNairobiWelcomeMarker();
+    }
   };
 
   // Show error toast if there's an error
@@ -39,6 +236,9 @@ const Buy = () => {
       toast.error('Failed to load properties. Please try again.');
     }
   }, [error]);
+
+  // Check if Mapbox token is configured
+  const isMapboxConfigured = MAPBOX_ACCESS_TOKEN && MAPBOX_ACCESS_TOKEN !== 'your_mapbox_access_token_here';
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -50,7 +250,7 @@ const Buy = () => {
           <div className="container mx-auto px-4">
             <h1 className="text-center mb-6">Buy a House</h1>
             <p className="text-center text-muted-foreground text-lg mb-8 max-w-2xl mx-auto">
-              Discover your perfect property from our extensive listings
+              Discover your perfect property in Nairobi and beyond
             </p>
             <SearchBar variant="inline" onSearch={handleSearch} />
           </div>
@@ -84,7 +284,7 @@ const Buy = () => {
 
                     {/* Price Range Filter */}
                     <div>
-                      <label className="text-sm font-medium mb-2 block">Price Range</label>
+                      <label className="text-sm font-medium mb-2 block">Price Range (KSh)</label>
                       <div className="flex gap-2">
                         <input
                           type="number"
@@ -122,15 +322,31 @@ const Buy = () => {
 
                     {/* Location Filter */}
                     <div>
-                      <label className="text-sm font-medium mb-2 block">City</label>
+                      <label className="text-sm font-medium mb-2 block">Location</label>
                       <input
                         type="text"
-                        placeholder="Enter city"
+                        placeholder="Nairobi, Mombasa, etc."
                         className="w-full p-2 border rounded-md text-sm"
                         value={filters.city || ''}
                         onChange={(e) => handleSearch({ ...filters, city: e.target.value })}
                       />
                     </div>
+
+                    {/* Map Toggle */}
+                    {isMapboxConfigured && (
+                      <div className="pt-4 border-t">
+                        <label className="text-sm font-medium mb-2 block">Map View</label>
+                        <Button
+                          variant={showMap ? "default" : "outline"}
+                          size="sm"
+                          className="w-full"
+                          onClick={() => setShowMap(!showMap)}
+                        >
+                          <Map className="h-4 w-4 mr-2" />
+                          {showMap ? 'Hide Map' : 'Show Nairobi Map'}
+                        </Button>
+                      </div>
+                    )}
 
                     {/* Clear Filters */}
                     <Button
@@ -173,18 +389,50 @@ const Buy = () => {
                   </div>
                 </div>
 
-                {/* Map Integration Placeholder */}
-                <div id="property-map" className="bg-muted rounded-lg h-64 mb-6 flex items-center justify-center border">
-                  <div className="text-center">
-                    <Map className="h-12 w-12 mx-auto mb-2 text-muted-foreground" />
-                    <p className="text-muted-foreground">
-                      Map integration will be added here
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      MapBox API Key required
+                {/* Map Integration */}
+                {showMap && isMapboxConfigured && (
+                  <div className="mb-6">
+                    <div 
+                      ref={mapContainer} 
+                      className="bg-muted rounded-lg h-96 border relative"
+                    >
+                      {!mapLoaded && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-muted/50 rounded-lg">
+                          <div className="text-center">
+                            <LoadingSpinner size="sm" />
+                            <p className="text-muted-foreground mt-2">Loading Nairobi map...</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-2 text-center">
+                      💡 Map centered on Nairobi. Click property markers to view details.
                     </p>
                   </div>
-                </div>
+                )}
+
+                {/* Map Not Configured Message */}
+                {showMap && !isMapboxConfigured && (
+                  <div className="bg-muted rounded-lg h-64 mb-6 flex items-center justify-center border">
+                    <div className="text-center">
+                      <Map className="h-12 w-12 mx-auto mb-2 text-muted-foreground" />
+                      <p className="text-muted-foreground mb-2">
+                        Map integration requires MapBox API Key
+                      </p>
+                      <p className="text-xs text-muted-foreground max-w-md">
+                        Please set your VITE_MAPBOX_ACCESS_TOKEN in your .env file
+                      </p>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="mt-3"
+                        onClick={() => window.open('https://account.mapbox.com/access-tokens/', '_blank')}
+                      >
+                        Get Mapbox Token
+                      </Button>
+                    </div>
+                  </div>
+                )}
 
                 {/* Error State */}
                 {error && (
@@ -217,11 +465,16 @@ const Buy = () => {
                     }
                   >
                     {properties.map((property) => (
-                      <PropertyCard 
+                      <div 
                         key={property.id} 
-                        property={property}
-                        viewMode={viewMode}
-                      />
+                        id={`property-${property.id}`}
+                        className="transition-all duration-300"
+                      >
+                        <PropertyCard 
+                          property={property}
+                          viewMode={viewMode}
+                        />
+                      </div>
                     ))}
                   </div>
                 )}
@@ -235,7 +488,7 @@ const Buy = () => {
                       <p className="text-muted-foreground mb-4">
                         {Object.keys(filters).length > 0 
                           ? 'Try adjusting your search filters to see more results.'
-                          : 'No properties are currently available. Check back later!'
+                          : 'No properties are currently available in Nairobi. Check back later!'
                         }
                       </p>
                       {Object.keys(filters).length > 0 && (
