@@ -163,6 +163,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://pristineprimier.co.ke",
     "https://www.pristineprimier.com",
     "https://api.pristineprimier.com",
+    "https://pristineprimier.com",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
