@@ -1,6 +1,6 @@
 import { Property, PropertyFilters, Favorite, Inquiry, SavedSearch, PaginatedResponse } from '@/types/property';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://18.217.243.193/api';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://api.pristineprimier.com/api'|| 'http://localhost:8000';
 
 
 // Helper function to handle API responses
@@ -225,5 +225,3 @@ export const savedSearchesAPI = {
   },
 };
 
-// Remove the default export since we're not using axios anymore
-// export default api;
