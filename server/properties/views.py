@@ -202,6 +202,15 @@ def public_inquiry(request):
             except Property.DoesNotExist:
                 # Property not found, but still proceed with inquiry
                 pass
+        inquiry = Inquiry.objects.create(
+            name=inquiry_data['name'],
+            email=inquiry_data['email'],
+            phone=inquiry_data['phone'],
+            message=inquiry_data['message'],
+            inquiry_type=inquiry_data['inquiry_type'],
+            user=None,  # Public inquiry
+            property_id=inquiry_data.get('property')  # Can be None
+        )    
         
         serializer = InquirySerializer(data=inquiry_data)
         
