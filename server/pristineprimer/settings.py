@@ -66,13 +66,26 @@ TEMPLATES = [
 WSGI_APPLICATION = 'pristineprimer.wsgi.application'
 
 # For PostgreSQL (uncomment when ready)
+#DATABASES = {
+    #'default': {
+        #'ENGINE': 'django.db.backends.postgresql',
+        #'NAME': 'pristineprimer',
+        #'USER': 'postgres',
+        #'PASSWORD': 'Chrispine9909',
+        #'HOST': 'localhost',
+        #'PORT': '5432',
+    #}
+#}
+
+
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'pristineprimer',
         'USER': 'postgres',
         'PASSWORD': 'Chrispine9909',
-        'HOST': 'localhost',
+        'HOST': 'pristineprimer.czq8ae44qs94.us-east-2.rds.amazonaws.com',
         'PORT': '5432',
     }
 }
