@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, User, LogOut } from 'lucide-react';
+import { Menu, X, Home, User, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -46,20 +46,14 @@ const Header = () => {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
       <nav className="container mx-auto flex h-16 items-center justify-between px-4">
-        {/* Logo with SVG */}
+        {/* Logo */}
         <Link 
           to="/" 
-          className="flex items-center gap-2 hover:opacity-90 transition-opacity"
+          className="flex items-center gap-2 text-xl font-bold text-primary hover:text-primary/90 transition-base"
           onClick={() => setMobileMenuOpen(false)}
         >
-          <img 
-            src="/logorealestate.svg" 
-            alt="PristinePrimier Real Estate" 
-            className="h-8 w-auto"
-          />
-          <span className="text-xl font-bold text-primary hidden sm:inline">
-            PristinePrimier
-          </span>
+          <Home className="h-6 w-6" />
+          <span className="hidden sm:inline">PristinePrimier</span>
         </Link>
 
         {/* Desktop Navigation */}
