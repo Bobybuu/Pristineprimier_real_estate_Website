@@ -56,21 +56,21 @@ const SearchBar = ({ onSearch, variant = 'hero' }: SearchBarProps) => {
       onSubmit={handleSubmit}
       className={`${
         isHero
-          ? 'bg-background/95 backdrop-blur-sm shadow-elegant rounded-lg p-6 max-w-5xl w-full'
-          : 'bg-background border rounded-lg p-4'
+          ? 'bg-white/95 backdrop-blur-sm shadow-lg rounded-xl p-4 max-w-4xl w-full border border-[#577A26]/20'
+          : 'bg-white border border-[#577A26]/20 rounded-lg p-3'
       }`}
     >
-      <div className={`grid gap-4 ${isHero ? 'md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-4'}`}>
+      <div className={`grid gap-3 ${isHero ? 'md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-4'}`}>
         {/* Search/Location */}
         <div className={isHero ? 'lg:col-span-2' : ''}>
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#577A26]" />
             <Input
               type="text"
               placeholder="Search by title, description, or location..."
               value={filters.search}
               onChange={(e) => updateFilter('search', e.target.value)}
-              className="pl-10 h-12"
+              className="pl-10 h-11 text-sm border-[#577A26]/30 focus:border-[#577A26] focus:ring-[#577A26]/20"
             />
           </div>
         </div>
@@ -78,13 +78,13 @@ const SearchBar = ({ onSearch, variant = 'hero' }: SearchBarProps) => {
         {/* City */}
         <div>
           <div className="relative">
-            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#577A26]" />
             <Input
               type="text"
               placeholder="City"
               value={filters.city}
               onChange={(e) => updateFilter('city', e.target.value)}
-              className="pl-10 h-12"
+              className="pl-10 h-11 text-sm border-[#577A26]/30 focus:border-[#577A26] focus:ring-[#577A26]/20"
             />
           </div>
         </div>
@@ -92,8 +92,8 @@ const SearchBar = ({ onSearch, variant = 'hero' }: SearchBarProps) => {
         {/* Property Type */}
         <div>
           <Select value={filters.property_type} onValueChange={(value) => updateFilter('property_type', value)}>
-            <SelectTrigger className="h-12">
-              <Home className="h-5 w-5 mr-2 text-muted-foreground" />
+            <SelectTrigger className="h-11 text-sm border-[#577A26]/30 focus:border-[#577A26] focus:ring-[#577A26]/20">
+              <Home className="h-4 w-4 mr-2 text-[#577A26]" />
               <SelectValue placeholder="Property Type" />
             </SelectTrigger>
             <SelectContent>
@@ -110,36 +110,46 @@ const SearchBar = ({ onSearch, variant = 'hero' }: SearchBarProps) => {
         {/* Price Range */}
         <div className="grid grid-cols-2 gap-2">
           <div className="relative">
-            <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-3 w-3 text-[#577A26]" />
             <Input
               type="number"
               placeholder="Min Price"
               value={filters.min_price}
               onChange={(e) => updateFilter('min_price', e.target.value)}
-              className="pl-9 h-12"
+              className="pl-8 h-11 text-sm border-[#577A26]/30 focus:border-[#577A26] focus:ring-[#577A26]/20"
             />
           </div>
           <div className="relative">
-            <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-3 w-3 text-[#577A26]" />
             <Input
               type="number"
               placeholder="Max Price"
               value={filters.max_price}
               onChange={(e) => updateFilter('max_price', e.target.value)}
-              className="pl-9 h-12"
+              className="pl-8 h-11 text-sm border-[#577A26]/30 focus:border-[#577A26] focus:ring-[#577A26]/20"
             />
           </div>
         </div>
 
-        
+        {/* State */}
+        <div>
+          <Input
+            type="text"
+            placeholder="State"
+            value={filters.state}
+            onChange={(e) => updateFilter('state', e.target.value)}
+            className="h-11 text-sm border-[#577A26]/30 focus:border-[#577A26] focus:ring-[#577A26]/20"
+          />
+        </div>
+
         {/* Search Button */}
         <Button
           type="submit"
-          variant={isHero ? 'hero' : 'default'}
-          size="lg"
-          className={isHero ? 'lg:col-span-3 h-12' : 'h-12'}
+          className={`h-11 text-sm font-medium bg-[#577A26] hover:bg-[#577A26]/90 text-white border border-[#577A26] ${
+            isHero ? 'lg:col-span-3' : ''
+          }`}
         >
-          <Search className="h-5 w-5 mr-2" />
+          <Search className="h-4 w-4 mr-2" />
           Search Properties
         </Button>
       </div>
