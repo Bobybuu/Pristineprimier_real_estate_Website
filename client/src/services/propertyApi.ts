@@ -1,5 +1,29 @@
 // services/propertyApi.ts
-const API_BASE_URL = 'https://api.pristineprimier.com/api';
+
+// Environment-based configuration
+const getApiBaseUrl = (): string => {
+  const isProduction = import.meta.env.MODE === 'production';
+
+  if (isProduction) {
+    return import.meta.env.VITE_API_URL || 'https://api.pristineprimier.com/api';
+  }
+  return import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+};
+
+const getMediaBaseUrl = (): string => {
+  const isProduction = import.meta.env.MODE === 'production';
+
+  if (isProduction) {
+    return import.meta.env.VITE_MEDIA_URL || 'https://api.pristineprimier.com';
+  }
+  return import.meta.env.VITE_MEDIA_URL || 'http://localhost:8000';
+};
+
+const API_BASE_URL = getApiBaseUrl();
+export const MEDIA_BASE_URL = getMediaBaseUrl();
+
+// Placeholder image as data URL to avoid 404
+export const PLACEHOLDER_IMAGE = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2YzZjRmNiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IiM5YzljOWMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5ObyBJbWFnZTwvdGV4dD48L3N2Zz4=';
 
 export interface PropertyData {
   title: string;
@@ -28,8 +52,36 @@ export interface PropertyData {
 }
 
 class PropertyApi {
+  // Helper function to handle API responses with comprehensive error handling
+  private async handleResponse(response: Response) {
+    if (!response.ok) {
+      let errorMessage = `HTTP error! status: ${response.status}`;
+      
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.message || errorData.detail || errorMessage;
+      } catch {
+        // If response is not JSON, use status text
+        errorMessage = response.statusText || errorMessage;
+      }
+      
+      throw new Error(errorMessage);
+    }
+    
+    // For 204 No Content responses
+    if (response.status === 204) {
+      return {};
+    }
+    
+    try {
+      return await response.json();
+    } catch {
+      return { message: 'Success' };
+    }
+  }
+
+  // Get CSRF token from cookie with fallback
   private getCSRFToken(): string {
-    // Get CSRF token from cookie
     const cookieValue = document.cookie
       .split('; ')
       .find(row => row.startsWith('csrftoken='))
@@ -39,6 +91,7 @@ class PropertyApi {
     return cookieValue || '';
   }
 
+  // Generic API request function with better error handling
   private async request(endpoint: string, options: RequestInit = {}) {
     const url = `${API_BASE_URL}${endpoint}`;
     const csrfToken = this.getCSRFToken();
@@ -46,39 +99,48 @@ class PropertyApi {
     console.log(`Making API request to: ${url}`);
     console.log('CSRF Token available:', !!csrfToken);
     
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-      ...options.headers,
+    const config: RequestInit = {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(csrfToken && { 'X-CSRFToken': csrfToken }),
+        ...options.headers,
+      },
+      credentials: 'include',
+      ...options,
     };
 
-    // Add CSRF token if available
-    if (csrfToken) {
-      headers['X-CSRFToken'] = csrfToken;
-    }
-
     try {
-      const response = await fetch(url, {
-        headers,
-        credentials: 'include',
-        ...options,
-      });
-      
-      console.log(`Response status: ${response.status}`);
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.log(`Error response: ${errorText}`);
-        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-      }
-      
-      const data = await response.json();
-      console.log('API response:', data);
-      return data;
-      
+      const response = await fetch(url, config);
+      return await this.handleResponse(response);
     } catch (error) {
-      console.error('API request failed:', error);
+      console.error(`API Request failed for ${endpoint}:`, error);
       throw error;
     }
+  }
+
+  // Image URL helper function - handles double media issue
+  getImageUrl(imagePath: string): string {
+    if (!imagePath) {
+      return PLACEHOLDER_IMAGE;
+    }
+    
+    // If it's already a full URL, return as is
+    if (imagePath.startsWith('http')) {
+      return imagePath;
+    }
+    
+    // Remove leading slash
+    let cleanPath = imagePath.startsWith('/') ? imagePath.slice(1) : imagePath;
+    
+    // Handle the double media prefix issue
+    // If path already starts with 'media/', remove it to avoid duplication
+    if (cleanPath.startsWith('media/')) {
+      // Remove the 'media/' prefix since we'll add it back
+      cleanPath = cleanPath.replace(/^media\//, '');
+    }
+    
+    // Construct the final URL with single media prefix
+    return `${MEDIA_BASE_URL}/media/${cleanPath}`;
   }
 
   async createProperty(propertyData: PropertyData) {
@@ -108,6 +170,62 @@ class PropertyApi {
     }
     
     throw new Error('All property creation endpoints failed. Please check your Django URLs configuration.');
+  }
+
+  async getProperties(filters?: any) {
+    const queryParams = new URLSearchParams();
+    if (filters) {
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== null && value !== undefined && value !== '') {
+          if (Array.isArray(value)) {
+            value.forEach(v => queryParams.append(key, v.toString()));
+          } else {
+            queryParams.append(key, value.toString());
+          }
+        }
+      });
+    }
+    
+    const endpoint = queryParams.toString() 
+      ? `/properties/?${queryParams.toString()}`
+      : '/properties/';
+      
+    return this.request(endpoint);
+  }
+
+  async getFeaturedProperties() {
+    return this.request('/properties/?featured=true&limit=6');
+  }
+
+  async getPropertyById(id: string) {
+    return this.request(`/properties/${id}/`);
+  }
+
+  async updateProperty(id: string, propertyData: Partial<PropertyData>) {
+    return this.request(`/properties/${id}/`, {
+      method: 'PATCH',
+      body: JSON.stringify(propertyData),
+    });
+  }
+
+  async deleteProperty(id: string) {
+    return this.request(`/properties/${id}/`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getMyProperties() {
+    return this.request('/properties/my_properties/');
+  }
+
+  async toggleFavorite(propertyId: string) {
+    return this.request(`/properties/${propertyId}/favorite/`, {
+      method: 'POST',
+    });
+  }
+
+  async getFavorites() {
+    return this.request('/properties/my_favorites/');
   }
 
   async uploadImages(propertyId: string, images: File[], captions: string[] = [], isPrimary: boolean[] = []) {
@@ -149,10 +267,6 @@ class PropertyApi {
     }
   }
 
-  async getMyProperties() {
-    return this.request('/properties/my_properties/');
-  }
-
   // Test method to check available endpoints
   async testEndpoints() {
     console.log('Testing available endpoints...');
@@ -162,6 +276,7 @@ class PropertyApi {
       '/properties/create/',
       '/create/',
       '/properties/my_properties/',
+      '/properties/my_favorites/',
     ];
 
     for (const endpoint of endpoints) {
