@@ -110,10 +110,10 @@ async function apiRequest(endpoint: string, options: RequestInit = {}) {
   }
 }
 
-// Image URL helper function
+// Image URL helper function - FIXED to handle double media issue
 export const getImageUrl = (imagePath: string): string => {
   if (!imagePath) {
-    return '/placeholder-property.jpg';
+    return PLACEHOLDER_IMAGE;
   }
   
   // If it's already a full URL, return as is
@@ -121,9 +121,17 @@ export const getImageUrl = (imagePath: string): string => {
     return imagePath;
   }
   
-  // Remove leading slash if present to avoid double slashes
-  const cleanPath = imagePath.startsWith('/') ? imagePath.slice(1) : imagePath;
+  // Remove leading slash
+  let cleanPath = imagePath.startsWith('/') ? imagePath.slice(1) : imagePath;
   
+  // Handle the double media prefix issue
+  // If path already starts with 'media/', remove it to avoid duplication
+  if (cleanPath.startsWith('media/')) {
+    // Remove the 'media/' prefix since we'll add it back
+    cleanPath = cleanPath.replace(/^media\//, '');
+  }
+  
+  // Construct the final URL with single media prefix
   return `${MEDIA_BASE_URL}/media/${cleanPath}`;
 };
 
