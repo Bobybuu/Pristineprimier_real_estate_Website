@@ -1,18 +1,54 @@
+// services/api.ts
 import { Property, PropertyFilters, Favorite, Inquiry, SavedSearch, PaginatedResponse } from '@/types/property';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://api.pristineprimier.com/api'|| 'http://localhost:8000';
+// Environment-based configuration
+const getApiBaseUrl = (): string => {
+  // For production
+  if (process.env.NODE_ENV === 'production') {
+    return process.env.REACT_APP_API_URL || 'https://api.pristineprimier.com/api';
+  }
+  // For development
+  return process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
+};
 
+const getMediaBaseUrl = (): string => {
+  // For production
+  if (process.env.NODE_ENV === 'production') {
+    return process.env.REACT_APP_MEDIA_URL || 'https://api.pristineprimier.com';
+  }
+  // For development
+  return process.env.REACT_APP_MEDIA_URL || 'http://localhost:8000';
+};
+
+const API_BASE_URL = getApiBaseUrl();
+export const MEDIA_BASE_URL = getMediaBaseUrl();
 
 // Helper function to handle API responses
 async function handleResponse(response: Response) {
-  const data = await response.json().catch(() => ({ 
-    message: 'Network error' 
-  }));
-  
   if (!response.ok) {
-    throw new Error(data.message || `HTTP error! status: ${response.status}`);
+    let errorMessage = `HTTP error! status: ${response.status}`;
+    
+    try {
+      const errorData = await response.json();
+      errorMessage = errorData.message || errorData.detail || errorMessage;
+    } catch {
+      // If response is not JSON, use status text
+      errorMessage = response.statusText || errorMessage;
+    }
+    
+    throw new Error(errorMessage);
   }
-  return data;
+  
+  // For 204 No Content responses
+  if (response.status === 204) {
+    return {};
+  }
+  
+  try {
+    return await response.json();
+  } catch {
+    return { message: 'Success' };
+  }
 }
 
 // Get CSRF token from cookie
@@ -25,47 +61,77 @@ function getCsrfTokenFromCookie(): string | null {
   return cookieValue || null;
 }
 
-// Get CSRF token
+// Get CSRF token with better error handling
 export async function getCsrfToken(): Promise<string> {
+  // Try to get from cookie first
   const cookieToken = getCsrfTokenFromCookie();
   if (cookieToken) {
     return cookieToken;
   }
 
-  // Fallback to API endpoint
+  // If no cookie token, try to fetch from API
   try {
     const response = await fetch(`${API_BASE_URL}/auth/csrf/`, {
       credentials: 'include',
     });
-    const data = await response.json();
-    return data.csrfToken;
+    
+    if (response.ok) {
+      const data = await response.json();
+      return data.csrfToken;
+    }
   } catch (error) {
-    console.error('Failed to get CSRF token:', error);
-    throw new Error('Unable to get CSRF token');
+    console.warn('Failed to get CSRF token from API, using empty token:', error);
   }
+  
+  // Return empty string as fallback (some endpoints might work without CSRF)
+  return '';
 }
 
-// Generic API request function
+// Generic API request function with better error handling
 async function apiRequest(endpoint: string, options: RequestInit = {}) {
   const csrfToken = await getCsrfToken();
   
   const config: RequestInit = {
     headers: {
       'Content-Type': 'application/json',
-      'X-CSRFToken': csrfToken,
+      ...(csrfToken && { 'X-CSRFToken': csrfToken }),
       ...options.headers,
     },
     credentials: 'include',
     ...options,
   };
 
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
-  return handleResponse(response);
+  try {
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+    return await handleResponse(response);
+  } catch (error) {
+    console.error(`API Request failed for ${endpoint}:`, error);
+    throw error;
+  }
 }
+
+// Image URL helper function
+export const getImageUrl = (imagePath: string): string => {
+  if (!imagePath) {
+    return '/placeholder-property.jpg';
+  }
+  
+  // If it's already a full URL, return as is
+  if (imagePath.startsWith('http')) {
+    return imagePath;
+  }
+  
+  // Remove leading slash if present to avoid double slashes
+  const cleanPath = imagePath.startsWith('/') ? imagePath.slice(1) : imagePath;
+  
+  return `${MEDIA_BASE_URL}/media/${cleanPath}`;
+};
+
+// Placeholder image as data URL to avoid 404
+export const PLACEHOLDER_IMAGE = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2YzZjRmNiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IiM5YzljOWMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5ObyBJbWFnZTwvdGV4dD48L3N2Zz4=';
 
 // Auth API functions
 export const authAPI = {
-  // Login
   async login(credentials: { username: string; password: string }) {
     return apiRequest('/auth/login/', {
       method: 'POST',
@@ -73,7 +139,6 @@ export const authAPI = {
     });
   },
 
-  // Register
   async register(userData: {
     username: string;
     email: string;
@@ -89,19 +154,16 @@ export const authAPI = {
     });
   },
 
-  // Logout
   async logout() {
     return apiRequest('/auth/logout/', {
       method: 'POST',
     });
   },
 
-  // Get current user
   async getCurrentUser() {
     return apiRequest('/auth/me/');
   },
 
-  // Seller application
   async submitSellerApplication(applicationData: any) {
     return apiRequest('/auth/seller/apply/', {
       method: 'POST',
@@ -110,73 +172,64 @@ export const authAPI = {
   },
 };
 
-// Properties API - Updated to use fetch instead of axios
+// Properties API
 export const propertiesAPI = {
-  // Get all properties with filters
   async getAll(filters: PropertyFilters = {}): Promise<PaginatedResponse<Property>> {
     const params = new URLSearchParams();
     
     Object.entries(filters).forEach(([key, value]) => {
       if (value !== null && value !== undefined && value !== '') {
         if (Array.isArray(value)) {
-          value.forEach(v => params.append(key, v));
+          value.forEach(v => params.append(key, v.toString()));
         } else {
           params.append(key, value.toString());
         }
       }
     });
     
-    return apiRequest(`/properties/?${params}`);
+    return apiRequest(`/properties/?${params.toString()}`);
   },
 
-  // Get featured properties
   async getFeatured(): Promise<PaginatedResponse<Property>> {
-    return apiRequest('/properties/?featured=true&status=published');
+    return apiRequest('/properties/?featured=true&limit=6');
   },
 
-  // Get single property
   async getById(id: number): Promise<Property> {
     return apiRequest(`/properties/${id}/`);
   },
 
-  // Create property (for sellers)
   async create(propertyData: Partial<Property>): Promise<Property> {
-    return apiRequest('/properties/create/', {
+    return apiRequest('/properties/', {
       method: 'POST',
       body: JSON.stringify(propertyData),
     });
   },
 
-  // Update property (for sellers)
   async update(id: number, propertyData: Partial<Property>): Promise<Property> {
     return apiRequest(`/properties/${id}/`, {
-      method: 'PUT',
+      method: 'PATCH',
       body: JSON.stringify(propertyData),
     });
   },
 
-  // Delete property
   async delete(id: number): Promise<void> {
     return apiRequest(`/properties/${id}/`, {
       method: 'DELETE',
     });
   },
 
-  // Toggle favorite
   async toggleFavorite(propertyId: number): Promise<{status: string}> {
     return apiRequest(`/properties/${propertyId}/favorite/`, {
       method: 'POST',
     });
   },
 
-  // Get user's favorites
   async getFavorites(): Promise<Favorite[]> {
-    return apiRequest('/properties/my_favorites/');
+    return apiRequest('/properties/favorites/');
   },
 
-  // Get user's properties (for sellers)
   async getMyProperties(): Promise<Property[]> {
-    return apiRequest('/properties/my_properties/');
+    return apiRequest('/properties/my-properties/');
   },
 };
 
@@ -213,7 +266,7 @@ export const savedSearchesAPI = {
 
   async update(id: number, searchData: Partial<SavedSearch>): Promise<SavedSearch> {
     return apiRequest(`/saved-searches/${id}/`, {
-      method: 'PUT',
+      method: 'PATCH',
       body: JSON.stringify(searchData),
     });
   },
@@ -224,4 +277,3 @@ export const savedSearchesAPI = {
     });
   },
 };
-

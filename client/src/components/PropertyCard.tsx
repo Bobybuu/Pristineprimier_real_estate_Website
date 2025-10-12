@@ -3,8 +3,9 @@ import { Bed, Bath, Square, MapPin, Heart } from 'lucide-react';
 import { Property, PropertyImage } from '@/types/property';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { propertiesAPI } from '@/services/api';
+import { propertiesAPI, getImageUrl, PLACEHOLDER_IMAGE } from '@/services/api';
 import { useState, MouseEvent } from 'react';
+import { useImageLoader } from '@/hooks/useImageLoader';
 
 interface PropertyCardProps {
   property: Property;
@@ -14,28 +15,40 @@ interface PropertyCardProps {
 const PropertyCard = ({ property, viewMode = 'grid' }: PropertyCardProps) => {
   const [isFavorited, setIsFavorited] = useState<boolean>(property.is_favorited);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [imageError, setImageError] = useState<boolean>(false);
-  const [imageLoading, setImageLoading] = useState<boolean>(true);
 
-  // Fix image URL - construct full URL for Django media files
-  const getImageUrl = (imagePath: string): string => {
-    if (!imagePath) {
-      console.log('❌ No image path provided for property:', property.id);
-      return '';
+  // Get the image path correctly - check different possible locations
+  const getImagePath = (): string => {
+    // Case 1: Check if primary_image is a string (direct path)
+    if (typeof property.primary_image === 'string') {
+      console.log('📸 Using primary_image as string path:', property.primary_image);
+      return property.primary_image;
     }
     
-    // If it's already a full URL, return as is
-    if (imagePath.startsWith('http')) {
-      console.log('✅ Image is already full URL:', imagePath);
-      return imagePath;
+    // Case 2: Check if primary_image is an object with image property
+    if (property.primary_image && typeof property.primary_image === 'object' && 'image' in property.primary_image) {
+      console.log('📸 Using primary_image.image path:', property.primary_image.image);
+      return property.primary_image.image;
     }
     
-    // Construct full URL for Django media files
-    const baseUrl = 'http://localhost:8000';
-    const fullUrl = `${baseUrl}${imagePath}`;
-    console.log('🔄 Constructed image URL:', fullUrl, 'from path:', imagePath);
-    return fullUrl;
+    // Case 3: Check first image in images array
+    if (property.images && property.images.length > 0 && property.images[0].image) {
+      console.log('📸 Using first image from images array:', property.images[0].image);
+      return property.images[0].image;
+    }
+    
+    console.log('❌ No valid image path found for property:', property.id);
+    return '';
   };
+
+  // Get the image path
+  const imagePath = getImagePath();
+  const { 
+    imageUrl, 
+    isLoading: imageLoading, 
+    hasError: imageError, 
+    handleImageError, 
+    handleImageLoad 
+  } = useImageLoader(imagePath);
 
   const handleFavoriteToggle = async (e: MouseEvent<HTMLButtonElement>): Promise<void> => {
     e.preventDefault();
@@ -82,48 +95,8 @@ const PropertyCard = ({ property, viewMode = 'grid' }: PropertyCardProps) => {
     return 'Available';
   };
 
-  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    console.error('❌ Image failed to load:', e.currentTarget.src);
-    setImageError(true);
-    setImageLoading(false);
-    e.currentTarget.src = '/placeholder-property.jpg';
-  };
-
-  const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    console.log('✅ Image loaded successfully:', e.currentTarget.src);
-    setImageError(false);
-    setImageLoading(false);
-  };
-
   const isLandOnly = property.property_type === 'land';
   const statusLabel = getStatusLabel(property.status, property.property_type);
-  
-  // FIX: Get the image path correctly - check different possible locations
-  const getImagePath = (): string => {
-    // Case 1: Check if primary_image is a string (direct path)
-    if (typeof property.primary_image === 'string') {
-      console.log('📸 Using primary_image as string path:', property.primary_image);
-      return property.primary_image;
-    }
-    
-    // Case 2: Check if primary_image is an object with image property
-    if (property.primary_image && typeof property.primary_image === 'object' && 'image' in property.primary_image) {
-      console.log('📸 Using primary_image.image path:', property.primary_image.image);
-      return property.primary_image.image;
-    }
-    
-    // Case 3: Check first image in images array
-    if (property.images && property.images.length > 0 && property.images[0].image) {
-      console.log('📸 Using first image from images array:', property.images[0].image);
-      return property.images[0].image;
-    }
-    
-    console.log('❌ No valid image path found for property:', property.id);
-    return '';
-  };
-
-  const imagePath = getImagePath();
-  const imageUrl = imagePath ? getImageUrl(imagePath) : '';
 
   // Debug logging for this specific property
   console.log('🏠 PropertyCard Debug:', {
@@ -145,33 +118,25 @@ const PropertyCard = ({ property, viewMode = 'grid' }: PropertyCardProps) => {
       <Card className={`group overflow-hidden hover:shadow-elegant transition-smooth cursor-pointer ${
         isListView ? 'flex' : 'h-full'
       }`}>
-        {/* Image */}
+        {/* Image Section */}
         <div className={`relative overflow-hidden ${
           isListView ? 'w-64 h-48 flex-shrink-0' : 'h-56'
         }`}>
-          {imageUrl && !imageError ? (
-            <>
-              {imageLoading && (
-                <div className="absolute inset-0 bg-muted flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                </div>
-              )}
-              <img
-                src={imageUrl}
-                alt={property.title}
-                className={`w-full h-full object-cover group-hover:scale-110 transition-smooth ${
-                  imageLoading ? 'opacity-0' : 'opacity-100'
-                }`}
-                loading="lazy"
-                onError={handleImageError}
-                onLoad={handleImageLoad}
-              />
-            </>
-          ) : (
-            <div className="w-full h-full bg-muted flex items-center justify-center">
-              <span className="text-muted-foreground">No Image Available</span>
+          {imageLoading && (
+            <div className="absolute inset-0 bg-muted flex items-center justify-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
             </div>
           )}
+          <img
+            src={imageError ? PLACEHOLDER_IMAGE : imageUrl}
+            alt={property.title}
+            className={`w-full h-full object-cover group-hover:scale-110 transition-smooth ${
+              imageLoading ? 'opacity-0' : 'opacity-100'
+            }`}
+            loading="lazy"
+            onError={handleImageError}
+            onLoad={handleImageLoad}
+          />
           
           {/* Status Badge */}
           <div className={`absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-semibold ${
