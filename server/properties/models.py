@@ -99,25 +99,55 @@ class Favorite(models.Model):
         return f"{self.user.username} - {self.property.title}"
 
 class Inquiry(models.Model):
-    property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='inquiries')
-    # FIXED: Using your custom user model
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='property_inquiries')
-    name = models.CharField(max_length=100)
-    email = models.EmailField()
-    phone = models.CharField(max_length=20, blank=True)
-    message = models.TextField()
-    inquiry_type = models.CharField(max_length=20, choices=[
-        ('general', 'General Information'),
-        ('tour', 'Schedule Tour'),
-        ('price', 'Price Inquiry'),
-    ])
-    preferred_date = models.DateTimeField(null=True, blank=True)
-    status = models.CharField(max_length=20, default='new', choices=[
+    INQUIRY_TYPES = [
+        ('property_inquiry', 'Property Inquiry'),
+        ('valuation_request', 'Valuation Request'), 
+        ('management_request', 'Management Request'),
+        ('general_inquiry', 'General Inquiry'),
+    ]
+    
+    STATUS_CHOICES = [
         ('new', 'New'),
         ('contacted', 'Contacted'),
         ('scheduled', 'Tour Scheduled'),
         ('closed', 'Closed'),
-    ])
+    ]
+    
+    # Make user and property optional for public inquiries
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE, 
+        related_name='property_inquiries',
+        null=True,  # Allow null for public inquiries
+        blank=True
+    )
+    property = models.ForeignKey(
+        Property, 
+        on_delete=models.CASCADE, 
+        related_name='inquiries',
+        null=True,  # Allow null for general inquiries
+        blank=True
+    )
+    
+    # Contact information (required for public inquiries)
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    phone = models.CharField(max_length=20)
+    message = models.TextField()
+    
+    # Inquiry type matching the API
+    inquiry_type = models.CharField(
+        max_length=20, 
+        choices=INQUIRY_TYPES,
+        default='general_inquiry'
+    )
+    
+    preferred_date = models.DateTimeField(null=True, blank=True)
+    status = models.CharField(
+        max_length=20, 
+        choices=STATUS_CHOICES, 
+        default='new'
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     
     class Meta:
@@ -125,7 +155,8 @@ class Inquiry(models.Model):
         ordering = ['-created_at']
     
     def __str__(self):
-        return f"Inquiry for {self.property.title} from {self.name}"
+        property_info = f" for {self.property.title}" if self.property else ""
+        return f"{self.inquiry_type}{property_info} from {self.name}"
 
 # REMOVED: SavedSearch model - it already exists in users app
 # class SavedSearch(models.Model):

@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Q
+from rest_framework.permissions import AllowAny
 from rest_framework.decorators import api_view, permission_classes
 from .models import Property, PropertyImage, Favorite, Inquiry
 from .serializers import (
@@ -174,3 +175,45 @@ def create_property_simple(request):
         
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+# properties/views.py - FIXED VERSION
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def public_inquiry(request):
+    """
+    Public inquiry endpoint that doesn't require authentication
+    """
+    try:
+        # Create a modified data dict for the serializer
+        inquiry_data = {
+            'name': request.data.get('name'),
+            'email': request.data.get('email'),
+            'phone': request.data.get('phone'),
+            'message': request.data.get('message'),
+            'inquiry_type': request.data.get('inquiry_type', 'general_inquiry'),
+        }
+        
+        # Handle property association if provided
+        property_id = request.data.get('property')
+        if property_id:
+            try:
+                property_obj = Property.objects.get(id=property_id)
+                inquiry_data['property'] = property_obj.id
+            except Property.DoesNotExist:
+                # Property not found, but still proceed with inquiry
+                pass
+        
+        serializer = InquirySerializer(data=inquiry_data)
+        
+        if serializer.is_valid():
+            # For public inquiries, user will be None
+            inquiry = serializer.save(user=None)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+    except Exception as e:
+        return Response(
+            {'error': str(e)}, 
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )

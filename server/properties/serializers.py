@@ -57,8 +57,10 @@ class FavoriteSerializer(serializers.ModelSerializer):
             return primary_image.image.url
         return None
 
+
+# properties/serializers.py - ENHANCE INQUIRY SERIALIZER
 class InquirySerializer(serializers.ModelSerializer):
-    property_title = serializers.CharField(source='property.title', read_only=True)
+    property_title = serializers.CharField(source='property.title', read_only=True, allow_null=True)
     
     class Meta:
         model = Inquiry
@@ -66,4 +68,30 @@ class InquirySerializer(serializers.ModelSerializer):
             'id', 'property', 'property_title', 'name', 'email', 'phone',
             'message', 'inquiry_type', 'preferred_date', 'status', 'created_at'
         ]
-        read_only_fields = ['user', 'created_at']
+        read_only_fields = ['user', 'created_at', 'status']
+    
+    def validate(self, data):
+        """
+        Ensure either user is authenticated or name/email/phone provided for public inquiries
+        """
+        if not self.context['request'].user.is_authenticated:
+            if not all([data.get('name'), data.get('email'), data.get('phone')]):
+                raise serializers.ValidationError(
+                    "Name, email, and phone are required for public inquiries"
+                )
+        return data
+    
+    def create(self, validated_data):
+        # Set user to None for public inquiries, or to request.user for authenticated users
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            validated_data['user'] = request.user
+            # For authenticated users, use their info if not provided
+            if not validated_data.get('name'):
+                validated_data['name'] = request.user.get_full_name()
+            if not validated_data.get('email'):
+                validated_data['email'] = request.user.email
+        else:
+            validated_data['user'] = None
+        
+        return super().create(validated_data)
