@@ -31,31 +31,38 @@ class PropertyApi {
   private async request(endpoint: string, options: RequestInit = {}) {
     const url = `${API_BASE_URL}${endpoint}`;
     
+    console.log(`Making API request to: ${url}`);
+    
     try {
       const response = await fetch(url, {
         headers: {
           'Content-Type': 'application/json',
           ...options.headers,
         },
-        credentials: 'include',  // Important for cookies/authentication
+        credentials: 'include',  // Important for cookies/session
         ...options,
       });
       
+      console.log(`Response status: ${response.status}`);
+      
       if (!response.ok) {
         const errorText = await response.text();
+        console.log(`Error response: ${errorText}`);
         throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
       }
       
-      return await response.json();
+      const data = await response.json();
+      console.log('API response:', data);
+      return data;
+      
     } catch (error) {
       console.error('API request failed:', error);
       throw error;
     }
   }
 
-  // No need for getCSRFToken method since we're using credentials: 'include'
-
   async createProperty(propertyData: PropertyData) {
+    console.log('Creating property with data:', propertyData);
     return this.request('/properties/create/', {
       method: 'POST',
       body: JSON.stringify(propertyData),
@@ -63,6 +70,8 @@ class PropertyApi {
   }
 
   async uploadImages(propertyId: string, images: File[], captions: string[] = [], isPrimary: boolean[] = []) {
+    console.log(`Uploading ${images.length} images for property ${propertyId}`);
+    
     const formData = new FormData();
     
     images.forEach((image, index) => {
@@ -71,34 +80,29 @@ class PropertyApi {
       formData.append(`image_is_primary[${index}]`, (isPrimary[index] || index === 0).toString());
     });
 
-    const response = await fetch(`${API_BASE_URL}/properties/${propertyId}/upload_images/`, {
-      method: 'POST',
-      credentials: 'include',  // Important for cookies/authentication
-      body: formData,
-    });
+    try {
+      const response = await fetch(`${API_BASE_URL}/properties/${propertyId}/upload_images/`, {
+        method: 'POST',
+        credentials: 'include',
+        body: formData,
+      });
 
-    if (!response.ok) {
-      throw new Error(`Image upload failed: ${response.status}`);
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Image upload failed: ${response.status}, ${errorText}`);
+      }
+
+      const result = await response.json();
+      console.log('Image upload successful:', result);
+      return result;
+    } catch (error) {
+      console.error('Image upload error:', error);
+      throw error;
     }
-
-    return await response.json();
   }
 
   async getMyProperties() {
     return this.request('/properties/my_properties/');
-  }
-
-  async updateProperty(propertyId: string, propertyData: Partial<PropertyData>) {
-    return this.request(`/properties/${propertyId}/`, {
-      method: 'PATCH',
-      body: JSON.stringify(propertyData),
-    });
-  }
-
-  async deleteProperty(propertyId: string) {
-    return this.request(`/properties/${propertyId}/`, {
-      method: 'DELETE',
-    });
   }
 }
 
