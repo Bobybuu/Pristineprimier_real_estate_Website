@@ -35,10 +35,9 @@ class PropertyApi {
       const response = await fetch(url, {
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRFToken': this.getCSRFToken(),
           ...options.headers,
         },
-        credentials: 'include',
+        credentials: 'include',  // Important for cookies/authentication
         ...options,
       });
       
@@ -54,13 +53,7 @@ class PropertyApi {
     }
   }
 
-  private getCSRFToken(): string {
-    const cookieValue = document.cookie
-      .split('; ')
-      .find(row => row.startsWith('csrftoken='))
-      ?.split('=')[1];
-    return cookieValue || '';
-  }
+  // No need for getCSRFToken method since we're using credentials: 'include'
 
   async createProperty(propertyData: PropertyData) {
     return this.request('/properties/create/', {
@@ -80,10 +73,7 @@ class PropertyApi {
 
     const response = await fetch(`${API_BASE_URL}/properties/${propertyId}/upload_images/`, {
       method: 'POST',
-      headers: {
-        'X-CSRFToken': this.getCSRFToken(),
-      },
-      credentials: 'include',
+      credentials: 'include',  // Important for cookies/authentication
       body: formData,
     });
 
