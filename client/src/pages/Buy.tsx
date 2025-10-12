@@ -5,46 +5,40 @@ import Footer from '@/components/Footer';
 import SearchBar from '@/components/SearchBar';
 import PropertyCard from '@/components/PropertyCard';
 import { Button } from '@/components/ui/button';
-import { mockProperties } from '@/lib/mockData';
-import type { Property } from '@/lib/mockData';
+import { toast } from 'sonner';
+import { useProperties } from '@/hooks/useProperties';
+import { PropertyFilters } from '@/types/property';
+import LoadingSpinner from '@/components/LoadingSpinner';
+
+// Remove the local Property interface and use the one from '@/types/property'
+
+interface SearchFilters {
+  property_type?: string;
+  min_price?: string;
+  max_price?: string;
+  bedrooms?: string;
+  city?: string;
+  state?: string;
+  search?: string;
+}
 
 const Buy = () => {
-  const [properties, setProperties] = useState<Property[]>([]);
+  const [filters, setFilters] = useState<PropertyFilters>({});
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [loading, setLoading] = useState(false);
+  
+  // Use the custom hook instead of local state management
+  const { properties, loading, error } = useProperties(filters);
 
+  const handleSearch = (searchFilters: PropertyFilters) => {
+    setFilters(searchFilters);
+  };
+
+  // Show error toast if there's an error
   useEffect(() => {
-    // TODO: Replace with actual API call - GET /api/properties
-    loadProperties();
-  }, []);
-
-  const loadProperties = async () => {
-    setLoading(true);
-    try {
-      // TODO: await propertyApi.search(filters);
-      await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate API call
-      setProperties(mockProperties);
-    } catch (error) {
-      console.error('Failed to load properties:', error);
-    } finally {
-      setLoading(false);
+    if (error) {
+      toast.error('Failed to load properties. Please try again.');
     }
-  };
-
-  const handleSearch = async (filters: any) => {
-    setLoading(true);
-    try {
-      // TODO: Replace with actual API call with filters
-      // const results = await propertyApi.search(filters);
-      console.log('Search with filters:', filters);
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      setProperties(mockProperties);
-    } catch (error) {
-      console.error('Search failed:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [error]);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -70,10 +64,84 @@ const Buy = () => {
               <aside className="lg:w-64 flex-shrink-0">
                 <div className="bg-card border rounded-lg p-6 sticky top-20">
                   <h3 className="font-semibold mb-4">Advanced Filters</h3>
-                  {/* TODO: Add advanced filter components */}
-                  <p className="text-sm text-muted-foreground">
-                    Additional filters will be added here for property features, amenities, and more.
-                  </p>
+                  <div className="space-y-4">
+                    {/* Property Type Filter */}
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">Property Type</label>
+                      <select 
+                        className="w-full p-2 border rounded-md text-sm"
+                        value={filters.property_type || ''}
+                        onChange={(e) => handleSearch({ ...filters, property_type: e.target.value })}
+                      >
+                        <option value="">All Types</option>
+                        <option value="apartment">Apartment</option>
+                        <option value="land">Land</option>
+                        <option value="commercial">Commercial</option>
+                        <option value="rental">Rental</option>
+                        <option value="sale">For Sale</option>
+                      </select>
+                    </div>
+
+                    {/* Price Range Filter */}
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">Price Range</label>
+                      <div className="flex gap-2">
+                        <input
+                          type="number"
+                          placeholder="Min"
+                          className="w-full p-2 border rounded-md text-sm"
+                          value={filters.min_price || ''}
+                          onChange={(e) => handleSearch({ ...filters, min_price: e.target.value })}
+                        />
+                        <input
+                          type="number"
+                          placeholder="Max"
+                          className="w-full p-2 border rounded-md text-sm"
+                          value={filters.max_price || ''}
+                          onChange={(e) => handleSearch({ ...filters, max_price: e.target.value })}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Bedrooms Filter */}
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">Bedrooms</label>
+                      <select 
+                        className="w-full p-2 border rounded-md text-sm"
+                        value={filters.min_bedrooms || ''}
+                        onChange={(e) => handleSearch({ ...filters, min_bedrooms: e.target.value })}
+                      >
+                        <option value="">Any</option>
+                        <option value="1">1+</option>
+                        <option value="2">2+</option>
+                        <option value="3">3+</option>
+                        <option value="4">4+</option>
+                        <option value="5">5+</option>
+                      </select>
+                    </div>
+
+                    {/* Location Filter */}
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">City</label>
+                      <input
+                        type="text"
+                        placeholder="Enter city"
+                        className="w-full p-2 border rounded-md text-sm"
+                        value={filters.city || ''}
+                        onChange={(e) => handleSearch({ ...filters, city: e.target.value })}
+                      />
+                    </div>
+
+                    {/* Clear Filters */}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full"
+                      onClick={() => setFilters({})}
+                    >
+                      Clear Filters
+                    </Button>
+                  </div>
                 </div>
               </aside>
 
@@ -83,6 +151,9 @@ const Buy = () => {
                 <div className="flex items-center justify-between mb-6">
                   <div className="text-sm text-muted-foreground">
                     <span className="font-semibold text-foreground">{properties.length}</span> properties found
+                    {Object.keys(filters).length > 0 && (
+                      <span className="ml-2">(with filters applied)</span>
+                    )}
                   </div>
                   <div className="flex gap-2">
                     <Button
@@ -115,16 +186,29 @@ const Buy = () => {
                   </div>
                 </div>
 
+                {/* Error State */}
+                {error && (
+                  <div className="text-center py-12 bg-destructive/10 rounded-lg">
+                    <p className="text-destructive text-lg mb-4">Failed to load properties</p>
+                    <Button 
+                      onClick={() => window.location.reload()}
+                      variant="outline"
+                    >
+                      Try Again
+                    </Button>
+                  </div>
+                )}
+
                 {/* Loading State */}
                 {loading && (
                   <div className="text-center py-12">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+                    <LoadingSpinner size="lg" />
                     <p className="text-muted-foreground mt-4">Loading properties...</p>
                   </div>
                 )}
 
                 {/* Property Grid/List */}
-                {!loading && properties.length > 0 && (
+                {!loading && !error && properties.length > 0 && (
                   <div
                     className={
                       viewMode === 'grid'
@@ -133,15 +217,36 @@ const Buy = () => {
                     }
                   >
                     {properties.map((property) => (
-                      <PropertyCard key={property.id} property={property} />
+                      <PropertyCard 
+                        key={property.id} 
+                        property={property}
+                        viewMode={viewMode}
+                      />
                     ))}
                   </div>
                 )}
 
                 {/* No Results */}
-                {!loading && properties.length === 0 && (
+                {!loading && !error && properties.length === 0 && (
                   <div className="text-center py-12">
-                    <p className="text-muted-foreground">No properties found. Try adjusting your filters.</p>
+                    <div className="max-w-md mx-auto">
+                      <Map className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
+                      <h3 className="text-lg font-semibold mb-2">No properties found</h3>
+                      <p className="text-muted-foreground mb-4">
+                        {Object.keys(filters).length > 0 
+                          ? 'Try adjusting your search filters to see more results.'
+                          : 'No properties are currently available. Check back later!'
+                        }
+                      </p>
+                      {Object.keys(filters).length > 0 && (
+                        <Button
+                          variant="outline"
+                          onClick={() => setFilters({})}
+                        >
+                          Clear All Filters
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>

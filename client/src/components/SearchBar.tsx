@@ -131,39 +131,7 @@ const SearchBar = ({ onSearch, variant = 'hero' }: SearchBarProps) => {
           </div>
         </div>
 
-        {/* Beds */}
-        <div>
-          <Select value={filters.min_bedrooms} onValueChange={(value) => updateFilter('min_bedrooms', value)}>
-            <SelectTrigger className="h-12">
-              <SelectValue placeholder="Beds" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="any">Any Beds</SelectItem>
-              <SelectItem value="1">1+ Beds</SelectItem>
-              <SelectItem value="2">2+ Beds</SelectItem>
-              <SelectItem value="3">3+ Beds</SelectItem>
-              <SelectItem value="4">4+ Beds</SelectItem>
-              <SelectItem value="5">5+ Beds</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Baths */}
-        <div>
-          <Select value={filters.min_bathrooms} onValueChange={(value) => updateFilter('min_bathrooms', value)}>
-            <SelectTrigger className="h-12">
-              <SelectValue placeholder="Baths" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="any">Any Baths</SelectItem>
-              <SelectItem value="1">1+ Baths</SelectItem>
-              <SelectItem value="2">2+ Baths</SelectItem>
-              <SelectItem value="3">3+ Baths</SelectItem>
-              <SelectItem value="4">4+ Baths</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
+        
         {/* Search Button */}
         <Button
           type="submit"

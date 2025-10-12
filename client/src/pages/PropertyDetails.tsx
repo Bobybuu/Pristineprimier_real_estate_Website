@@ -38,11 +38,11 @@ const PropertyDetails = () => {
     }
   };
 
-  const formatPrice = (price: string) => {
+  const formatPrice = (price: string): string => {
     const numericPrice = parseFloat(price);
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-KE', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'KES',
       minimumFractionDigits: 0,
     }).format(numericPrice);
   };

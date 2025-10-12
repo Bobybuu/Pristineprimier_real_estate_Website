@@ -140,7 +140,7 @@ export const propertiesAPI = {
 
   // Create property (for sellers)
   async create(propertyData: Partial<Property>): Promise<Property> {
-    return apiRequest('/properties/', {
+    return apiRequest('/properties/create/', {
       method: 'POST',
       body: JSON.stringify(propertyData),
     });

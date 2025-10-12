@@ -30,7 +30,7 @@ const Auth = () => {
     last_name: '',
     phone_number: '',
     password: '',
-    confirmPassword: '',
+    password_confirm: '', // Changed from confirmPassword to password_confirm
     user_type: 'buyer' as UserRole,
   });
 
@@ -74,15 +74,17 @@ const Auth = () => {
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (signupData.password !== signupData.confirmPassword) {
+    // Validate passwords match
+    if (signupData.password !== signupData.password_confirm) {
       toast.error('Passwords do not match');
       return;
     }
 
-    // Split username into first and last name
-    const nameParts = signupData.username.trim().split(' ');
-    const first_name = nameParts[0] || '';
-    const last_name = nameParts.slice(1).join(' ') || '';
+    // Validate password strength
+    if (signupData.password.length < 8) {
+      toast.error('Password must be at least 8 characters long');
+      return;
+    }
 
     setLoading(true);
 
@@ -91,12 +93,14 @@ const Auth = () => {
         username: signupData.username,
         email: signupData.email,
         password: signupData.password,
-        first_name,
-        last_name,
+        password_confirm: signupData.password_confirm, // Include password_confirm field
+        first_name: signupData.first_name,
+        last_name: signupData.last_name,
         user_type: signupData.user_type,
         phone_number: signupData.phone_number,
       };
 
+      console.log('Sending registration data:', userData);
       await register(userData);
       
       // Redirect based on user type - the user will be available from auth context after registration
@@ -227,6 +231,31 @@ const Auth = () => {
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSignup} className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="signup-first-name">First Name</Label>
+                      <Input
+                        id="signup-first-name"
+                        type="text"
+                        placeholder="John"
+                        value={signupData.first_name}
+                        onChange={(e) => setSignupData({ ...signupData, first_name: e.target.value })}
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="signup-last-name">Last Name</Label>
+                      <Input
+                        id="signup-last-name"
+                        type="text"
+                        placeholder="Doe"
+                        value={signupData.last_name}
+                        onChange={(e) => setSignupData({ ...signupData, last_name: e.target.value })}
+                      />
+                    </div>
+                  </div>
+
                   <div>
                     <Label htmlFor="signup-username">Username</Label>
                     <div className="relative mt-1">
@@ -336,8 +365,8 @@ const Auth = () => {
                         id="signup-confirm"
                         type="password"
                         placeholder="••••••••"
-                        value={signupData.confirmPassword}
-                        onChange={(e) => setSignupData({ ...signupData, confirmPassword: e.target.value })}
+                        value={signupData.password_confirm}
+                        onChange={(e) => setSignupData({ ...signupData, password_confirm: e.target.value })}
                         className="pl-10"
                         required
                       />

@@ -5,26 +5,28 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Q
+from rest_framework.decorators import api_view, permission_classes
 from .models import Property, PropertyImage, Favorite, Inquiry
 from .serializers import (
     PropertyListSerializer, PropertyDetailSerializer, 
-    FavoriteSerializer, InquirySerializer
-    # Removed SavedSearchSerializer import since it's now in users app
+    FavoriteSerializer, InquirySerializer, PropertySerializer
 )
-from .filters import PropertyFilter
 
 class PropertyViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_class = PropertyFilter
     search_fields = ['title', 'description', 'address', 'city', 'state']
     ordering_fields = ['price', 'created_at', 'square_feet', 'bedrooms']
     ordering = ['-created_at']
     
     def get_queryset(self):
-        queryset = Property.objects.filter(status='published')
+        queryset = Property.objects.all()
         
-        # Handle featured filter manually if needed
+        # For public endpoints, only show published properties
+        if self.action in ['list', 'retrieve']:
+            queryset = queryset.filter(status='published')
+        
+        # Handle featured filter
         featured_param = self.request.query_params.get('featured')
         if featured_param:
             if featured_param.lower() == 'true':
@@ -32,27 +34,26 @@ class PropertyViewSet(viewsets.ModelViewSet):
             elif featured_param.lower() == 'false':
                 queryset = queryset.filter(featured=False)
         
-        # Sellers can see their own draft/pending properties
-        if self.request.user.is_authenticated:
-            if self.action in ['list', 'retrieve']:
-                # For public endpoints, only show published properties
-                pass
-            else:
-                # For other actions, sellers can see their own properties
-                user_properties = Property.objects.filter(seller=self.request.user)
-                queryset = queryset | user_properties
+        # Sellers can see their own draft/pending properties in non-public actions
+        if self.request.user.is_authenticated and self.action not in ['list', 'retrieve']:
+            user_properties = Property.objects.filter(seller=self.request.user)
+            queryset = queryset | user_properties
         
         return queryset.distinct()
     
     def get_serializer_class(self):
         if self.action == 'list':
             return PropertyListSerializer
+        elif self.action == 'create':
+            return PropertySerializer  # Use PropertySerializer for creation
+        elif self.action in ['update', 'partial_update']:
+            return PropertySerializer  # Use PropertySerializer for updates
         return PropertyDetailSerializer
     
     def perform_create(self, serializer):
         serializer.save(seller=self.request.user)
     
-    @action(detail=True, methods=['post'])
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
     def favorite(self, request, pk=None):
         property = self.get_object()
         favorite, created = Favorite.objects.get_or_create(
@@ -66,19 +67,19 @@ class PropertyViewSet(viewsets.ModelViewSet):
             favorite.delete()
             return Response({'status': 'removed from favorites'}, status=status.HTTP_200_OK)
     
-    @action(detail=False, methods=['get'])
+    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
     def my_favorites(self, request):
         favorites = Favorite.objects.filter(user=request.user)
         serializer = FavoriteSerializer(favorites, many=True)
         return Response(serializer.data)
     
-    @action(detail=False, methods=['get'])
+    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
     def my_properties(self, request):
         properties = Property.objects.filter(seller=request.user)
-        serializer = self.get_serializer(properties, many=True)
+        serializer = PropertySerializer(properties, many=True)
         return Response(serializer.data)
     
-    @action(detail=True, methods=['post'])
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
     def inquire(self, request, pk=None):
         property = self.get_object()
         serializer = InquirySerializer(data=request.data)
@@ -102,13 +103,74 @@ class InquiryViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
-# REMOVED: SavedSearchViewSet since it's now in users app
-# class SavedSearchViewSet(viewsets.ModelViewSet):
-#     permission_classes = [IsAuthenticated]
-#     serializer_class = SavedSearchSerializer
-#     
-#     def get_queryset(self):
-#         return SavedSearch.objects.filter(user=self.request.user)
-#     
-#     def perform_create(self, serializer):
-#         serializer.save(user=self.request.user)
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def my_properties(request):
+    """Get properties created by the current user"""
+    properties = Property.objects.filter(seller=request.user)
+    serializer = PropertySerializer(properties, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def my_favorites(request):
+    """Get user's favorite properties"""
+    favorites = Favorite.objects.filter(user=request.user).select_related('property')
+    serializer = FavoriteSerializer(favorites, many=True)
+    return Response(serializer.data)
+
+# Simple property creation endpoint for testing
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_property_simple(request):
+    """Simple property creation endpoint"""
+    try:
+        # Create property without images first
+        property_data = {
+            'title': request.data.get('title'),
+            'description': request.data.get('description'),
+            'property_type': request.data.get('property_type'),
+            'status': request.data.get('status', 'draft'),
+            'address': request.data.get('address'),
+            'city': request.data.get('city'),
+            'state': request.data.get('state'),
+            'zip_code': request.data.get('zip_code'),
+            'price': request.data.get('price'),
+            'price_unit': request.data.get('price_unit', 'total'),
+            'bedrooms': request.data.get('bedrooms'),
+            'bathrooms': request.data.get('bathrooms'),
+            'square_feet': request.data.get('square_feet'),
+            'lot_size': request.data.get('lot_size'),
+            'year_built': request.data.get('year_built'),
+            'has_garage': request.data.get('has_garage', False),
+            'has_pool': request.data.get('has_pool', False),
+            'has_garden': request.data.get('has_garden', False),
+            'has_fireplace': request.data.get('has_fireplace', False),
+            'has_central_air': request.data.get('has_central_air', False),
+            'featured': request.data.get('featured', False),
+        }
+        
+        # Remove None values
+        property_data = {k: v for k, v in property_data.items() if v is not None}
+        
+        serializer = PropertySerializer(data=property_data)
+        if serializer.is_valid():
+            property = serializer.save(seller=request.user)
+            
+            # Handle image uploads if any
+            images = request.FILES.getlist('images')
+            for i, image_file in enumerate(images):
+                PropertyImage.objects.create(
+                    property=property,
+                    image=image_file,
+                    caption=request.data.get(f'image_captions[{i}]', ''),
+                    is_primary=request.data.get(f'image_is_primary[{i}]', 'false').lower() == 'true',
+                    order=i
+                )
+            
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
