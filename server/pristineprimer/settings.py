@@ -23,6 +23,7 @@ ALLOWED_HOSTS = [
     "pristineprimier.co.ke",
     "www.pristineprimier.com",
     'api.pristineprimier.com',
+    "main.d35ciakzcz3l11.amplifyapp.com",
 ]
 
 # ---------------------------
@@ -172,6 +173,7 @@ CSRF_TRUSTED_ORIGINS = [
     "https://www.pristineprimier.com",
     "https://pristineprimier.com",
     "https://api.pristineprimier.com",
+    "https://main.d35ciakzcz3l11.amplifyapp.com",
 ]
 
 SESSION_COOKIE_SAMESITE = 'None'
