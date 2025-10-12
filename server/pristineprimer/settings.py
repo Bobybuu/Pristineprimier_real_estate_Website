@@ -22,6 +22,7 @@ ALLOWED_HOSTS = [
     "18.217.243.193",
     "pristineprimier.co.ke",
     "www.pristineprimier.com",
+    'api.pristineprimier.com',
 ]
 
 # ---------------------------
