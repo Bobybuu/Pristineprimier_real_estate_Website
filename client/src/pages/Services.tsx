@@ -24,7 +24,7 @@ const Services = () => {
             {/* Services Overview */}
             <section className="bg-secondary py-12">
               <div className="container mx-auto px-4 text-center">
-                <h1 className="mb-6">Our Services</h1>
+                <h1 className="mb-6 font-medium">Our Services</h1>
                 <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                   Comprehensive property services to enhance and maintain your real estate investments
                 </p>
@@ -43,9 +43,9 @@ const Services = () => {
                     >
                       <CardContent className="p-8">
                         <div className="text-5xl mb-4">{service.icon}</div>
-                        <h2 className="text-2xl font-semibold mb-3">{service.title}</h2>
+                        <h2 className="text-2xl font-medium mb-3">{service.title}</h2>
                         <p className="text-muted-foreground mb-4">{service.description}</p>
-                        <Button variant="teal" size="sm">
+                        <Button className="bg-[#f77f77] hover:bg-[#f77f77]/90 text-white" size="sm">
                           Learn More & Request Service
                         </Button>
                       </CardContent>
@@ -77,13 +77,13 @@ const Services = () => {
                 <div className="max-w-4xl mx-auto">
                   <div className="text-center mb-12">
                     <div className="text-6xl mb-4">{selectedServiceData?.icon}</div>
-                    <h1 className="mb-4">{selectedServiceData?.title}</h1>
+                    <h1 className="mb-4 font-medium">{selectedServiceData?.title}</h1>
                     <p className="text-muted-foreground text-lg">{selectedServiceData?.details}</p>
                   </div>
 
                   {/* Service Features */}
                   <div className="bg-secondary rounded-lg p-8 mb-12">
-                    <h2 className="text-2xl font-semibold mb-6">What's Included</h2>
+                    <h2 className="text-2xl font-medium mb-6">What's Included</h2>
                     <ul className="space-y-3">
                       <li className="flex items-start gap-2">
                         <div className="w-2 h-2 rounded-full bg-teal mt-2"></div>
@@ -111,7 +111,7 @@ const Services = () => {
                   {/* Contact Form */}
                   <Card className="shadow-elegant">
                     <CardContent className="p-8">
-                      <h2 className="text-2xl font-semibold mb-6">Request This Service</h2>
+                      <h2 className="text-2xl font-medium mb-6">Request This Service</h2>
                       <ContactForm formType="management" />
                     </CardContent>
                   </Card>
