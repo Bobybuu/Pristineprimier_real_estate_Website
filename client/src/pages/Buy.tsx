@@ -361,7 +361,7 @@ const Buy = () => {
                           onClick={() => setShowMap(!showMap)}
                         >
                           <Map className="h-4 w-4 mr-2" />
-                          {showMap ? 'Hide Map' : 'Show Nairobi Map'}
+                          {showMap ? 'Hide Map' : 'Show  Map'}
                         </Button>
                       </div>
                     )}
