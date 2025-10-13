@@ -203,7 +203,7 @@ CSRF_COOKIE_DOMAIN = '.pristineprimier.com'
 # ---------------------------
 # AWS SES CONFIGURATION
 # ---------------------------
-
+"""
 # Option 1: Using django-ses (Recommended - better AWS integration)
 EMAIL_BACKEND = 'django_ses.SESBackend'
 
@@ -229,7 +229,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv('AWS_SES_SMTP_USERNAME')
 EMAIL_HOST_PASSWORD = os.getenv('AWS_SES_SMTP_PASSWORD')
-"""
+DEFAULT_FROM_EMAIL = 'PristinePrimier Real Estate <newsletter@pristineprimier.com>'
 
 # Development override
 if DEBUG:
