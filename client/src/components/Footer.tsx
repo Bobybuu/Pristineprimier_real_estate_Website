@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, Phone, MessageCircle, Music, Youtube, Instagram, Send } from 'lucide-react';
+import { Mail, Phone, MessageCircle, Music, Youtube, Instagram, Send, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
@@ -216,6 +216,20 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-black/20 mt-6 pt-4 text-center text-xs text-black/60">
           <p>&copy; {new Date().getFullYear()} PristinePrimier Real Estate. All rights reserved.</p>
+          
+          {/* Implimenta Link */}
+          <div className="mt-2">
+            <a 
+              href="https://www.implimenta.tech/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-pink-500 hover:text-pink-600 transition-colors font-medium"
+            >
+              <span>❤️</span>
+              Made by Implimenta
+            </a>
+          </div>
+
           <div className="flex justify-center gap-4 mt-1">
             <Link to="/privacy" className="hover:text-black/80 transition-base">
               Privacy Policy
