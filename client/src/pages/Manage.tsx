@@ -215,7 +215,7 @@ const Manage = () => {
             </p>
             <Button className="bg-[#1f1e1d] hover:bg-[#1f1e1d]/90 text-white">
               <Link to="/services">
-                View All Services <ArrowRight className="ml-2 h-5 w-5" />
+                View All Services
               </Link>
             </Button>
           </div>
