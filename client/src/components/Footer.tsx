@@ -124,7 +124,7 @@ const Footer = () => {
           {/* Social Media Links */}
           <div className="flex space-x-4">
             <a 
-              href="https://www.facebook.com/profile.php?id=61578142085551" 
+              href="https://web.facebook.com/people/PristinePrimer-Real-Estate/61578142085551/" 
               target="_blank" 
               rel="noopener noreferrer"
               aria-label="Facebook" 
@@ -135,7 +135,7 @@ const Footer = () => {
               </svg>
             </a>
             <a 
-            href="https://www.instagram.com/pristineprimer.re?igsh=ZmFna3p4d2RuZXF4" 
+            href="https://www.instagram.com/pristineprimier.re?igsh=ZmFna3p4d2RuZXF4" 
             target="_blank" 
             rel="noopener noreferrer"
             aria-label="Instagram" 
@@ -146,7 +146,7 @@ const Footer = () => {
             </svg>
           </a>
             <a 
-              href="https://x.com/PristinePrimer?t=uwzZe-a7N6zVTlqW3R5FTQ&s=09" 
+              href="https://x.com/PristinePrimier?t=rtYfB5-tSYumWfICk6vKfA&s=09" 
               target="_blank" 
               rel="noopener noreferrer"
               aria-label="Twitter" 
@@ -157,7 +157,7 @@ const Footer = () => {
               </svg>
             </a>
             <a 
-              href="https://youtube.com/@pristineprimerre?si=ch4ipezfZwAOaK1z" 
+              href="https://youtube.com/@pristineprimierre?si=5tWPIODLQIQj_rzG" 
               target="_blank" 
               rel="noopener noreferrer"
               aria-label="YouTube" 
@@ -168,7 +168,7 @@ const Footer = () => {
               </svg>
             </a>
             <a 
-              href="https://www.tiktok.com/@pristineprimer.re?_t=ZM-8zkSaPFTYBU&_r=1" 
+              href="https://www.tiktok.com/@pristineprimer.re?_t=ZM-90NhiAPtt8d&_r=1"
               target="_blank" 
               rel="noopener noreferrer"
               aria-label="TikTok" 
