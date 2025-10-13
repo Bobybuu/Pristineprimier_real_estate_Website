@@ -11,6 +11,7 @@ import { mockTestimonials } from '@/lib/mockData';
 import { PropertyFilters } from '@/types/property';
 import heroImage from '@/assets/hero-home.jpg';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import PWAInstallPrompt from '@/components/PWAInstallPrompt'; // Add this import
 
 const Index = (): JSX.Element => {
   const { featuredProperties, loading, error } = useFeaturedProperties();
@@ -198,6 +199,9 @@ const Index = (): JSX.Element => {
       </main>
 
       <Footer />
+
+      {/* PWA Install Prompt Popup */}
+      <PWAInstallPrompt />
 
       {/* Floating WhatsApp Button */}
       <a

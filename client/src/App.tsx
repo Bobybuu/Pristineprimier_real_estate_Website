@@ -17,6 +17,7 @@ import Dashboard from "@/pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import Profile from "@/pages/Profile";
 import CreateProperty from "@/pages/CreateProperty";
+import PWAInstallPrompt from "@/components/PWAInstallPrompt"; // Add this import
 
 const queryClient = new QueryClient();
 
@@ -104,6 +105,9 @@ const App = () => (
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+          
+          {/* PWA Install Prompt - Appears on all pages */}
+          <PWAInstallPrompt />
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
