@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, Home as HomeIcon, DollarSign, Building2, Star, Key } from 'lucide-react';
-import { FaWhatsapp } from 'react-icons/fa'; // Add this import
+import { FaWhatsapp } from 'react-icons/fa';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SearchBar from '@/components/SearchBar';
@@ -29,7 +29,7 @@ const Index = (): JSX.Element => {
       <Header />
 
       <main>
-             {/* Hero Section */}
+        {/* Hero Section */}
         <section className="relative h-[600px] md:h-[700px] flex items-center justify-center overflow-hidden">
           <div className="absolute inset-0">
             <img src={heroImage} alt="Luxury real estate" className="w-full h-full object-cover" />
@@ -41,7 +41,7 @@ const Index = (): JSX.Element => {
               Your Trusted Real Estate Partner in Kenya
             </h1>
             <p className="text-white/90 text-lg md:text-xl mb-8 max-w-2xl mx-auto animate-fade-in">
-              Buy, Sell, or Manage Apartments, Homes and Land  with Ease.
+              Buy, Sell, or Manage Apartments, Homes and Land with Ease.
             </p>
 
             <div className="flex justify-center animate-fade-in">
@@ -50,20 +50,27 @@ const Index = (): JSX.Element => {
           </div>
         </section>
 
-
-          
-        {/* CTA Section */}
-        <section className="py-16 gradient-hero text-primary-foreground">
+        {/* CTA Section - Reduced height for mobile */}
+        <section className="py-8 md:py-16 gradient-hero text-primary-foreground">
           <div className="container mx-auto px-4 text-center">
-            <h2 className="mb-4">Ready to Find Your Perfect Home?</h2>
-            <p className="text-lg mb-8 max-w-2xl mx-auto text-primary-foreground/90">
+            <h2 className="mb-3 md:mb-4 text-xl md:text-3xl">Ready to Find Your Perfect Home?</h2>
+            <p className="text-sm md:text-lg mb-4 md:mb-8 max-w-2xl mx-auto text-primary-foreground/90">
               Join thousands of satisfied clients who found their dream properties with us
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild variant="gold" size="xl">
+            <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center">
+              <Button 
+                asChild 
+                size="lg" 
+                className="bg-[#f77f77] hover:bg-[#f77f77]/90 text-white border border-[#f77f77]"
+              >
                 <Link to="/buy">Browse Properties</Link>
               </Button>
-              <Button asChild variant="outline" size="xl" className="bg-transparent border-2 border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary">
+              <Button 
+                asChild 
+                variant="outline" 
+                size="lg" 
+                className="bg-transparent border-2 border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary"
+              >
                 <Link to="/auth">Get Started</Link>
               </Button>
             </div>
@@ -147,50 +154,47 @@ const Index = (): JSX.Element => {
               </p>
             </div>
 
-            
-          {loading ? (
-            <div className="flex justify-center items-center py-12">
-              <LoadingSpinner size="lg" />
-            </div>
-          ) : error ? (
-            <div className="text-center py-12">
-              <p className="text-destructive mb-4">Failed to load featured properties</p>
-              <Button onClick={() => window.location.reload()}>
-                Try Again
-              </Button>
-            </div>
-          ) : (
-            <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                {featuredProperties && featuredProperties.length > 0 ? (
-                  featuredProperties.map((property) => (
-                    <PropertyCard key={property.id} property={property} />
-                  ))
-                ) : (
-                  <div className="col-span-full text-center py-12">
-                    <p className="text-muted-foreground text-lg">
-                      No featured properties available at the moment.
-                    </p>
-                    <p className="text-sm text-muted-foreground mt-2">
-                      Check back soon for new listings!
-                    </p>
-                  </div>
-                )}
+            {loading ? (
+              <div className="flex justify-center items-center py-12">
+                <LoadingSpinner size="lg" />
               </div>
-
-              <div className="text-center">
-                <Button asChild variant="outline" size="lg">
-                  <Link to="/buy">
-                    View All Properties <ArrowRight className="ml-2 h-5 w-5" />
-                  </Link>
+            ) : error ? (
+              <div className="text-center py-12">
+                <p className="text-destructive mb-4">Failed to load featured properties</p>
+                <Button onClick={() => window.location.reload()}>
+                  Try Again
                 </Button>
               </div>
-            </>
-          )}
+            ) : (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                  {featuredProperties && featuredProperties.length > 0 ? (
+                    featuredProperties.map((property) => (
+                      <PropertyCard key={property.id} property={property} />
+                    ))
+                  ) : (
+                    <div className="col-span-full text-center py-12">
+                      <p className="text-muted-foreground text-lg">
+                        No featured properties available at the moment.
+                      </p>
+                      <p className="text-sm text-muted-foreground mt-2">
+                        Check back soon for new listings!
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="text-center">
+                  <Button asChild variant="outline" size="lg">
+                    <Link to="/buy">
+                      View All Properties <ArrowRight className="ml-2 h-5 w-5" />
+                    </Link>
+                  </Button>
+                </div>
+              </>
+            )}
           </div>
         </section>
-
-      
       </main>
 
       <Footer />
