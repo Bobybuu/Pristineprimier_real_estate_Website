@@ -1,50 +1,92 @@
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from django.utils import timezone
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.shortcuts import get_object_or_404
+from django.contrib.auth.decorators import login_required
 
-from .models import NewsletterSubscriber, PopupDismissal
-from .serializers import NewsletterSubscriptionSerializer, PopupDismissalSerializer
+from .models import NewsletterSubscriber, PopupDismissal, EmailTemplate, NewsletterCampaign, EmailLog
+from .serializers import (
+    NewsletterSubscriptionSerializer, 
+    PopupDismissalSerializer,
+    NewsletterUnsubscribeSerializer,
+    EmailTemplateSerializer,
+    NewsletterCampaignSerializer,
+    EmailLogSerializer,
+    SendTestEmailSerializer,
+    NewsletterSubscriberSerializer
+)
+
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def subscribe_newsletter(request):
-    """Subscribe to newsletter"""
+    """Subscribe to newsletter with SES integration"""
     serializer = NewsletterSubscriptionSerializer(data=request.data)
     
     if serializer.is_valid():
-        email = serializer.validated_data['email']
-        
-        # Check if email exists but is inactive (resubscribe)
-        existing_subscriber = NewsletterSubscriber.objects.filter(email=email).first()
-        
-        if existing_subscriber:
-            existing_subscriber.is_active = True
-            existing_subscriber.unsubscribed_at = None
-            if request.user.is_authenticated:
-                existing_subscriber.user = request.user
-            existing_subscriber.save()
-        else:
-            # Create new subscriber
-            subscriber = NewsletterSubscriber(
-                email=email,
-                user=request.user if request.user.is_authenticated else None
-            )
-            subscriber.save()
+        subscriber = serializer.save()
         
         return Response({
             'success': True,
-            'message': 'Successfully subscribed to our newsletter!'
+            'message': 'Successfully subscribed to our newsletter! Welcome email sent.',
+            'data': NewsletterSubscriberSerializer(subscriber).data
         }, status=status.HTTP_201_CREATED)
     
     return Response({
         'success': False,
         'errors': serializer.errors
     }, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def unsubscribe_newsletter(request):
+    """Unsubscribe from newsletter using token or email"""
+    serializer = NewsletterUnsubscribeSerializer(data=request.data)
+    
+    if serializer.is_valid():
+        subscriber = serializer.validated_data['subscriber']
+        subscriber.unsubscribe()
+        
+        return Response({
+            'success': True,
+            'message': 'Successfully unsubscribed from our newsletter.'
+        })
+    
+    return Response({
+        'success': False,
+        'errors': serializer.errors
+    }, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def unsubscribe_by_token(request, token):
+    """Unsubscribe using token from email link"""
+    try:
+        subscriber = NewsletterSubscriber.objects.get(token=token, is_active=True)
+        subscriber.unsubscribe()
+        
+        return Response({
+            'success': True,
+            'message': 'You have been successfully unsubscribed from our newsletter.',
+            'email': subscriber.email
+        })
+    except NewsletterSubscriber.DoesNotExist:
+        return Response({
+            'success': False,
+            'message': 'Invalid unsubscribe link or already unsubscribed.'
+        }, status=status.HTTP_404_NOT_FOUND)
+
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -69,6 +111,7 @@ def dismiss_popup(request):
         'success': True,
         'message': 'Popup dismissed for 3 days'
     })
+
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
@@ -98,36 +141,118 @@ def check_popup_status(request):
         'dismissed_at': dismissal.dismissed_at.isoformat() if dismissal else None
     })
 
-@api_view(['POST'])
-@permission_classes([AllowAny])
-def unsubscribe_newsletter(request):
-    """Unsubscribe from newsletter"""
-    email = request.data.get('email')
-    
-    if not email:
-        return Response({
-            'success': False,
-            'message': 'Email is required'
-        }, status=status.HTTP_400_BAD_REQUEST)
-    
-    try:
-        subscriber = NewsletterSubscriber.objects.get(email=email, is_active=True)
-        subscriber.is_active = False
-        subscriber.unsubscribed_at = timezone.now()
-        subscriber.save()
-        
-        return Response({
-            'success': True,
-            'message': 'Successfully unsubscribed from newsletter'
-        })
-    
-    except NewsletterSubscriber.DoesNotExist:
-        return Response({
-            'success': False,
-            'message': 'Email not found in our subscription list'
-        }, status=status.HTTP_404_NOT_FOUND)
 
-# Django view for backward compatibility
+# Admin Views
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def email_templates_list(request):
+    """List all email templates"""
+    templates = EmailTemplate.objects.all()
+    serializer = EmailTemplateSerializer(templates, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET', 'PUT'])
+@permission_classes([IsAdminUser])
+def email_template_detail(request, template_type):
+    """Get or update specific email template"""
+    try:
+        template = EmailTemplate.objects.get(template_type=template_type)
+    except EmailTemplate.DoesNotExist:
+        return Response({'error': 'Template not found'}, status=404)
+    
+    if request.method == 'GET':
+        serializer = EmailTemplateSerializer(template)
+        return Response(serializer.data)
+    
+    elif request.method == 'PUT':
+        serializer = EmailTemplateSerializer(template, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+
+
+@api_view(['POST'])
+@permission_classes([IsAdminUser])
+def send_test_email(request):
+    """Send test email to preview templates"""
+    serializer = SendTestEmailSerializer(data=request.data)
+    
+    if serializer.is_valid():
+        template_type = serializer.validated_data['template_type']
+        test_email = serializer.validated_data['test_email']
+        
+        try:
+            # Create temporary subscriber for testing
+            test_subscriber = NewsletterSubscriber(
+                email=test_email,
+                name="Test User"
+            )
+            
+            # Send using the template system
+            success = test_subscriber.send_template_email(template_type)
+            
+            if success:
+                return Response({
+                    'success': True,
+                    'message': f'Test email sent to {test_email}'
+                })
+            else:
+                return Response({
+                    'success': False,
+                    'message': 'Failed to send test email'
+                }, status=500)
+                
+        except Exception as e:
+            return Response({
+                'success': False,
+                'message': f'Error sending test email: {str(e)}'
+            }, status=500)
+    
+    return Response({
+        'success': False,
+        'errors': serializer.errors
+    }, status=400)
+
+
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def subscriber_list(request):
+    """List all subscribers (admin only)"""
+    subscribers = NewsletterSubscriber.objects.all().order_by('-subscribed_at')
+    serializer = NewsletterSubscriberSerializer(subscribers, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def subscriber_stats(request):
+    """Get newsletter statistics"""
+    total_subscribers = NewsletterSubscriber.objects.count()
+    active_subscribers = NewsletterSubscriber.objects.filter(is_active=True).count()
+    recent_subscribers = NewsletterSubscriber.objects.filter(
+        subscribed_at__gte=timezone.now() - timezone.timedelta(days=30)
+    ).count()
+    
+    return Response({
+        'total_subscribers': total_subscribers,
+        'active_subscribers': active_subscribers,
+        'recent_subscribers': recent_subscribers,
+        'inactive_subscribers': total_subscribers - active_subscribers
+    })
+
+
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def email_logs(request):
+    """Get email sending logs"""
+    logs = EmailLog.objects.all().order_by('-sent_at')[:100]  # Last 100 emails
+    serializer = EmailLogSerializer(logs, many=True)
+    return Response(serializer.data)
+
+
+# Legacy endpoint for backward compatibility
 @csrf_exempt
 def newsletter_subscribe_legacy(request):
     """Legacy endpoint for form submissions"""
@@ -142,21 +267,26 @@ def newsletter_subscribe_legacy(request):
                     'message': 'Email is required'
                 }, status=400)
             
-            # Use the same logic as API view
-            existing_subscriber = NewsletterSubscriber.objects.filter(email=email).first()
+            # Use serializer for consistency
+            serializer = NewsletterSubscriptionSerializer(data={'email': email})
             
-            if existing_subscriber:
-                existing_subscriber.is_active = True
-                existing_subscriber.unsubscribed_at = None
-                existing_subscriber.save()
+            if serializer.is_valid():
+                subscriber = serializer.save()
+                return JsonResponse({
+                    'success': True,
+                    'message': 'Successfully subscribed to newsletter!'
+                })
             else:
-                NewsletterSubscriber.objects.create(email=email)
+                return JsonResponse({
+                    'success': False,
+                    'message': serializer.errors.get('email', ['Invalid email'])[0]
+                }, status=400)
             
+        except json.JSONDecodeError:
             return JsonResponse({
-                'success': True,
-                'message': 'Successfully subscribed to newsletter!'
-            })
-            
+                'success': False,
+                'message': 'Invalid JSON data'
+            }, status=400)
         except Exception as e:
             return JsonResponse({
                 'success': False,
