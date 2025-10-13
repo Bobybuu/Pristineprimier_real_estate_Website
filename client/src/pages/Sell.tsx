@@ -61,15 +61,15 @@ const Sell = () => {
         {/* Hero Section */}
         <section className="gradient-hero text-primary-foreground py-20">
           <div className="container mx-auto px-4 text-center">
-            <h1 className="mb-6">Sell Your House with Confidence</h1>
+            <h1 className="text-3xl font-medium">Sell Your House with Confidence</h1>
             <p className="text-xl mb-8 max-w-2xl mx-auto text-primary-foreground/90">
               Get the best price for your property with our expert team and proven process
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild variant="gold" size="xl">
+              <Button className="bg-[#f77f77] hover:bg-[#f77f77]/90 text-white">
                 <a href="#valuation">Get Free Valuation</a>
               </Button>
-              <Button asChild variant="outline" size="xl" className="bg-transparent border-2 border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary">
+              <Button className="bg-[#1f1e1d] hover:bg-[#1f1e1d]/90 text-white">
                 <Link to="/dashboard/seller">Seller Dashboard</Link>
               </Button>
             </div>
@@ -80,7 +80,7 @@ const Sell = () => {
         <section className="py-16">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
-              <h2 className="mb-4">Why Sell With Us?</h2>
+              <h2 className="mb-4 font-medium">Why Sell With Us?</h2>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                 Experience the difference with our comprehensive selling services
               </p>
@@ -93,7 +93,7 @@ const Sell = () => {
                     <div className="w-16 h-16 bg-teal/10 rounded-full flex items-center justify-center mx-auto mb-4">
                       <benefit.icon className="h-8 w-8 text-teal" />
                     </div>
-                    <h3 className="text-lg font-semibold mb-2">{benefit.title}</h3>
+                    <h3 className="text-lg font-medium mb-2">{benefit.title}</h3>
                     <p className="text-muted-foreground text-sm">{benefit.description}</p>
                   </CardContent>
                 </Card>
@@ -106,7 +106,7 @@ const Sell = () => {
         <section className="py-16 bg-secondary">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
-              <h2 className="mb-4">Our Selling Process</h2>
+              <h2 className="mb-4 font-medium">Our Selling Process</h2>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                 A simple, transparent process from listing to closing
               </p>
@@ -117,7 +117,7 @@ const Sell = () => {
                 <div key={index} className="relative">
                   <div className="bg-card p-6 rounded-lg shadow-md h-full">
                     <div className="text-5xl font-bold text-teal/20 mb-4">{step.number}</div>
-                    <h3 className="text-xl font-semibold mb-3">{step.title}</h3>
+                    <h3 className="text-xl font-medium mb-3">{step.title}</h3>
                     <p className="text-muted-foreground">{step.description}</p>
                   </div>
                   {index < steps.length - 1 && (
@@ -136,7 +136,7 @@ const Sell = () => {
           <div className="container mx-auto px-4">
             <div className="max-w-3xl mx-auto">
               <div className="text-center mb-8">
-                <h2 className="mb-4">Get Your Free Property Valuation</h2>
+                <h2 className="mb-4 font-medium">Get Your Free Property Valuation</h2>
                 <p className="text-muted-foreground text-lg">
                   Provide us with some basic information and receive an instant estimate
                 </p>
@@ -149,7 +149,7 @@ const Sell = () => {
               </Card>
 
               <div className="mt-8 p-6 bg-secondary rounded-lg">
-                <h3 className="font-semibold mb-4">What happens after you submit?</h3>
+                <h3 className="font-medium mb-4">What happens after you submit?</h3>
                 <ul className="space-y-3">
                   <li className="flex items-start gap-2">
                     <CheckCircle className="h-5 w-5 text-teal mt-0.5 flex-shrink-0" />
@@ -178,11 +178,11 @@ const Sell = () => {
         {/* CTA Section */}
         <section className="py-16 bg-accent text-accent-foreground">
           <div className="container mx-auto px-4 text-center">
-            <h2 className="mb-4">Ready to Get Started?</h2>
+            <h2 className="mb-4 font-medium">Ready to Get Started?</h2>
             <p className="text-lg mb-8 max-w-2xl mx-auto text-accent-foreground/90">
               Access your seller dashboard to create listings and track your sales
             </p>
-            <Button asChild variant="gold" size="xl">
+            <Button className="bg-[#1f1e1d] hover:bg-[#1f1e1d]/90 text-white">
               <Link to="/dashboard/seller">Go to Dashboard</Link>
             </Button>
           </div>
