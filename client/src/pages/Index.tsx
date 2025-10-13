@@ -170,36 +170,7 @@ const Index = (): JSX.Element => {
           </div>
         </section>
 
-        {/* Testimonials */}
-        <section className="py-16 bg-secondary">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="mb-4">What Our Clients Say</h2>
-              <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                Don't just take our word for it - hear from our satisfied clients
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {mockTestimonials.map((testimonial) => (
-                <div
-                  key={testimonial.id}
-                  className="bg-card p-6 rounded-lg shadow-md hover:shadow-elegant transition-smooth"
-                >
-                  <div className="flex gap-1 mb-4">
-                    {Array.from({ length: testimonial.rating }).map((_, i) => (
-                      <Star key={i} className="h-5 w-5 fill-gold text-gold" />
-                    ))}
-                  </div>
-                  <p className="text-muted-foreground mb-4">"{testimonial.content}"</p>
-                  <div className="font-semibold">{testimonial.name}</div>
-                  <div className="text-sm text-muted-foreground">{testimonial.role}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
+        
         {/* CTA Section */}
         <section className="py-16 gradient-hero text-primary-foreground">
           <div className="container mx-auto px-4 text-center">
