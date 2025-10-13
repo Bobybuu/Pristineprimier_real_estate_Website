@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, MapPin, DollarSign, Home } from 'lucide-react';
+import { Search, MapPin, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -109,33 +109,27 @@ const SearchBar = ({ onSearch, variant = 'hero' }: SearchBarProps) => {
 
         {/* Price Range */}
         <div className="grid grid-cols-2 gap-2">
-          <div className="relative">
-            <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-3 w-3 text-[#577A26]" />
-            <Input
-              type="number"
-              placeholder="Min Price"
-              value={filters.min_price}
-              onChange={(e) => updateFilter('min_price', e.target.value)}
-              className="pl-8 h-11 text-sm border-[#577A26]/30 focus:border-[#577A26] focus:ring-[#577A26]/20"
-            />
-          </div>
-          <div className="relative">
-            <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-3 w-3 text-[#577A26]" />
-            <Input
-              type="number"
-              placeholder="Max Price"
-              value={filters.max_price}
-              onChange={(e) => updateFilter('max_price', e.target.value)}
-              className="pl-8 h-11 text-sm border-[#577A26]/30 focus:border-[#577A26] focus:ring-[#577A26]/20"
-            />
-          </div>
+          <Input
+            type="number"
+            placeholder="Min Price"
+            value={filters.min_price}
+            onChange={(e) => updateFilter('min_price', e.target.value)}
+            className="h-11 text-sm border-[#577A26]/30 focus:border-[#577A26] focus:ring-[#577A26]/20"
+          />
+          <Input
+            type="number"
+            placeholder="Max Price"
+            value={filters.max_price}
+            onChange={(e) => updateFilter('max_price', e.target.value)}
+            className="h-11 text-sm border-[#577A26]/30 focus:border-[#577A26] focus:ring-[#577A26]/20"
+          />
         </div>
 
-        {/* State */}
+        {/* County (formerly State) */}
         <div>
           <Input
             type="text"
-            placeholder="State"
+            placeholder="County"
             value={filters.state}
             onChange={(e) => updateFilter('state', e.target.value)}
             className="h-11 text-sm border-[#577A26]/30 focus:border-[#577A26] focus:ring-[#577A26]/20"
@@ -145,7 +139,7 @@ const SearchBar = ({ onSearch, variant = 'hero' }: SearchBarProps) => {
         {/* Search Button */}
         <Button
           type="submit"
-          className={`h-11 text-sm font-medium bg-[#577A26] hover:bg-[#577A26]/90 text-white border border-[#577A26] ${
+          className={`h-11 text-sm font-medium bg-[#f77f77] hover:bg-[#f77f77]/90 text-white border border-[#f77f77] ${
             isHero ? 'lg:col-span-3' : ''
           }`}
         >
