@@ -278,7 +278,7 @@ const ContactForm = ({ propertyId, formType = 'inquiry', onSubmit }: ContactForm
       
       {/* Privacy notice */}
       <p className="text-xs text-muted-foreground text-center">
-        By submitting this form, you agree to our privacy policy and consent to be contacted by PristinePrimer Real Estate.
+        By submitting this form, you agree to our privacy policy and consent to be contacted by PristinePrimier Real Estate.
       </p>
     </form>
   );
