@@ -103,8 +103,3 @@ class InquiryAdmin(admin.ModelAdmin):
         }),
     )
 
-# REMOVED: SavedSearch admin registration since it's now in users app
-# @admin.register(SavedSearch)
-# class SavedSearchAdmin(admin.ModelAdmin):
-#     list_display = ['user', 'name', 'is_active', 'created_at']
-#     list_filter = ['is_active', 'created_at']

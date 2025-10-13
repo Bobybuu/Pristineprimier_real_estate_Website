@@ -8,10 +8,13 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/auth/', include('users.urls')),
     path('api/', include('properties.urls')),
-    # path('dashboard/', include('dashboard.urls')),
-    
-    re_path(r'^.*$', TemplateView.as_view(template_name='index.html'), name='react-app'),
 ]
 
+# Media files in development
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# React app routes - exclude admin, api, and media paths
+urlpatterns += [
+    re_path(r'^(?!admin|api|media).*$', TemplateView.as_view(template_name='index.html'), name='react-app'),
+]
