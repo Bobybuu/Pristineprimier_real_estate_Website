@@ -29,7 +29,7 @@ const Index = (): JSX.Element => {
       <Header />
 
       <main>
-        {/* Hero Section */}
+             {/* Hero Section */}
         <section className="relative h-[600px] md:h-[700px] flex items-center justify-center overflow-hidden">
           <div className="absolute inset-0">
             <img src={heroImage} alt="Luxury real estate" className="w-full h-full object-cover" />
@@ -38,10 +38,10 @@ const Index = (): JSX.Element => {
 
           <div className="relative z-10 container mx-auto px-4 text-center">
             <h1 className="text-white mb-6 animate-fade-in">
-              Find Your Dream Home
+              Your Trusted Real Estate Partner in Kenya
             </h1>
             <p className="text-white/90 text-lg md:text-xl mb-8 max-w-2xl mx-auto animate-fade-in">
-              Discover premium properties with PristinePrimier - Your trusted partner in real estate excellence
+              Buy, Sell, or Manage Apartments, Homes and Land  with Ease.
             </p>
 
             <div className="flex justify-center animate-fade-in">
