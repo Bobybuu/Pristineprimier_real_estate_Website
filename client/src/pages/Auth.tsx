@@ -295,7 +295,7 @@ const Auth = () => {
                       <Input
                         id="signup-phone"
                         type="tel"
-                        placeholder="(555) 123-4567"
+                        placeholder="0722123456"
                         value={signupData.phone_number}
                         onChange={(e) => setSignupData({ ...signupData, phone_number: e.target.value })}
                         className="pl-10"
