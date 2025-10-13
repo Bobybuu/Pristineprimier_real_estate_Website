@@ -212,7 +212,7 @@ const ContactForm = ({ propertyId, formType = 'inquiry', onSubmit }: ContactForm
             value={formData.phone}
             onChange={handleChange}
             required
-            placeholder="(555) 123-4567"
+            placeholder=" 0722123456"
             className="mt-1"
           />
         </div>
