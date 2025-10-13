@@ -49,13 +49,18 @@ const PropertyCard = ({ property, viewMode = 'grid' }: PropertyCardProps) => {
 
   // Handle both string and number prices from your Property type
   const formatPrice = (price: string | number): string => {
-    const numericPrice = typeof price === 'string' ? parseFloat(price) : price;
-    return new Intl.NumberFormat('en-KE', {
-      style: 'currency',
-      currency: 'KES',
-      minimumFractionDigits: 0,
-    }).format(numericPrice);
-  };
+  const numericPrice = typeof price === 'string' ? parseFloat(price) : price;
+  
+  // Format with KES but replace the currency symbol
+  const formatted = new Intl.NumberFormat('en-KE', {
+    style: 'currency',
+    currency: 'KES',
+    minimumFractionDigits: 0,
+  }).format(numericPrice);
+  
+  // Replace "KES" with "Ksh"
+  return formatted.replace('KES', 'Ksh');
+};
 
   const getPropertyTypeLabel = (type: Property['property_type']): string => {
     const typeMap: Record<Property['property_type'], string> = {
