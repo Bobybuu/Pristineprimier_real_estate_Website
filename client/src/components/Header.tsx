@@ -1,11 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, User, LogOut } from 'lucide-react';
+import { Menu, X, User, LogOut, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isStandalone, setIsStandalone] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const location = useLocation();
   const { user, logout } = useAuth();
 
@@ -16,6 +18,33 @@ const Header = () => {
     { path: '/rent', label: 'Rent Property' },
     { path: '/services', label: 'Services' },
   ];
+
+  useEffect(() => {
+    // Check if app is already installed
+    setIsStandalone(window.matchMedia('(display-mode: standalone)').matches);
+
+    const handleBeforeInstallPrompt = (e: any) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    
+    if (outcome === 'accepted') {
+      setDeferredPrompt(null);
+    }
+  };
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -78,6 +107,19 @@ const Header = () => {
 
         {/* Auth Buttons - Desktop */}
         <div className="hidden lg:flex items-center gap-3">
+          {/* PWA Install Button */}
+          {!isStandalone && deferredPrompt && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleInstallClick}
+              className="border-[#f77f77] text-[#f77f77] hover:bg-[#f77f77] hover:text-white"
+            >
+              <Download className="h-4 w-4 mr-2" />
+              Install App
+            </Button>
+          )}
+
           {user ? (
             <>
               <span className="text-sm text-white/80">
@@ -140,6 +182,19 @@ const Header = () => {
             
             {/* Mobile Auth Buttons */}
             <div className="flex flex-col gap-2 pt-4 border-t border-white/20">
+              {/* Mobile PWA Install Button */}
+              {!isStandalone && deferredPrompt && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleInstallClick}
+                  className="border-[#f77f77] text-[#f77f77] hover:bg-[#f77f77] hover:text-white"
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Install App
+                </Button>
+              )}
+
               {user ? (
                 <>
                   <div className="text-sm text-white/80 text-center py-2">
