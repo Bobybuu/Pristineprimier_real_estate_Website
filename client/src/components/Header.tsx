@@ -44,7 +44,7 @@ const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-[#577A26] backdrop-blur supports-[backdrop-filter]:bg-[#577A26] shadow-sm">
+    <header className="sticky top-0 z-50 w-full border-b bg-black backdrop-blur supports-[backdrop-filter]:bg-black/80 shadow-sm">
       <nav className="container mx-auto flex h-16 items-center justify-between px-4">
         {/* Logo with PNG */}
         <Link 
@@ -67,8 +67,8 @@ const Header = () => {
               to={link.path}
               className={`text-sm font-medium transition-base ${
                 isActive(link.path)
-                  ? 'text-black border-b-2 border-black font-semibold'
-                  : 'text-black/80 hover:text-black hover:border-b-2 hover:border-black/50'
+                  ? 'text-white border-b-2 border-white font-semibold'
+                  : 'text-white/80 hover:text-white hover:border-b-2 hover:border-white/50'
               }`}
             >
               {link.label}
@@ -80,10 +80,10 @@ const Header = () => {
         <div className="hidden lg:flex items-center gap-3">
           {user ? (
             <>
-              <span className="text-sm text-black/80">
+              <span className="text-sm text-white/80">
                 Welcome, {getUserDisplayName()}
               </span>
-              <Button asChild variant="outline" size="sm" className="border-black text-black hover:bg-black hover:text-white">
+              <Button asChild variant="outline" size="sm" className="border-white text-white hover:bg-white hover:text-black">
                 <Link to={getDashboardPath()}>
                   <User className="h-4 w-4 mr-2" />
                   Dashboard
@@ -93,7 +93,7 @@ const Header = () => {
                 variant="ghost" 
                 size="sm" 
                 onClick={handleLogout}
-                className="text-black/80 hover:text-black hover:bg-black/10"
+                className="text-white/80 hover:text-white hover:bg-white/10"
               >
                 <LogOut className="h-4 w-4 mr-2" />
                 Logout
@@ -101,10 +101,10 @@ const Header = () => {
             </>
           ) : (
             <>
-              <Button asChild variant="ghost" size="sm" className="text-black/80 hover:text-black hover:bg-black/10">
+              <Button asChild variant="ghost" size="sm" className="text-white/80 hover:text-white hover:bg-white/10">
                 <Link to="/auth">Login</Link>
               </Button>
-              <Button asChild variant="outline" size="sm" className="border-black text-black hover:bg-black hover:text-white">
+              <Button asChild variant="outline" size="sm" className="border-white text-white hover:bg-white hover:text-black">
                 <Link to="/auth">Sign Up</Link>
               </Button>
             </>
@@ -113,7 +113,7 @@ const Header = () => {
 
         {/* Mobile Menu Button */}
         <button
-          className="lg:hidden text-black"
+          className="lg:hidden text-white"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           aria-label="Toggle menu"
         >
@@ -123,14 +123,14 @@ const Header = () => {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden border-t border-black/20 bg-[#577A26] animate-fade-in">
+        <div className="lg:hidden border-t border-white/20 bg-black animate-fade-in">
           <div className="container mx-auto px-4 py-4 flex flex-col gap-4">
             {navLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
                 className={`text-sm font-medium py-2 transition-base ${
-                  isActive(link.path) ? 'text-black font-semibold border-l-2 border-black pl-2' : 'text-black/80 hover:text-black'
+                  isActive(link.path) ? 'text-white font-semibold border-l-2 border-white pl-2' : 'text-white/80 hover:text-white'
                 }`}
                 onClick={() => setMobileMenuOpen(false)}
               >
@@ -139,13 +139,13 @@ const Header = () => {
             ))}
             
             {/* Mobile Auth Buttons */}
-            <div className="flex flex-col gap-2 pt-4 border-t border-black/20">
+            <div className="flex flex-col gap-2 pt-4 border-t border-white/20">
               {user ? (
                 <>
-                  <div className="text-sm text-black/80 text-center py-2">
+                  <div className="text-sm text-white/80 text-center py-2">
                     Welcome, {getUserDisplayName()}
                   </div>
-                  <Button asChild variant="outline" size="sm" className="border-black text-black hover:bg-black hover:text-white">
+                  <Button asChild variant="outline" size="sm" className="border-white text-white hover:bg-white hover:text-black">
                     <Link to={getDashboardPath()} onClick={() => setMobileMenuOpen(false)}>
                       <User className="h-4 w-4 mr-2" />
                       Dashboard
@@ -155,7 +155,7 @@ const Header = () => {
                     variant="ghost" 
                     size="sm" 
                     onClick={handleLogout}
-                    className="text-black/80 hover:text-black hover:bg-black/10"
+                    className="text-white/80 hover:text-white hover:bg-white/10"
                   >
                     <LogOut className="h-4 w-4 mr-2" />
                     Logout
@@ -163,12 +163,12 @@ const Header = () => {
                 </>
               ) : (
                 <>
-                  <Button asChild variant="ghost" size="sm" className="text-black/80 hover:text-black hover:bg-black/10">
+                  <Button asChild variant="ghost" size="sm" className="text-white/80 hover:text-white hover:bg-white/10">
                     <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
                       Login
                     </Link>
                   </Button>
-                  <Button asChild variant="outline" size="sm" className="border-black text-black hover:bg-black hover:text-white">
+                  <Button asChild variant="outline" size="sm" className="border-white text-white hover:bg-white hover:text-black">
                     <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
                       Sign Up
                     </Link>
