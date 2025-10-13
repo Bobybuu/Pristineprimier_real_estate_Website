@@ -50,6 +50,26 @@ const Index = (): JSX.Element => {
           </div>
         </section>
 
+
+          
+        {/* CTA Section */}
+        <section className="py-16 gradient-hero text-primary-foreground">
+          <div className="container mx-auto px-4 text-center">
+            <h2 className="mb-4">Ready to Find Your Perfect Home?</h2>
+            <p className="text-lg mb-8 max-w-2xl mx-auto text-primary-foreground/90">
+              Join thousands of satisfied clients who found their dream properties with us
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button asChild variant="gold" size="xl">
+                <Link to="/buy">Browse Properties</Link>
+              </Button>
+              <Button asChild variant="outline" size="xl" className="bg-transparent border-2 border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary">
+                <Link to="/auth">Get Started</Link>
+              </Button>
+            </div>
+          </div>
+        </section>
+
         {/* Quick Action CTAs */}
         <section className="py-16 bg-secondary">
           <div className="container mx-auto px-4">
@@ -170,24 +190,7 @@ const Index = (): JSX.Element => {
           </div>
         </section>
 
-        
-        {/* CTA Section */}
-        <section className="py-16 gradient-hero text-primary-foreground">
-          <div className="container mx-auto px-4 text-center">
-            <h2 className="mb-4">Ready to Find Your Perfect Home?</h2>
-            <p className="text-lg mb-8 max-w-2xl mx-auto text-primary-foreground/90">
-              Join thousands of satisfied clients who found their dream properties with us
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild variant="gold" size="xl">
-                <Link to="/buy">Browse Properties</Link>
-              </Button>
-              <Button asChild variant="outline" size="xl" className="bg-transparent border-2 border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary">
-                <Link to="/auth">Get Started</Link>
-              </Button>
-            </div>
-          </div>
-        </section>
+      
       </main>
 
       <Footer />
