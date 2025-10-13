@@ -85,15 +85,15 @@ const Manage = () => {
         {/* Hero Section */}
         <section className="gradient-hero text-primary-foreground py-20">
           <div className="container mx-auto px-4 text-center">
-            <h1 className="mb-6">Professional Property Management</h1>
+            <h1 className="mb-6 font-medium">Professional Property Management</h1>
             <p className="text-xl mb-8 max-w-2xl mx-auto text-primary-foreground/90">
               Maximize your rental income and minimize your stress with our comprehensive management services
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild variant="gold" size="xl">
+              <Button className="bg-[#f77f77] hover:bg-[#f77f77]/90 text-white">
                 <a href="#request">Request Service</a>
               </Button>
-              <Button asChild variant="outline" size="xl" className="bg-transparent border-2 border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary">
+              <Button className="bg-[#1f1e1d] hover:bg-[#1f1e1d]/90 text-white">
                 <Link to="/services">View All Services</Link>
               </Button>
             </div>
@@ -104,7 +104,7 @@ const Manage = () => {
         <section className="py-16">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
-              <h2 className="mb-4">Our Management Services</h2>
+              <h2 className="mb-4 font-medium">Our Management Services</h2>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                 Everything you need to run your rental property successfully
               </p>
@@ -117,7 +117,7 @@ const Manage = () => {
                     <div className="w-14 h-14 bg-teal/10 rounded-lg flex items-center justify-center mb-4">
                       <service.icon className="h-7 w-7 text-teal" />
                     </div>
-                    <h3 className="text-xl font-semibold mb-2">{service.title}</h3>
+                    <h3 className="text-xl font-medium mb-2">{service.title}</h3>
                     <p className="text-muted-foreground">{service.description}</p>
                   </CardContent>
                 </Card>
@@ -130,7 +130,7 @@ const Manage = () => {
         <section className="py-16 bg-secondary">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
-              <h2 className="mb-4">Management Packages</h2>
+              <h2 className="mb-4 font-medium">Management Packages</h2>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                 Choose the package that fits your needs
               </p>
@@ -148,16 +148,16 @@ const Manage = () => {
                 >
                   {pkg.popular && (
                     <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                      <span className="bg-teal text-teal-foreground px-4 py-1 rounded-full text-sm font-semibold">
+                      <span className="bg-teal text-teal-foreground px-4 py-1 rounded-full text-sm font-medium">
                         Most Popular
                       </span>
                     </div>
                   )}
                   <CardContent className="p-8">
-                    <h3 className="text-2xl font-bold mb-2">{pkg.name}</h3>
+                    <h3 className="text-2xl font-medium mb-2">{pkg.name}</h3>
                     <p className="text-muted-foreground mb-6">{pkg.description}</p>
                     <div className="mb-6">
-                      <span className="text-4xl font-bold text-primary">{pkg.price}</span>
+                      <span className="text-4xl font-medium text-primary">{pkg.price}</span>
                       {pkg.price !== 'Custom' && (
                         <span className="text-muted-foreground"> of monthly rent</span>
                       )}
@@ -171,10 +171,11 @@ const Manage = () => {
                       ))}
                     </ul>
                     <Button
-                      asChild
-                      variant={pkg.popular ? 'teal' : 'outline'}
-                      size="lg"
-                      className="w-full"
+                      className={`w-full ${
+                        pkg.popular 
+                          ? 'bg-[#f77f77] hover:bg-[#f77f77]/90 text-white' 
+                          : 'bg-[#1f1e1d] hover:bg-[#1f1e1d]/90 text-white'
+                      }`}
                     >
                       <a href="#request">Get Started</a>
                     </Button>
@@ -190,7 +191,7 @@ const Manage = () => {
           <div className="container mx-auto px-4">
             <div className="max-w-3xl mx-auto">
               <div className="text-center mb-8">
-                <h2 className="mb-4">Request Management Services</h2>
+                <h2 className="mb-4 font-medium">Request Management Services</h2>
                 <p className="text-muted-foreground text-lg">
                   Tell us about your property and we'll create a custom management plan
                 </p>
@@ -208,11 +209,11 @@ const Manage = () => {
         {/* Services Link */}
         <section className="py-16 bg-accent text-accent-foreground">
           <div className="container mx-auto px-4 text-center">
-            <h2 className="mb-4">Need Additional Services?</h2>
+            <h2 className="mb-4 font-medium">Need Additional Services?</h2>
             <p className="text-lg mb-8 max-w-2xl mx-auto text-accent-foreground/90">
               Explore our renovation, smart home integration, and other property enhancement services
             </p>
-            <Button asChild variant="gold" size="xl">
+            <Button className="bg-[#1f1e1d] hover:bg-[#1f1e1d]/90 text-white">
               <Link to="/services">
                 View All Services <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
