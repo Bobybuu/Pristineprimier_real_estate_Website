@@ -11,10 +11,13 @@ import { PropertyFilters } from '@/types/property';
 import heroImage from '@/assets/hero-home.jpg';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import PWAInstallPrompt from '@/components/PWAInstallPrompt'; 
+import { useNewsletterPopup } from '@/hooks/useNewsletterPopup';
+import NewsletterPopup from '@/components/NewsletterPopup';
+
 
 const Index = (): JSX.Element => {
   const { featuredProperties, loading, error } = useFeaturedProperties();
-
+  const { showPopup, setShowPopup } = useNewsletterPopup();
   const handleSearch = (filters: PropertyFilters): void => {
     const queryParams = new URLSearchParams();
     Object.entries(filters).forEach(([key, value]) => {
@@ -198,6 +201,10 @@ const Index = (): JSX.Element => {
       </main>
 
       <Footer />
+      {/* Newsletter Popup */}
+      {showPopup && (
+        <NewsletterPopup onClose={() => setShowPopup(false)} />
+      )}
 
       {/* PWA Install Prompt Popup */}
       <PWAInstallPrompt />

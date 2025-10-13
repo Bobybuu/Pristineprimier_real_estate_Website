@@ -9,23 +9,59 @@ const Footer = () => {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleNewsletterSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+ //  update the handleNewsletterSubmit function:
+const handleNewsletterSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  
+  // Basic email validation before making the request
+  if (!email || !email.includes('@')) {
+    toast.error('Please enter a valid email address');
+    return;
+  }
 
-    try {
-      // TODO: Replace with actual API call - POST /api/newsletter/subscribe
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      
-      toast.success('Successfully subscribed to newsletter!');
-      setEmail('');
-    } catch (error) {
-      toast.error('Failed to subscribe. Please try again.');
-      console.error('Newsletter subscription error:', error);
-    } finally {
-      setLoading(false);
+  setLoading(true);
+
+  try {
+    const response = await fetch('/api/newsletter/subscribe/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      // Handle HTTP errors (4xx, 5xx)
+      throw new Error(data.message || `HTTP error! status: ${response.status}`);
     }
-  };
+
+    if (data.success) {
+      toast.success(data.message);
+      setEmail('');
+      
+      // Optional: Track successful subscription
+      console.log('Newsletter subscription successful for:', email);
+    } else {
+      // Handle API-level errors (success: false)
+      const errorMessage = data.errors?.email?.[0] || data.message || 'Subscription failed';
+      toast.error(errorMessage);
+    }
+  } catch (error) {
+    console.error('Newsletter subscription error:', error);
+    
+    // More specific error messages
+    if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
+      toast.error('Network error. Please check your connection and try again.');
+    } else {
+      toast.error(error instanceof Error ? error.message : 'Failed to subscribe. Please try again.');
+    }
+  } finally {
+    setLoading(false);
+  }
+};
+  
 
   return (
     <footer className="border-t border-gray-200 bg-gray-50 py-16 mt-auto">
