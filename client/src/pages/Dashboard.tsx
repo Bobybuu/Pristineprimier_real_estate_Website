@@ -42,10 +42,10 @@ interface Property {
   views_count: number;
 }
 
-// API service functions
+// API service functions with CORRECT endpoints
 const dashboardAPI = {
   getOverview: async (): Promise<DashboardStats> => {
-    const response = await fetch('/api/users/dashboard/overview/', {
+    const response = await fetch('/api/auth/dashboard/overview/', {
       credentials: 'include',
     });
     if (!response.ok) throw new Error('Failed to fetch dashboard data');
@@ -53,7 +53,7 @@ const dashboardAPI = {
   },
 
   getQuickStats: async () => {
-    const response = await fetch('/api/users/dashboard/quick-stats/', {
+    const response = await fetch('/api/auth/dashboard/quick-stats/', {
       credentials: 'include',
     });
     if (!response.ok) throw new Error('Failed to fetch quick stats');
@@ -75,6 +75,30 @@ const dashboardAPI = {
     if (!response.ok) throw new Error('Failed to fetch favorites');
     return response.json();
   },
+
+  getProfile: async () => {
+    const response = await fetch('/api/auth/dashboard/profile/', {
+      credentials: 'include',
+    });
+    if (!response.ok) throw new Error('Failed to fetch profile');
+    return response.json();
+  },
+
+  getActivities: async () => {
+    const response = await fetch('/api/auth/dashboard/activities/', {
+      credentials: 'include',
+    });
+    if (!response.ok) throw new Error('Failed to fetch activities');
+    return response.json();
+  },
+
+  getSavedSearches: async () => {
+    const response = await fetch('/api/auth/dashboard/saved-searches/', {
+      credentials: 'include',
+    });
+    if (!response.ok) throw new Error('Failed to fetch saved searches');
+    return response.json();
+  }
 };
 
 // Loading skeleton component
@@ -361,6 +385,8 @@ const SellerDashboard = () => {
 const BuyerDashboard = () => {
   const { user } = useAuth();
   const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [favorites, setFavorites] = useState<any[]>([]);
+  const [savedSearches, setSavedSearches] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -370,8 +396,14 @@ const BuyerDashboard = () => {
   const loadDashboardData = async () => {
     try {
       setLoading(true);
-      const overviewData = await dashboardAPI.getOverview();
+      const [overviewData, favoritesData, searchesData] = await Promise.all([
+        dashboardAPI.getOverview(),
+        dashboardAPI.getMyFavorites().catch(() => []), // Gracefully handle errors
+        dashboardAPI.getSavedSearches().catch(() => []), // Gracefully handle errors
+      ]);
       setStats(overviewData);
+      setFavorites(favoritesData || []);
+      setSavedSearches(searchesData || []);
     } catch (error) {
       toast.error('Failed to load dashboard data');
       console.error('Dashboard error:', error);
@@ -404,7 +436,7 @@ const BuyerDashboard = () => {
                 <Heart className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{stats?.total_favorites || 0}</div>
+                <div className="text-2xl font-bold">{stats?.total_favorites || favorites.length || 0}</div>
                 <p className="text-xs text-muted-foreground">Properties saved</p>
               </CardContent>
             </Card>
@@ -415,7 +447,7 @@ const BuyerDashboard = () => {
                 <Search className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{stats?.total_saved_searches || 0}</div>
+                <div className="text-2xl font-bold">{stats?.total_saved_searches || savedSearches.length || 0}</div>
                 <p className="text-xs text-muted-foreground">Active searches</p>
               </CardContent>
             </Card>
@@ -448,6 +480,30 @@ const BuyerDashboard = () => {
             </Button>
           </div>
 
+          {/* Saved Properties */}
+          {favorites.length > 0 && (
+            <Card className="mb-6">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Heart className="h-5 w-5" />
+                  Recently Saved Properties
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {favorites.slice(0, 4).map((favorite) => (
+                    <div key={favorite.id} className="border rounded-lg p-4">
+                      <h4 className="font-medium">{favorite.property?.title || 'Property'}</h4>
+                      <p className="text-sm text-muted-foreground">
+                        ${favorite.property?.price?.toLocaleString() || 'N/A'}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Recent Activity */}
           <Card>
             <CardHeader>
@@ -459,13 +515,13 @@ const BuyerDashboard = () => {
                   {stats.recent_activities.slice(0, 5).map((activity) => (
                     <div key={activity.id} className="flex items-center justify-between py-2 border-b last:border-b-0">
                       <div>
-                        <p className="font-medium capitalize">{activity.activity_type.replace('_', ' ')}</p>
+                        <p className="font-medium capitalize">{activity.activity_type?.replace('_', ' ') || 'Activity'}</p>
                         {activity.property_title && (
                           <p className="text-sm text-muted-foreground">{activity.property_title}</p>
                         )}
                       </div>
                       <p className="text-sm text-muted-foreground">
-                        {new Date(activity.created_at).toLocaleDateString()}
+                        {activity.created_at ? new Date(activity.created_at).toLocaleDateString() : 'Recently'}
                       </p>
                     </div>
                   ))}
@@ -487,9 +543,35 @@ const BuyerDashboard = () => {
   );
 };
 
-// Admin Dashboard (you can enhance this similarly)
+// Admin Dashboard with Real Data
 const AdminDashboard = () => {
-  // ... similar structure with real API calls
+  const { user } = useAuth();
+  const [adminStats, setAdminStats] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadAdminData();
+  }, []);
+
+  const loadAdminData = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/auth/admin/dashboard/stats/', {
+        credentials: 'include',
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setAdminStats(data);
+      }
+    } catch (error) {
+      console.error('Admin dashboard error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) return <DashboardSkeleton />;
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
@@ -498,15 +580,92 @@ const AdminDashboard = () => {
           <div className="mb-8">
             <h1 className="text-3xl font-bold mb-2">Admin Dashboard</h1>
             <p className="text-muted-foreground">
-              Welcome back! Manage all listings and users.
+              Welcome back, {user?.first_name || user?.username}! Manage all listings and users.
             </p>
           </div>
-          {/* Add real admin API integrations here */}
-          <Card>
-            <CardContent className="p-8 text-center">
-              <p className="text-muted-foreground">Admin dashboard with real data coming soon...</p>
-            </CardContent>
-          </Card>
+
+          {/* Admin Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+                <Users className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{adminStats?.total_users || 0}</div>
+                <p className="text-xs text-muted-foreground">Registered users</p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium">Total Properties</CardTitle>
+                <Building2 className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{adminStats?.total_properties || 0}</div>
+                <p className="text-xs text-muted-foreground">Listed properties</p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium">Pending Applications</CardTitle>
+                <FileText className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{adminStats?.pending_applications || 0}</div>
+                <p className="text-xs text-muted-foreground">Seller applications</p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium">Total Inquiries</CardTitle>
+                <Users className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{adminStats?.total_inquiries || 0}</div>
+                <p className="text-xs text-muted-foreground">Customer inquiries</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Quick Actions for Admin */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <Button variant="outline" className="w-full" asChild>
+              <Link to="/admin/users">
+                <Users className="h-4 w-4 mr-2" />
+                Manage Users
+              </Link>
+            </Button>
+            <Button variant="outline" className="w-full" asChild>
+              <Link to="/admin/properties">
+                <Building2 className="h-4 w-4 mr-2" />
+                Manage Properties
+              </Link>
+            </Button>
+            <Button variant="outline" className="w-full" asChild>
+              <Link to="/admin/applications">
+                <FileText className="h-4 w-4 mr-2" />
+                View Applications
+              </Link>
+            </Button>
+            <Button variant="outline" className="w-full" asChild>
+              <Link to="/admin/inquiries">
+                <Users className="h-4 w-4 mr-2" />
+                Manage Inquiries
+              </Link>
+            </Button>
+          </div>
+
+          {!adminStats && (
+            <Card>
+              <CardContent className="p-8 text-center">
+                <p className="text-muted-foreground">Admin dashboard data will appear here once available.</p>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </main>
       <Footer />
