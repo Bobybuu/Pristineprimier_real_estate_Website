@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Home, Mail, Lock, User, Phone, Building2, UserCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -15,8 +15,9 @@ type UserRole = 'buyer' | 'seller' | 'agent' | 'admin' | 'management_client';
 
 const Auth = () => {
   const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState('login');
   const navigate = useNavigate();
-  const { login, register, user } = useAuth();
+  const { login, register, user, isAuthenticated } = useAuth();
 
   const [loginData, setLoginData] = useState({ 
     username: '', 
@@ -30,42 +31,51 @@ const Auth = () => {
     last_name: '',
     phone_number: '',
     password: '',
-    password_confirm: '', // Changed from confirmPassword to password_confirm
+    password_confirm: '',
     user_type: 'buyer' as UserRole,
   });
 
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      redirectUser(user.user_type);
+    }
+  }, [isAuthenticated, user, navigate]);
+
+  const redirectUser = (userType: string) => {
+    switch (userType) {
+      case 'seller':
+      case 'agent':
+        navigate('/dashboard/seller');
+        break;
+      case 'admin':
+        navigate('/dashboard/admin');
+        break;
+      case 'management_client':
+        navigate('/dashboard');
+        break;
+      default:
+        navigate('/dashboard');
+    }
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!loginData.username || !loginData.password) {
+      toast.error('Please fill in all fields');
+      return;
+    }
+
     setLoading(true);
 
     try {
       await login(loginData);
-      
-      // Use the actual user from auth context for redirection
-      if (user) {
-        switch (user.user_type) {
-          case 'seller':
-            navigate('/dashboard/seller');
-            break;
-          case 'agent':
-            navigate('/dashboard/seller'); // For now, agents go to seller dashboard
-            break;
-          case 'admin':
-            navigate('/dashboard/admin');
-            break;
-          case 'management_client':
-            navigate('/dashboard');
-            break;
-          default:
-            navigate('/dashboard');
-        }
-      } else {
-        // Fallback if user is not immediately available
-        navigate('/dashboard');
-      }
-    } catch (error) {
+      // The redirect will happen automatically via the useEffect above
+      toast.success('Login successful!');
+    } catch (error: any) {
       console.error('Login error:', error);
-      // Error is already handled in the auth context
+      // Error message is already shown by the auth context
     } finally {
       setLoading(false);
     }
@@ -73,6 +83,12 @@ const Auth = () => {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validate required fields
+    if (!signupData.username || !signupData.email || !signupData.password || !signupData.first_name) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
 
     // Validate passwords match
     if (signupData.password !== signupData.password_confirm) {
@@ -86,6 +102,13 @@ const Auth = () => {
       return;
     }
 
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(signupData.email)) {
+      toast.error('Please enter a valid email address');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -93,9 +116,9 @@ const Auth = () => {
         username: signupData.username,
         email: signupData.email,
         password: signupData.password,
-        password_confirm: signupData.password_confirm, // Include password_confirm field
+        password_confirm: signupData.password_confirm,
         first_name: signupData.first_name,
-        last_name: signupData.last_name,
+        last_name: signupData.last_name || '', // Ensure last_name is always a string
         user_type: signupData.user_type,
         phone_number: signupData.phone_number,
       };
@@ -103,26 +126,11 @@ const Auth = () => {
       console.log('Sending registration data:', userData);
       await register(userData);
       
-      // Redirect based on user type - the user will be available from auth context after registration
-      switch (signupData.user_type) {
-        case 'seller':
-          navigate('/dashboard/seller');
-          break;
-        case 'agent':
-          navigate('/dashboard/seller'); // For now, agents go to seller dashboard
-          break;
-        case 'admin':
-          navigate('/dashboard/admin');
-          break;
-        case 'management_client':
-          navigate('/dashboard');
-          break;
-        default:
-          navigate('/dashboard');
-      }
-    } catch (error) {
+      // The redirect will happen automatically via the useEffect above
+      toast.success('Registration successful!');
+    } catch (error: any) {
       console.error('Signup error:', error);
-      // Error is already handled in the auth context
+      // Error message is already shown by the auth context
     } finally {
       setLoading(false);
     }
@@ -132,7 +140,7 @@ const Auth = () => {
     // Map frontend roles to backend user types
     const userTypeMap: { [key: string]: UserRole } = {
       'user': 'buyer',
-      'agent': 'seller' // For now, agents are sellers until we add agent-specific registration
+      'agent': 'seller' 
     };
     
     const userType = userTypeMap[role] || 'buyer';
@@ -148,6 +156,25 @@ const Auth = () => {
     return signupData.user_type === 'buyer' ? 'user' : 'agent';
   };
 
+  // Reset form when switching tabs
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    if (value === 'login') {
+      setLoginData({ username: '', password: '' });
+    } else {
+      setSignupData({
+        username: '',
+        email: '',
+        first_name: '',
+        last_name: '',
+        phone_number: '',
+        password: '',
+        password_confirm: '',
+        user_type: 'buyer',
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-secondary p-4">
       <div className="w-full max-w-md">
@@ -161,7 +188,7 @@ const Auth = () => {
         </div>
 
         {/* Auth Tabs */}
-        <Tabs defaultValue="login" className="w-full">
+        <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="login">Login</TabsTrigger>
             <TabsTrigger value="signup">Sign Up</TabsTrigger>
@@ -188,6 +215,7 @@ const Auth = () => {
                         onChange={(e) => setLoginData({ ...loginData, username: e.target.value })}
                         className="pl-10"
                         required
+                        disabled={loading}
                       />
                     </div>
                   </div>
@@ -204,12 +232,26 @@ const Auth = () => {
                         onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
                         className="pl-10"
                         required
+                        disabled={loading}
                       />
                     </div>
                   </div>
 
-                  <Button type="submit" variant="hero" size="lg" className="w-full" disabled={loading}>
-                    {loading ? 'Logging in...' : 'Login'}
+                  <Button 
+                    type="submit" 
+                    variant="hero" 
+                    size="lg" 
+                    className="w-full" 
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                        Logging in...
+                      </>
+                    ) : (
+                      'Login'
+                    )}
                   </Button>
 
                   <p className="text-center text-sm text-muted-foreground">
@@ -233,7 +275,7 @@ const Auth = () => {
                 <form onSubmit={handleSignup} className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="signup-first-name">First Name</Label>
+                      <Label htmlFor="signup-first-name">First Name *</Label>
                       <Input
                         id="signup-first-name"
                         type="text"
@@ -241,6 +283,7 @@ const Auth = () => {
                         value={signupData.first_name}
                         onChange={(e) => setSignupData({ ...signupData, first_name: e.target.value })}
                         required
+                        disabled={loading}
                       />
                     </div>
 
@@ -252,12 +295,13 @@ const Auth = () => {
                         placeholder="Doe"
                         value={signupData.last_name}
                         onChange={(e) => setSignupData({ ...signupData, last_name: e.target.value })}
+                        disabled={loading}
                       />
                     </div>
                   </div>
 
                   <div>
-                    <Label htmlFor="signup-username">Username</Label>
+                    <Label htmlFor="signup-username">Username *</Label>
                     <div className="relative mt-1">
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
@@ -268,12 +312,13 @@ const Auth = () => {
                         onChange={(e) => setSignupData({ ...signupData, username: e.target.value })}
                         className="pl-10"
                         required
+                        disabled={loading}
                       />
                     </div>
                   </div>
 
                   <div>
-                    <Label htmlFor="signup-email">Email</Label>
+                    <Label htmlFor="signup-email">Email *</Label>
                     <div className="relative mt-1">
                       <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
@@ -284,12 +329,13 @@ const Auth = () => {
                         onChange={(e) => setSignupData({ ...signupData, email: e.target.value })}
                         className="pl-10"
                         required
+                        disabled={loading}
                       />
                     </div>
                   </div>
 
                   <div>
-                    <Label htmlFor="signup-phone">Phone</Label>
+                    <Label htmlFor="signup-phone">Phone Number</Label>
                     <div className="relative mt-1">
                       <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
@@ -299,7 +345,7 @@ const Auth = () => {
                         value={signupData.phone_number}
                         onChange={(e) => setSignupData({ ...signupData, phone_number: e.target.value })}
                         className="pl-10"
-                        required
+                        disabled={loading}
                       />
                     </div>
                   </div>
@@ -311,12 +357,13 @@ const Auth = () => {
                       value={getRadioGroupValue()}
                       onValueChange={handleRoleChange}
                       className="grid grid-cols-2 gap-4 mt-2"
+                      disabled={loading}
                     >
                       <div>
                         <RadioGroupItem value="user" id="role-user" className="peer sr-only" />
                         <Label
                           htmlFor="role-user"
-                          className="flex flex-col items-center justify-between rounded-lg border-2 border-muted bg-background p-4 hover:bg-secondary cursor-pointer peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5"
+                          className="flex flex-col items-center justify-between rounded-lg border-2 border-muted bg-background p-4 hover:bg-secondary cursor-pointer peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed"
                         >
                           <UserCircle className="mb-2 h-6 w-6" />
                           <div className="text-center">
@@ -329,7 +376,7 @@ const Auth = () => {
                         <RadioGroupItem value="agent" id="role-agent" className="peer sr-only" />
                         <Label
                           htmlFor="role-agent"
-                          className="flex flex-col items-center justify-between rounded-lg border-2 border-muted bg-background p-4 hover:bg-secondary cursor-pointer peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5"
+                          className="flex flex-col items-center justify-between rounded-lg border-2 border-muted bg-background p-4 hover:bg-secondary cursor-pointer peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed"
                         >
                           <Building2 className="mb-2 h-6 w-6" />
                           <div className="text-center">
@@ -342,7 +389,7 @@ const Auth = () => {
                   </div>
 
                   <div>
-                    <Label htmlFor="signup-password">Password</Label>
+                    <Label htmlFor="signup-password">Password *</Label>
                     <div className="relative mt-1">
                       <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
@@ -353,12 +400,15 @@ const Auth = () => {
                         onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
                         className="pl-10"
                         required
+                        disabled={loading}
+                        minLength={8}
                       />
                     </div>
+                    <p className="text-xs text-muted-foreground mt-1">Must be at least 8 characters long</p>
                   </div>
 
                   <div>
-                    <Label htmlFor="signup-confirm">Confirm Password</Label>
+                    <Label htmlFor="signup-confirm">Confirm Password *</Label>
                     <div className="relative mt-1">
                       <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
@@ -369,12 +419,26 @@ const Auth = () => {
                         onChange={(e) => setSignupData({ ...signupData, password_confirm: e.target.value })}
                         className="pl-10"
                         required
+                        disabled={loading}
                       />
                     </div>
                   </div>
 
-                  <Button type="submit" variant="hero" size="lg" className="w-full" disabled={loading}>
-                    {loading ? 'Creating account...' : 'Create Account'}
+                  <Button 
+                    type="submit" 
+                    variant="hero" 
+                    size="lg" 
+                    className="w-full" 
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                        Creating account...
+                      </>
+                    ) : (
+                      'Create Account'
+                    )}
                   </Button>
 
                   <p className="text-xs text-center text-muted-foreground">

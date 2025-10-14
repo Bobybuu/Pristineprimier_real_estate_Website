@@ -11,7 +11,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
-
+import { dashboardAPI, propertiesAPI } from '@/services/api';
+import { Property as ApiProperty } from '@/types/property'; 
 // Types for API responses
 interface DashboardStats {
   total_favorites: number;
@@ -31,75 +32,20 @@ interface DashboardStats {
   application_details: any;
 }
 
-interface Property {
-  id: string;
-  title: string;
-  price: number;
-  status: string;
-  property_type: string;
-  created_at: string;
-  city: string;
-  views_count: number;
-}
+// Use the imported Property type from your types file
+type Property = ApiProperty;
 
-// API service functions with CORRECT endpoints
-const dashboardAPI = {
-  getOverview: async (): Promise<DashboardStats> => {
-    const response = await fetch('/api/auth/dashboard/overview/', {
-      credentials: 'include',
-    });
-    if (!response.ok) throw new Error('Failed to fetch dashboard data');
-    return response.json();
-  },
-
-  getQuickStats: async () => {
-    const response = await fetch('/api/auth/dashboard/quick-stats/', {
-      credentials: 'include',
-    });
-    if (!response.ok) throw new Error('Failed to fetch quick stats');
-    return response.json();
-  },
-
-  getMyProperties: async (): Promise<Property[]> => {
-    const response = await fetch('/api/properties/my_properties/', {
-      credentials: 'include',
-    });
-    if (!response.ok) throw new Error('Failed to fetch properties');
-    return response.json();
-  },
-
-  getMyFavorites: async () => {
-    const response = await fetch('/api/properties/my_favorites/', {
-      credentials: 'include',
-    });
-    if (!response.ok) throw new Error('Failed to fetch favorites');
-    return response.json();
-  },
-
-  getProfile: async () => {
-    const response = await fetch('/api/auth/dashboard/profile/', {
-      credentials: 'include',
-    });
-    if (!response.ok) throw new Error('Failed to fetch profile');
-    return response.json();
-  },
-
-  getActivities: async () => {
-    const response = await fetch('/api/auth/dashboard/activities/', {
-      credentials: 'include',
-    });
-    if (!response.ok) throw new Error('Failed to fetch activities');
-    return response.json();
-  },
-
-  getSavedSearches: async () => {
-    const response = await fetch('/api/auth/dashboard/saved-searches/', {
-      credentials: 'include',
-    });
-    if (!response.ok) throw new Error('Failed to fetch saved searches');
-    return response.json();
-  }
-};
+// Alternative: If you want to keep your local interface, make sure it matches:
+// interface Property {
+//   id: number; // Changed from string to number to match the imported type
+//   title: string;
+//   price: number;
+//   status: string;
+//   property_type: string;
+//   created_at: string;
+//   city: string;
+//   views_count: number;
+// }
 
 // Loading skeleton component
 const DashboardSkeleton = () => (
@@ -163,7 +109,7 @@ const SellerDashboard = () => {
       setLoading(true);
       const [overviewData, myProperties] = await Promise.all([
         dashboardAPI.getOverview(),
-        dashboardAPI.getMyProperties(),
+        propertiesAPI.getMyProperties(),
       ]);
       setStats(overviewData);
       setProperties(myProperties);
@@ -398,7 +344,7 @@ const BuyerDashboard = () => {
       setLoading(true);
       const [overviewData, favoritesData, searchesData] = await Promise.all([
         dashboardAPI.getOverview(),
-        dashboardAPI.getMyFavorites().catch(() => []), // Gracefully handle errors
+        propertiesAPI.getFavorites().catch(() => []), // Gracefully handle errors
         dashboardAPI.getSavedSearches().catch(() => []), // Gracefully handle errors
       ]);
       setStats(overviewData);

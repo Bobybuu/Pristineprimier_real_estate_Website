@@ -35,11 +35,12 @@ interface User {
 interface AuthContextType {
   user: User | null;
   loading: boolean;
+  isAuthenticated: boolean; // Add this line
   login: (credentials: { username: string; password: string }) => Promise<void>;
   register: (userData: any) => Promise<void>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
-  refreshUser: () => Promise<User | null>; // Fix: Change return type to Promise<User | null>
+  refreshUser: () => Promise<User | null>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -59,6 +60,9 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // Add isAuthenticated as a computed property
+  const isAuthenticated = !!user;
 
   const checkAuth = async () => {
     try {
@@ -198,6 +202,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const value: AuthContextType = {
     user,
     loading,
+    isAuthenticated, // Add this to the context value
     login,
     register,
     logout,
