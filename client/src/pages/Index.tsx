@@ -40,7 +40,7 @@ const Index = (): JSX.Element => {
           </div>
 
           <div className="relative z-10 container mx-auto px-4 text-center">
-            <h1 className="text-white mb-6 animate-fade-in">
+            <h1 className="text-white mb-6 font-extralight tracking-tighter leading-none text-4xl md:text-5xl lg:text-6xl">
               Your Trusted Real Estate Partner in Kenya
             </h1>
             <p className="text-white/90 text-lg md:text-xl mb-8 max-w-2xl mx-auto animate-fade-in">
