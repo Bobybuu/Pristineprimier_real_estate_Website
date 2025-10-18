@@ -6,6 +6,7 @@ from django.utils.html import strip_tags
 import uuid
 import logging
 
+
 logger = logging.getLogger(__name__)
 User = get_user_model()
 

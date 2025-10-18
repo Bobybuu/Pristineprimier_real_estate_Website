@@ -44,6 +44,11 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'django_ses',  # AWS SES integration
+    
+    'health_check',
+    'health_check.db',
+    'health_check.cache',  # Cache health check
+    'health_check.storage',  # Storage health check
 
     # Local apps
     'users',
@@ -100,6 +105,17 @@ DATABASES = {
         'USER': 'postgres',
         'PASSWORD': 'Chrispine9909',
         'HOST': 'pristineprimer.czq8ae44qs94.us-east-2.rds.amazonaws.com',
+        'PORT': '5432',
+    }
+}
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'pristineprimer',
+        'USER': 'postgres',
+        'PASSWORD': 'Chrispine9909',
+        'HOST': 'localhost',
         'PORT': '5432',
     }
 }
@@ -224,7 +240,7 @@ NEWSLETTER_FROM_EMAIL = 'newsletter@pristineprimier.com'
 # Fallback: SMTP configuration (if you prefer SMTP instead of django-ses)
 """
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'email-smtp.us-east-1.amazonaws.com'
+EMAIL_HOST = 'email-smtp.us-east-2.amazonaws.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv('AWS_SES_SMTP_USERNAME')

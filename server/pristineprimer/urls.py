@@ -9,6 +9,7 @@ urlpatterns = [
     path('api/auth/', include('users.urls')),
     path('api/', include('properties.urls')),
     path('api/newsletter/', include('newsletter.urls')),
+    path('health/', include('health_check.urls')),
 ]
 
 # Media files in development
