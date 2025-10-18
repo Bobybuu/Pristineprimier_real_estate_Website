@@ -36,7 +36,7 @@ const Contact = (): JSX.Element => {
       description: 'For detailed inquiries and documentation',
       details: 'info@pristineprimer.com',
       action: 'Send Email',
-      link: 'mailto:info@pristineprimer.com',
+      link: 'mailto:info@pristineprimier.com',
       color: 'text-blue-600'
     },
     {
