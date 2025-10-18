@@ -20,14 +20,14 @@ export const useNewsletterPopup = () => {
         if (data.show_popup) {
           setTimeout(() => {
             setShowPopup(true);
-          }, 3000); // Show after 3 seconds
+          }, 30000000); // Show after 3 seconds
         }
       } catch (error) {
         console.error('Error checking popup status:', error);
         // Default to showing popup if there's an error
         setTimeout(() => {
           setShowPopup(true);
-        }, 3000);
+        }, 30000000); // Show after 3 seconds
       }
     };
 
