@@ -297,16 +297,13 @@ LOGGING = {
         },
     },
     'handlers': {
-        #'file': {
-           # 'level': 'INFO',
-           # 'class': 'logging.FileHandler',
-           # 'filename': BASE_DIR / 'django.log',
-           # 'formatter': 'verbose',
-        #},
-        'console': {
+        'file': {
             'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs', 'django.log'),
+        },
+        'console': {
             'class': 'logging.StreamHandler',
-            'formatter': 'simple',
         },
     },
     'loggers': {
