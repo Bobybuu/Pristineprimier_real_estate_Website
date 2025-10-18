@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, MapPin, Home } from 'lucide-react';
+import { Search, Home, DollarSign } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -13,13 +13,9 @@ interface SearchBarProps {
 const SearchBar = ({ onSearch, variant = 'hero' }: SearchBarProps) => {
   const [filters, setFilters] = useState({
     search: '',
-    city: '',
-    state: '',
     min_price: '',
     max_price: '',
     property_type: '',
-    min_bedrooms: '',
-    min_bathrooms: '',
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -28,13 +24,9 @@ const SearchBar = ({ onSearch, variant = 'hero' }: SearchBarProps) => {
     // Convert frontend filters to backend PropertyFilters format
     const backendFilters: PropertyFilters = {
       search: filters.search,
-      city: filters.city,
-      state: filters.state,
       min_price: filters.min_price,
       max_price: filters.max_price,
       property_type: filters.property_type === 'all' ? '' : filters.property_type,
-      min_bedrooms: filters.min_bedrooms === 'any' ? '' : filters.min_bedrooms,
-      min_bathrooms: filters.min_bathrooms === 'any' ? '' : filters.min_bathrooms,
     };
 
     // Clean up empty values
@@ -60,31 +52,22 @@ const SearchBar = ({ onSearch, variant = 'hero' }: SearchBarProps) => {
           : 'bg-white border border-[#577A26]/20 rounded-lg p-3'
       }`}
     >
-      <div className={`grid gap-3 ${isHero ? 'md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-4'}`}>
-        {/* Search/Location */}
-        <div className={isHero ? 'lg:col-span-2' : ''}>
+      <div className={`grid gap-3 ${
+        isHero 
+          ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4' 
+          : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
+      }`}>
+        
+        {/* Main Search Input */}
+        <div className={isHero ? 'md:col-span-1 lg:col-span-2' : 'lg:col-span-2'}>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#577A26]" />
             <Input
               type="text"
-              placeholder="Search by title, description, or location..."
+              placeholder="Search properties..."
               value={filters.search}
               onChange={(e) => updateFilter('search', e.target.value)}
-              className="pl-10 h-11 text-sm border-[#577A26]/30 focus:border-[#577A26] focus:ring-[#577A26]/20"
-            />
-          </div>
-        </div>
-
-        {/* City */}
-        <div>
-          <div className="relative">
-            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#577A26]" />
-            <Input
-              type="text"
-              placeholder="City"
-              value={filters.city}
-              onChange={(e) => updateFilter('city', e.target.value)}
-              className="pl-10 h-11 text-sm border-[#577A26]/30 focus:border-[#577A26] focus:ring-[#577A26]/20"
+              className="pl-10 h-11 text-sm border-[#577A26]/30 focus:border-[#577A26] focus:ring-[#577A26]/20 w-full"
             />
           </div>
         </div>
@@ -94,7 +77,7 @@ const SearchBar = ({ onSearch, variant = 'hero' }: SearchBarProps) => {
           <Select value={filters.property_type} onValueChange={(value) => updateFilter('property_type', value)}>
             <SelectTrigger className="h-11 text-sm border-[#577A26]/30 focus:border-[#577A26] focus:ring-[#577A26]/20">
               <Home className="h-4 w-4 mr-2 text-[#577A26]" />
-              <SelectValue placeholder="Property Type" />
+              <SelectValue placeholder="All Types" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Types</SelectItem>
@@ -109,42 +92,35 @@ const SearchBar = ({ onSearch, variant = 'hero' }: SearchBarProps) => {
 
         {/* Price Range */}
         <div className="grid grid-cols-2 gap-2">
-          <Input
-            type="number"
-            placeholder="Min Price"
-            value={filters.min_price}
-            onChange={(e) => updateFilter('min_price', e.target.value)}
-            className="h-11 text-sm border-[#577A26]/30 focus:border-[#577A26] focus:ring-[#577A26]/20"
-          />
-          <Input
-            type="number"
-            placeholder="Max Price"
-            value={filters.max_price}
-            onChange={(e) => updateFilter('max_price', e.target.value)}
-            className="h-11 text-sm border-[#577A26]/30 focus:border-[#577A26] focus:ring-[#577A26]/20"
-          />
-        </div>
-
-        {/* County (formerly State) */}
-        <div>
-          <Input
-            type="text"
-            placeholder="County"
-            value={filters.state}
-            onChange={(e) => updateFilter('state', e.target.value)}
-            className="h-11 text-sm border-[#577A26]/30 focus:border-[#577A26] focus:ring-[#577A26]/20"
-          />
+          <div className="relative">
+            <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-3 w-3 text-[#577A26]" />
+            <Input
+              type="number"
+              placeholder="Min Price"
+              value={filters.min_price}
+              onChange={(e) => updateFilter('min_price', e.target.value)}
+              className="pl-8 h-11 text-sm border-[#577A26]/30 focus:border-[#577A26] focus:ring-[#577A26]/20"
+            />
+          </div>
+          <div className="relative">
+            <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-3 w-3 text-[#577A26]" />
+            <Input
+              type="number"
+              placeholder="Max Price"
+              value={filters.max_price}
+              onChange={(e) => updateFilter('max_price', e.target.value)}
+              className="pl-8 h-11 text-sm border-[#577A26]/30 focus:border-[#577A26] focus:ring-[#577A26]/20"
+            />
+          </div>
         </div>
 
         {/* Search Button */}
         <Button
           type="submit"
-          className={`h-11 text-sm font-medium bg-[#f77f77] hover:bg-[#f77f77]/90 text-white border border-[#f77f77] ${
-            isHero ? 'lg:col-span-3' : ''
-          }`}
+          className="h-11 text-sm font-medium bg-[#f77f77] hover:bg-[#f77f77]/90 text-white border border-[#f77f77]"
         >
           <Search className="h-4 w-4 mr-2" />
-          Search Properties
+          Search
         </Button>
       </div>
     </form>
