@@ -266,7 +266,7 @@ const Buy = () => {
         {/* Page Header with Search */}
         <section className="bg-secondary py-12">
           <div className="container mx-auto px-4">
-            <h1 className="text-center mb-6">Buy a House</h1>
+            <h1 className="text-center mb-6">Properties</h1>
             <p className="text-center text-muted-foreground text-lg mb-8 max-w-2xl mx-auto">
               Discover your perfect property in Nairobi and beyond
             </p>
