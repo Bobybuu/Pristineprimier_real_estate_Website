@@ -20,6 +20,7 @@ import CreateProperty from "@/pages/CreateProperty";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt"; // Add this import
 import About from "./pages/About";
 import Contact from "./pages/Contact";
+import Faq from '@/pages/Faq';
 
 const queryClient = new QueryClient();
 
@@ -41,6 +42,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/faq" element={<Faq />} />
             
             {/* Protected Routes */}
             <Route 
