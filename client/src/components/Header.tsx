@@ -11,9 +11,9 @@ const Header = () => {
 
   const navLinks = [
     { path: '/buy', label: 'Buy a House' },
+    { path: '/rent', label: 'Rent Property' },
     { path: '/sell', label: 'Sell a House' },
     { path: '/manage', label: 'Manage Property' },
-    { path: '/rent', label: 'Rent Property' },
     { path: '/services', label: 'Services' },
     { path: '/about', label: 'About Us' },
     
