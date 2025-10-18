@@ -752,9 +752,6 @@ const PropertyDetails = () => {
                     <Button variant="outline" className="w-full">
                       📞 Call Agent
                     </Button>
-                    <Button variant="outline" className="w-full">
-                      📅 Schedule Tour
-                    </Button>
                   </div>
                 </div>
               </div>
