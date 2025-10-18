@@ -93,7 +93,7 @@ const About = (): JSX.Element => {
               <div>
                 <h2 className="mb-6 font-medium">Our Story</h2>
                 <p className="text-muted-foreground text-lg mb-6">
-                  Founded in 2015, PristinePrimer Real Estate began with a simple vision: to transform 
+                  Founded in 2015, PristinePrimier Real Estate began with a simple vision: to transform 
                   the real estate experience in Kenya by providing trustworthy, professional, and 
                   comprehensive property services.
                 </p>
