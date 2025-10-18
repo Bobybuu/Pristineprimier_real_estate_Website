@@ -10,7 +10,7 @@ const Header = () => {
   const { user, logout } = useAuth();
 
   const navLinks = [
-    { path: '/buy', label: 'Buy a House' },
+    { path: '/buy', label: 'Properties' },
     { path: '/rent', label: 'Rent Property' },
     { path: '/sell', label: 'Sell a House' },
     { path: '/manage', label: 'Manage Property' },
