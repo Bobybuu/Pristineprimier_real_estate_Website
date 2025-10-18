@@ -21,6 +21,7 @@ import PWAInstallPrompt from "@/components/PWAInstallPrompt"; // Add this import
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Faq from '@/pages/Faq';
+import Terms from "./pages/Terms";
 
 const queryClient = new QueryClient();
 
@@ -43,7 +44,10 @@ const App = () => (
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/faq" element={<Faq />} />
-            
+            <Route path="/terms" element={<Terms />} />
+
+
+
             {/* Protected Routes */}
             <Route 
               path="/dashboard/profile" 
