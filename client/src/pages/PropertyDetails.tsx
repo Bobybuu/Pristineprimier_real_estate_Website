@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button';
 import { propertiesAPI } from '@/services/api';
 import { Property, PropertyAmenity, LegalDocument, PropertyMedia } from '@/types/property';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import PropertyLocationMap from '../components/PropertyLocationMap';
 
 // Tab types
 type TabType = 'overview' | 'details' | 'location' | 'media' | 'documents';
@@ -297,17 +298,27 @@ const PropertyDetails = () => {
             {/* Map Container */}
             <div className="bg-white rounded-lg border border-gray-200 p-6">
               <h3 className="text-xl font-semibold mb-4">Location Map</h3>
-              <div className="h-96 bg-gray-200 rounded-lg flex items-center justify-center">
-                <div className="text-center">
-                  <Map className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-                  <p className="text-gray-600">Interactive Map Coming Soon</p>
-                  {property.latitude && property.longitude && (
-                    <p className="text-sm text-gray-500 mt-2">
-                      Coordinates: {property.latitude}, {property.longitude}
-                    </p>
-                  )}
-                </div>
+              <div className="h-96 rounded-lg overflow-hidden">
+                {property.latitude && property.longitude ? (
+                  <PropertyLocationMap 
+                    latitude={property.latitude}
+                    longitude={property.longitude}
+                    propertyTitle={property.title || 'Property Location'}
+                  />
+                ) : (
+                  <div className="h-full bg-gray-200 rounded-lg flex items-center justify-center">
+                    <div className="text-center">
+                      <Map className="h-12 w-12 text-gray-400 mx-auto mb-2" />
+                      <p className="text-gray-600">Location data not available</p>
+                    </div>
+                  </div>
+                )}
               </div>
+              {property.latitude && property.longitude && (
+                <p className="text-sm text-gray-500 mt-3 text-center">
+                  Coordinates: {property.latitude}, {property.longitude}
+                </p>
+              )}
             </div>
 
             {/* Nearby Amenities */}
@@ -320,7 +331,7 @@ const PropertyDetails = () => {
                 </div>
                 <div className="text-center p-4 bg-green-50 rounded-lg">
                   <ShoppingCart className="h-8 w-8 text-green-600 mx-auto mb-2" />
-                  <p className="font-medium">Shopping</p>
+                  <p className="font-medium">Shops</p>
                 </div>
                 <div className="text-center p-4 bg-red-50 rounded-lg">
                   <Hospital className="h-8 w-8 text-red-600 mx-auto mb-2" />
@@ -328,7 +339,7 @@ const PropertyDetails = () => {
                 </div>
                 <div className="text-center p-4 bg-purple-50 rounded-lg">
                   <Car className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-                  <p className="font-medium">Transport</p>
+                  <p className="font-medium">Roads</p>
                 </div>
               </div>
             </div>
@@ -347,8 +358,8 @@ const PropertyDetails = () => {
                 </div>
               </div>
             )}
-          </div>
-        );
+        </div>
+      );
 
       case 'media':
         return (
