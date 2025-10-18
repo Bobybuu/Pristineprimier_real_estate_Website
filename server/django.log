@@ -1408,3 +1408,6 @@ INFO 2025-10-18 19:58:39,386 basehttp 22120 21808 "GET /api/auth/csrf/ HTTP/1.1"
 INFO 2025-10-18 19:58:39,640 basehttp 22120 21808 "GET /api/properties/? HTTP/1.1" 200 6101
 INFO 2025-10-18 19:58:41,326 basehttp 22120 21808 "GET /api/auth/csrf/ HTTP/1.1" 200 81
 INFO 2025-10-18 19:58:41,598 basehttp 22120 21808 "GET /api/properties/?featured=true&limit=6 HTTP/1.1" 200 4125
+INFO 2025-10-18 20:13:32,076 basehttp 22120 2740 "GET /api/auth/csrf/ HTTP/1.1" 200 81
+INFO 2025-10-18 20:13:32,489 basehttp 22120 2740 "GET /api/properties/?featured=true&limit=6 HTTP/1.1" 200 4125
+INFO 2025-10-18 20:13:32,556 basehttp 22120 2740 "GET /media/property_images/2025/10/18/images_5.jpeg HTTP/1.1" 304 0
