@@ -1,4 +1,4 @@
-// services/api.ts - FIXED VERSION
+// services/api.ts 
 import { Property, PropertyFilters, Favorite, Inquiry, SavedSearch, PaginatedResponse } from '@/types/property';
 
 // Environment-based configuration
