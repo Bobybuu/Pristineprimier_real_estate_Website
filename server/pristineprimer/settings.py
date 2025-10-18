@@ -109,16 +109,7 @@ DATABASES = {
     }
 }
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'pristineprimer',
-        'USER': 'postgres',
-        'PASSWORD': 'Chrispine9909',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
-}
+
 
 # ---------------------------
 # PASSWORD VALIDATION
