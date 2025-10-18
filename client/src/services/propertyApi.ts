@@ -1,7 +1,23 @@
 // services/propertyApi.ts
 
 // Environment-based configuration
-import { Property, PropertyData, PropertyImage } from '@/types/property';
+import { 
+  Property, 
+  PropertyData, 
+  PropertyImage, 
+  PropertyMedia,
+  Amenity,
+  PropertyAmenity,
+  LegalDocument,
+  PropertyContact,
+  Inquiry,
+  PropertyStats,
+  DashboardStats,
+  PropertySearchParams,
+  PropertyCategories,
+  AmenityCategory,
+  PaginatedResponse
+} from '@/types/property';
 
 const getApiBaseUrl = (): string => {
   const isProduction = import.meta.env.MODE === 'production';
@@ -51,8 +67,6 @@ export const getImageUrl = (imagePath: string): string => {
 
 // EXACT SAME Placeholder image as data URL to avoid 404
 export const PLACEHOLDER_IMAGE = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2YzZjRmNiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IiM5YzljOWMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5ObyBJbWFnZTwvdGV4dD48L3N2Zz4=';
-
-
 
 class PropertyApi {
   // Helper function to handle API responses with comprehensive error handling
@@ -117,8 +131,9 @@ class PropertyApi {
     }
   }
 
+  // ===== EXISTING PROPERTY ENDPOINTS =====
+
   // Get primary image URL for a property - uses the EXACT SAME getImageUrl function
- // FIXED: Get primary image URL for a property
   getPrimaryImageUrl(property: Property): string {
     console.log('🔍 Getting primary image for property:', {
       id: property.id,
@@ -150,6 +165,7 @@ class PropertyApi {
     console.log('❌ No images found for property:', property.id);
     return PLACEHOLDER_IMAGE;
   }
+
   // Property CRUD operations
   async createProperty(propertyData: PropertyData): Promise<Property> {
     console.log('Creating property with data:', propertyData);
@@ -318,6 +334,290 @@ class PropertyApi {
       console.error('Error fetching property with images:', error);
       throw error;
     }
+  }
+
+  // ===== NEW LAND LISTING ENDPOINTS =====
+
+  // === ADVANCED SEARCH & FILTERING ===
+  async searchPropertiesAdvanced(params: PropertySearchParams): Promise<PaginatedResponse<Property>> {
+    const queryParams = new URLSearchParams();
+    
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== null && value !== undefined && value !== '') {
+        if (Array.isArray(value)) {
+          value.forEach(v => queryParams.append(key, v.toString()));
+        } else {
+          queryParams.append(key, value.toString());
+        }
+      }
+    });
+    
+    return this.request(`/properties/search/advanced/?${queryParams.toString()}`);
+  }
+
+  async getMapProperties(filters?: any): Promise<Property[]> {
+    const queryParams = new URLSearchParams();
+    if (filters) {
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== null && value !== undefined && value !== '') {
+          queryParams.append(key, value.toString());
+        }
+      });
+    }
+    
+    const endpoint = queryParams.toString() 
+      ? `/properties/map/data/?${queryParams.toString()}`
+      : '/properties/map/data/';
+      
+    return this.request(endpoint);
+  }
+
+  // === PROPERTY ANALYTICS ===
+  async getPropertyStats(): Promise<PropertyStats> {
+    return this.request('/properties/stats/overview/');
+  }
+
+  async getDashboardStats(): Promise<DashboardStats> {
+    return this.request('/dashboard/stats/');
+  }
+
+  // === PROPERTY ACTIONS ===
+  async getSimilarProperties(propertyId: string): Promise<Property[]> {
+    return this.request(`/properties/${propertyId}/similar/`);
+  }
+
+  async createPropertyInquiry(propertyId: string, inquiryData: {
+    name: string;
+    email: string;
+    phone: string;
+    message: string;
+    inquiry_type?: string;
+    preferred_date?: string;
+    budget_range?: string;
+  }): Promise<Inquiry> {
+    return this.request(`/properties/${propertyId}/inquire/`, {
+      method: 'POST',
+      body: JSON.stringify(inquiryData),
+    });
+  }
+
+  async incrementPropertyViews(propertyId: string): Promise<{views_count: number}> {
+    return this.request(`/properties/${propertyId}/increment-views/`, {
+      method: 'GET',
+    });
+  }
+
+  // === AMENITIES MANAGEMENT ===
+  async getAmenities(): Promise<Amenity[]> {
+    return this.request('/amenities/');
+  }
+
+  async getAmenityCategories(): Promise<AmenityCategory[]> {
+    return this.request('/amenities/categories/grouped/');
+  }
+
+  async getPropertyAmenities(propertyId: string): Promise<PropertyAmenity[]> {
+    return this.request(`/properties/${propertyId}/amenities/`);
+  }
+
+  async updatePropertyAmenities(propertyId: string, amenities: {
+    amenity_id: number;
+    availability: string;
+    details?: string;
+  }[]): Promise<PropertyAmenity[]> {
+    return this.request(`/properties/${propertyId}/amenities/`, {
+      method: 'PUT',
+      body: JSON.stringify({ amenity_ids: amenities }),
+    });
+  }
+
+  // === MEDIA MANAGEMENT ===
+  async getPropertyMedia(propertyId: string): Promise<PropertyMedia[]> {
+    return this.request(`/properties/${propertyId}/media/`);
+  }
+
+  async uploadPropertyMedia(
+    propertyId: string, 
+    files: File[], 
+    mediaData: {
+      media_types: string[];
+      captions?: string[];
+      is_primary?: boolean[];
+      display_order?: number[];
+    }
+  ): Promise<PropertyMedia[]> {
+    const formData = new FormData();
+    const csrfToken = this.getCSRFToken();
+    
+    files.forEach((file, index) => {
+      formData.append('media_files', file);
+      formData.append(`media_types[${index}]`, mediaData.media_types[index] || 'image');
+      formData.append(`captions[${index}]`, mediaData.captions?.[index] || '');
+      formData.append(`is_primary[${index}]`, (mediaData.is_primary?.[index] || false).toString());
+      formData.append(`display_order[${index}]`, (mediaData.display_order?.[index] || index).toString());
+    });
+
+    const headers: HeadersInit = {};
+    if (csrfToken) {
+      headers['X-CSRFToken'] = csrfToken;
+    }
+
+    const response = await fetch(`${API_BASE_URL}/property-media/`, {
+      method: 'POST',
+      credentials: 'include',
+      headers,
+      body: formData,
+    });
+
+    return await this.handleResponse(response);
+  }
+
+  async deletePropertyMedia(mediaId: string): Promise<void> {
+    return this.request(`/property-media/${mediaId}/`, {
+      method: 'DELETE',
+    });
+  }
+
+  async setPrimaryMedia(mediaId: string): Promise<void> {
+    return this.request(`/property-media/${mediaId}/set_primary/`, {
+      method: 'POST',
+    });
+  }
+
+  // === LEGAL DOCUMENTS ===
+  async getPropertyDocuments(propertyId: string): Promise<LegalDocument[]> {
+    return this.request(`/properties/${propertyId}/documents/`);
+  }
+
+  async uploadPropertyDocument(
+    propertyId: string,
+    file: File,
+    documentData: {
+      document_type: string;
+      description?: string;
+    }
+  ): Promise<LegalDocument> {
+    const formData = new FormData();
+    const csrfToken = this.getCSRFToken();
+    
+    formData.append('file', file);
+    formData.append('property', propertyId);
+    formData.append('document_type', documentData.document_type);
+    if (documentData.description) {
+      formData.append('description', documentData.description);
+    }
+
+    const headers: HeadersInit = {};
+    if (csrfToken) {
+      headers['X-CSRFToken'] = csrfToken;
+    }
+
+    const response = await fetch(`${API_BASE_URL}/legal-documents/`, {
+      method: 'POST',
+      credentials: 'include',
+      headers,
+      body: formData,
+    });
+
+    return await this.handleResponse(response);
+  }
+
+  async deletePropertyDocument(documentId: string): Promise<void> {
+    return this.request(`/legal-documents/${documentId}/`, {
+      method: 'DELETE',
+    });
+  }
+
+  // === PROPERTY CONTACT ===
+  async getPropertyContact(propertyId: string): Promise<PropertyContact> {
+    return this.request(`/properties/${propertyId}/contact/`);
+  }
+
+  async updatePropertyContact(propertyId: string, contactData: Partial<PropertyContact>): Promise<PropertyContact> {
+    return this.request(`/properties/${propertyId}/contact/`, {
+      method: 'PATCH',
+      body: JSON.stringify(contactData),
+    });
+  }
+
+  // === PUBLIC INQUIRIES ===
+  async createPublicInquiry(inquiryData: {
+    property?: number;
+    name: string;
+    email: string;
+    phone: string;
+    message: string;
+    inquiry_type?: string;
+    preferred_date?: string;
+    budget_range?: string;
+  }): Promise<Inquiry> {
+    return this.request('/public-inquiry/', {
+      method: 'POST',
+      body: JSON.stringify(inquiryData),
+    });
+  }
+
+  // === CATEGORIES & META DATA ===
+  async getPropertyCategories(): Promise<PropertyCategories> {
+    return this.request('/categories/');
+  }
+
+  // === INQUIRY MANAGEMENT ===
+  async getMyInquiries(): Promise<Inquiry[]> {
+    return this.request('/inquiries/');
+  }
+
+  async updateInquiryStatus(inquiryId: string, status: string): Promise<Inquiry> {
+    return this.request(`/inquiries/${inquiryId}/update-status/`, {
+      method: 'POST',
+      body: JSON.stringify({ status }),
+    });
+  }
+
+  async assignInquiryAgent(inquiryId: string, agentId: string): Promise<Inquiry> {
+    return this.request(`/inquiries/${inquiryId}/assign-agent/`, {
+      method: 'POST',
+      body: JSON.stringify({ agent_id: agentId }),
+    });
+  }
+
+  // === ADMIN ENDPOINTS ===
+  async getAdminProperties(filters?: any): Promise<PaginatedResponse<Property>> {
+    const queryParams = new URLSearchParams();
+    if (filters) {
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== null && value !== undefined && value !== '') {
+          queryParams.append(key, value.toString());
+        }
+      });
+    }
+    
+    const endpoint = queryParams.toString() 
+      ? `/admin/properties/?${queryParams.toString()}`
+      : '/admin/properties/';
+      
+    return this.request(endpoint);
+  }
+
+  async approveProperty(propertyId: string): Promise<Property> {
+    return this.request(`/admin/properties/${propertyId}/approve/`, {
+      method: 'POST',
+    });
+  }
+
+  async rejectProperty(propertyId: string): Promise<Property> {
+    return this.request(`/admin/properties/${propertyId}/reject/`, {
+      method: 'POST',
+    });
+  }
+
+  // === USER-SPECIFIC ENDPOINTS ===
+  async getMyFavoritesList(): Promise<Property[]> {
+    return this.request('/my-properties/favorites/');
+  }
+
+  async getMyPropertiesList(): Promise<Property[]> {
+    return this.request('/my-properties/owned/');
   }
 }
 
