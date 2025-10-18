@@ -270,7 +270,7 @@ const Buy = () => {
             <p className="text-center text-muted-foreground text-lg mb-8 max-w-2xl mx-auto">
               Discover your perfect property in Nairobi and beyond
             </p>
-            <SearchBar variant="inline" onSearch={handleSearch} />
+            
           </div>
         </section>
 
