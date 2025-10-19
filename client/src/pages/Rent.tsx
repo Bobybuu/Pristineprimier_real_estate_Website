@@ -21,10 +21,10 @@ const Rent = () => {
 
       <main className="flex-1">
         {/* Page Header */}
-        <section className="bg-secondary py-12">
+        <section className="bg-secondary py-1">
           <div className="container mx-auto px-4">
-            <h1 className="text-center mb-6">Rental Properties</h1>
-            <p className="text-center text-muted-foreground text-lg mb-8 max-w-2xl mx-auto">
+            <h1 className="text-center mb-2 font-light text-3xl tracking-tight">Rental Properties</h1>
+            <p className="text-center text-muted-foreground  mb-4 max-w-2xl mx-auto">
               Find your perfect rental home from our curated selection
             </p>
             <SearchBar variant="inline" onSearch={handleSearch} />
