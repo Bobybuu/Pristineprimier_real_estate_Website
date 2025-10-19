@@ -53,14 +53,16 @@ const Index = (): JSX.Element => {
           </div>
         </section>
 
+        
+
         {/* CTA Section - Reduced height for mobile */}
-        <section className="py-8 md:py-16 gradient-hero text-primary-foreground">
+        <section className="py-1 md:py-3 gradient-hero text-primary-foreground">
           <div className="container mx-auto px-4 text-center">
-            <h2 className="mb-3 md:mb-4 text-xl md:text-3xl">Ready to Find Your Perfect Home?</h2>
-            <p className="text-sm md:text-lg mb-4 md:mb-8 max-w-2xl mx-auto text-primary-foreground/90">
+            <h2 className="text-center text-xl mb-2 font-light  tracking-tight">Ready to Find Your Perfect Home?</h2>
+            <p className="text-sm md:text-xl mb-4 md:mb-2 max-w-2xl mx-auto text-primary-foreground/90">
               Join thousands of satisfied clients who found their dream properties with us
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center mb-2">
               <Button 
                 asChild 
                 size="lg" 
@@ -72,7 +74,7 @@ const Index = (): JSX.Element => {
                 asChild 
                 variant="outline" 
                 size="lg" 
-                className="bg-transparent border-2 border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary"
+                className="bg-transparent border-2 border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary "
               >
                 <Link to="/auth">Get Started</Link>
               </Button>
@@ -151,7 +153,7 @@ const Index = (): JSX.Element => {
         <section className="py-16">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
-              <h2 className="mb-4">Featured Properties</h2>
+              <h2 className="mb-4 font-light  tracking-tight">Featured Properties</h2>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                 Handpicked luxury properties that define elegance and comfort
               </p>
