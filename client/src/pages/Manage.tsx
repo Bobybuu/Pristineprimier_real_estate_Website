@@ -83,11 +83,11 @@ const Manage = () => {
 
       <main>
         {/* Hero Section */}
-        <section className="gradient-hero text-primary-foreground py-20">
+        <section className="gradient-hero text-primary-foreground py-6">
           <div className="container mx-auto px-4 text-center">
-            <h1 className="mb-6 font-medium">Professional Property Management</h1>
-            <p className="text-xl mb-8 max-w-2xl mx-auto text-primary-foreground/90">
-              Maximize your rental income and minimize your stress with our comprehensive management services
+            <h1 className="text-center mb-2 font-light text-3xl tracking-tight">Professional Property Management</h1>
+            <p className="mb-4 max-w-2xl mx-auto text-primary-foreground/90">
+              Maximize rental income and minimize stress with our comprehensive management services
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button className="bg-[#f77f77] hover:bg-[#f77f77]/90 text-white">
