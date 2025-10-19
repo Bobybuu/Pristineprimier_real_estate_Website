@@ -18,14 +18,16 @@ const Services = () => {
     <div className="flex flex-col min-h-screen">
       <Header />
 
+    
+
       <main className="flex-1">
         {!selectedService ? (
           <>
             {/* Services Overview */}
-            <section className="bg-secondary py-12">
+            <section className="bg-secondary py-1">
               <div className="container mx-auto px-4 text-center">
-                <h1 className="mb-6 font-medium">Our Services</h1>
-                <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+                <h1 className="text-center mb-2 font-light text-3xl tracking-tight">Our Services</h1>
+                <p className="text-muted-foreground mb-4  max-w-2xl mx-auto">
                   Comprehensive property services to enhance and maintain your real estate investments
                 </p>
               </div>
