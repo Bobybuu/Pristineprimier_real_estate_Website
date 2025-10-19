@@ -83,7 +83,7 @@ const Index = (): JSX.Element => {
         </section>
 
         {/* Quick Action CTAs */}
-        <section className="py-16 bg-secondary">
+        <section className="py-8 bg-secondary">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <Link to="/buy">
@@ -150,10 +150,10 @@ const Index = (): JSX.Element => {
         </section>
 
         {/* Featured Listings */}
-        <section className="py-16">
+        <section className="py-2">
           <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="mb-4 font-light  tracking-tight">Featured Properties</h2>
+            <div className="text-center mb-8">
+              <h2 className="mb-2 font-light  tracking-tight">Featured Properties</h2>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                 Handpicked luxury properties that define elegance and comfort
               </p>
