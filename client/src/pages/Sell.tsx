@@ -77,10 +77,10 @@ const Sell = () => {
         </section>
 
         {/* Benefits Section */}
-        <section className="py-16">
+        <section className="py-8">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
-              <h2 className="mb-4 font-medium">Why Sell With Us?</h2>
+              <h2 className="font-small text-center mb-2 font-light text-3xl tracking-tight">Why Sell With Us?</h2>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                 Experience the difference with our comprehensive selling services
               </p>
@@ -103,10 +103,10 @@ const Sell = () => {
         </section>
 
         {/* Process Section */}
-        <section className="py-16 bg-secondary">
+        <section className="py-8 bg-secondary">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
-              <h2 className="mb-4 font-medium">Our Selling Process</h2>
+              <h2 className="font-small text-center mb-2 font-light text-3xl tracking-tight">Our Selling Process</h2>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                 A simple, transparent process from listing to closing
               </p>
@@ -136,7 +136,7 @@ const Sell = () => {
           <div className="container mx-auto px-4">
             <div className="max-w-3xl mx-auto">
               <div className="text-center mb-8">
-                <h2 className="mb-4 font-medium">Get Your Free Property Valuation</h2>
+                <h2 className="font-small text-center mb-2 font-light text-3xl tracking-tight">Get Your Free Property Valuation</h2>
                 <p className="text-muted-foreground text-lg">
                   Provide us with some basic information and receive an instant estimate
                 </p>

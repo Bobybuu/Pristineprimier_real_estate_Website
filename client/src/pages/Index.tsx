@@ -150,7 +150,7 @@ const Index = (): JSX.Element => {
         </section>
 
         {/* Featured Listings */}
-        <section className="py-2">
+        <section className="py-1">
           <div className="container mx-auto px-4">
             <div className="text-center mb-8">
               <h2 className="mb-2 font-light  tracking-tight">Featured Properties</h2>
@@ -189,7 +189,7 @@ const Index = (): JSX.Element => {
                   )}
                 </div>
 
-                <div className="text-center">
+                <div className="text-center mb-3">
                   <Button asChild variant="outline" size="lg">
                     <Link to="/buy">
                       View All Properties <ArrowRight className="ml-2 h-5 w-5" />

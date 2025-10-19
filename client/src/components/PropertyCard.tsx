@@ -9,9 +9,10 @@ import { useState, MouseEvent } from 'react';
 interface PropertyCardProps {
   property: Property;
   viewMode?: 'grid' | 'list';
+  className?: string;
 }
 
-const PropertyCard = ({ property, viewMode = 'grid' }: PropertyCardProps) => {
+const PropertyCard = ({ property, viewMode = 'grid', className = "" }: PropertyCardProps) => {
   const [isFavorited, setIsFavorited] = useState<boolean>(property.is_favorited || false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [imageError, setImageError] = useState<boolean>(false);
@@ -53,7 +54,7 @@ const PropertyCard = ({ property, viewMode = 'grid' }: PropertyCardProps) => {
       currency: 'KES',
       minimumFractionDigits: 0,
     }).format(numericPrice);
-    return formatted.replace('KES', 'Ksh');
+    return formatted.replace('KES', 'KSh');
   };
 
   const getPropertyTypeLabel = (type: Property['property_type']): string => {
@@ -163,41 +164,28 @@ const PropertyCard = ({ property, viewMode = 'grid' }: PropertyCardProps) => {
   const { hasElectricity, displayText: electricityDisplay } = getElectricityStatus();
   const { hasRoadAccess, displayText: roadDisplay } = getRoadAccessStatus();
 
-  // Debug logging for this specific property
-  console.log('🏠 PropertyCard Debug:', {
-    propertyId: property.id,
-    propertyTitle: property.title,
-    landType: property.land_type,
-    has_borehole: property.has_borehole,
-    has_piped_water: property.has_piped_water,
-    electricity_availability: property.electricity_availability,
-    road_access_type: property.road_access_type,
-    distance_to_main_road: property.distance_to_main_road,
-    waterStatus: getWaterStatus(),
-    electricityStatus: getElectricityStatus(),
-    roadAccess: getRoadAccessStatus()
-  });
-
   const isListView = viewMode === 'list';
 
   return (
     <Link to={`/property/${property.id}`}>
-      <Card className={`group overflow-hidden hover:shadow-elegant transition-smooth cursor-pointer ${
-        isListView ? 'flex' : 'h-full'
-      }`}>
-        {/* Image Section */}
+      <Card className={`bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 overflow-hidden flex flex-col h-full max-h-[85vh] group ${
+        isListView ? 'flex-row' : ''
+      } ${className}`}>
+        {/* Image Container with Fixed Aspect Ratio */}
         <div className={`relative overflow-hidden ${
-          isListView ? 'w-64 h-48 flex-shrink-0' : 'h-56'
+          isListView 
+            ? 'w-64 h-48 flex-shrink-0' 
+            : 'h-48 md:h-56 lg:h-60'
         }`}>
           {imageLoading && !imageError && (
-            <div className="absolute inset-0 bg-muted flex items-center justify-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#f77f77]"></div>
             </div>
           )}
           <img
             src={imageError ? PLACEHOLDER_IMAGE : imageUrl}
             alt={property.title}
-            className={`w-full h-full object-cover group-hover:scale-110 transition-smooth ${
+            className={`w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 ${
               imageLoading && !imageError ? 'opacity-0' : 'opacity-100'
             }`}
             loading="lazy"
@@ -206,60 +194,63 @@ const PropertyCard = ({ property, viewMode = 'grid' }: PropertyCardProps) => {
           />
           
           {/* Status Badge */}
-          <div className={`absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-semibold ${
-            property.status === 'sold' || property.status === 'rented' 
-              ? 'bg-destructive text-destructive-foreground' 
-              : 'bg-primary text-primary-foreground'
-          }`}>
-            {statusLabel}
+          <div className="absolute top-3 left-3">
+            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+              property.status === 'sold' || property.status === 'rented' 
+                ? 'bg-red-100 text-red-800' 
+                : 'bg-[#f77f77] text-white'
+            }`}>
+              {statusLabel}
+            </span>
           </div>
           
           {/* Favorite Button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute top-3 left-3 bg-background/80 hover:bg-background"
+          <button
+            className="absolute top-3 right-3 p-1.5 bg-white/90 rounded-full hover:bg-white transition-colors duration-200 shadow-sm"
             onClick={handleFavoriteToggle}
             disabled={isLoading}
           >
             <Heart 
-              className={`h-5 w-5 ${isFavorited ? 'fill-destructive text-destructive' : ''}`} 
+              className={`h-4 w-4 ${isFavorited ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} 
             />
-          </Button>
+          </button>
 
           {/* Featured Badge */}
           {property.featured && (
-            <div className="absolute bottom-3 left-3 bg-gold text-gold-foreground px-3 py-1 rounded-full text-xs font-semibold">
+            <div className="absolute bottom-3 left-3 bg-yellow-500 text-white px-2 py-1 rounded-full text-xs font-medium">
               Featured
             </div>
           )}
 
           {/* Land Type Badge for Land Properties */}
           {isLandOnly && property.land_type && (
-            <div className="absolute bottom-3 right-3 bg-green-600 text-white px-2 py-1 rounded-full text-xs font-semibold">
+            <div className="absolute bottom-3 right-3 bg-green-600 text-white px-2 py-1 rounded-full text-xs font-medium">
               {getLandTypeLabel(property.land_type)}
             </div>
           )}
         </div>
 
-        <CardContent className={`p-5 ${isListView ? 'flex-1' : ''}`}>
+        {/* Content Area with Flexible Growth */}
+        <CardContent className={`flex-1 p-4 md:p-5 flex flex-col ${isListView ? 'justify-center' : ''}`}>
           {/* Price */}
-          <div className="text-2xl font-bold text-primary mb-2">
-            {getPriceDisplay()}
-            {property.property_type === 'rental' && <span className="text-base text-muted-foreground">/month</span>}
+          <div className="mb-2">
+            <h3 className="text-xl font-semibold text-gray-900">
+              {getPriceDisplay()}
+              {property.property_type === 'rental' && <span className="text-sm text-gray-600 font-normal">/month</span>}
+            </h3>
           </div>
 
           {/* Title */}
-          <h3 className={`font-semibold text-foreground mb-2 ${
-            isListView ? 'text-xl line-clamp-2' : 'text-lg line-clamp-1'
+          <h4 className={`font-medium text-gray-800 mb-2 ${
+            isListView ? 'text-lg line-clamp-2' : 'text-lg line-clamp-1'
           }`}>
             {property.title}
-          </h3>
+          </h4>
 
           {/* Location */}
-          <div className="flex items-center gap-1 text-muted-foreground text-sm mb-3">
-            <MapPin className="h-4 w-4" />
-            <span className={isListView ? 'line-clamp-2' : 'line-clamp-1'}>
+          <div className="flex items-center text-gray-600 mb-3">
+            <MapPin className="w-4 h-4 mr-1 flex-shrink-0" />
+            <span className={`text-sm ${isListView ? 'line-clamp-2' : 'line-clamp-1'}`}>
               {property.city}, {property.state}
               {property.landmarks && ` • ${property.landmarks}`}
             </span>
@@ -304,25 +295,25 @@ const PropertyCard = ({ property, viewMode = 'grid' }: PropertyCardProps) => {
 
           {/* Property Details for non-land properties */}
           {!isLandOnly && property.bedrooms && property.bathrooms && (
-            <div className={`flex items-center gap-4 text-sm text-muted-foreground ${
+            <div className={`grid grid-cols-3 gap-2 mb-4 py-2 border-y border-gray-100 ${
               isListView ? 'mb-4' : ''
             }`}>
               {property.bedrooms && (
-                <div className="flex items-center gap-1">
-                  <Bed className="h-4 w-4" />
-                  <span>{property.bedrooms} Beds</span>
+                <div className="text-center">
+                  <Bed className="w-4 h-4 mx-auto text-gray-500 mb-1" />
+                  <span className="text-sm text-gray-700">{property.bedrooms} bed</span>
                 </div>
               )}
               {property.bathrooms && (
-                <div className="flex items-center gap-1">
-                  <Bath className="h-4 w-4" />
-                  <span>{property.bathrooms} Baths</span>
+                <div className="text-center">
+                  <Bath className="w-4 h-4 mx-auto text-gray-500 mb-1" />
+                  <span className="text-sm text-gray-700">{property.bathrooms} bath</span>
                 </div>
               )}
               {property.square_feet && (
-                <div className="flex items-center gap-1">
-                  <Square className="h-4 w-4" />
-                  <span>{property.square_feet.toLocaleString()} sqft</span>
+                <div className="text-center">
+                  <Square className="w-4 h-4 mx-auto text-gray-500 mb-1" />
+                  <span className="text-sm text-gray-700">{property.square_feet.toLocaleString()} sqft</span>
                 </div>
               )}
             </div>
@@ -330,9 +321,9 @@ const PropertyCard = ({ property, viewMode = 'grid' }: PropertyCardProps) => {
 
           {/* Land Details */}
           {isLandOnly && (
-            <div className="flex items-center justify-between text-sm text-muted-foreground mb-3">
+            <div className="flex items-center justify-between text-sm text-gray-700 mb-4 py-2 border-y border-gray-100">
               <div className="flex items-center gap-1">
-                <Square className="h-4 w-4" />
+                <Square className="h-4 w-4 text-gray-500" />
                 <span>{getSizeDisplay()}</span>
               </div>
               
@@ -347,14 +338,14 @@ const PropertyCard = ({ property, viewMode = 'grid' }: PropertyCardProps) => {
 
           {/* Description (only in list view) */}
           {isListView && property.description && (
-            <p className="text-muted-foreground text-sm mt-3 line-clamp-3">
+            <p className="text-gray-600 text-sm mb-4 line-clamp-3 flex-1">
               {property.description}
             </p>
           )}
 
           {/* Property Type and Additional Info */}
-          <div className="mt-3 pt-3 border-t border-border flex justify-between items-center">
-            <span className="text-xs text-muted-foreground uppercase tracking-wide">
+          <div className="mt-auto pt-3 border-t border-gray-100 flex justify-between items-center">
+            <span className="text-xs text-gray-600 uppercase tracking-wide">
               {getPropertyTypeLabel(property.property_type)}
               {isLandOnly && property.land_type && ` • ${getLandTypeLabel(property.land_type)}`}
             </span>
@@ -370,6 +361,11 @@ const PropertyCard = ({ property, viewMode = 'grid' }: PropertyCardProps) => {
               </span>
             )}
           </div>
+
+          {/* CTA Button 
+          <button className="w-full bg-[#f77f77] hover:bg-[#f56a6a] text-white py-2.5 px-4 rounded-lg transition-colors duration-200 font-medium text-sm mt-4">
+            View Details
+          </button> */}
         </CardContent>
       </Card>
     </Link>
