@@ -66,23 +66,27 @@ const About = (): JSX.Element => {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-
       <main>
         {/* Hero Section */}
-        <section className="gradient-hero text-primary-foreground py-20">
+        <section className="gradient-hero text-primary-foreground py-1">
           <div className="container mx-auto px-4 text-center">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-medium mb-6">
+            <h1 className="text-center mb-2 font-light text-3xl tracking-tight">
               About PristinePrimier Real Estate
             </h1>
-            <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto text-primary-foreground/90">
+            <p className="mb-4 max-w-2xl mx-auto text-primary-foreground/90">
               Your Trusted Partner in Kenya's Real Estate Journey Since 2015
             </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-2">
             <Button 
               asChild 
               className="bg-[#f77f77] hover:bg-[#f77f77]/90 text-white border border-[#f77f77]"
             >
               <Link to="/contact">Get In Touch</Link>
             </Button>
+            </div>
+
+
+
           </div>
         </section>
 
