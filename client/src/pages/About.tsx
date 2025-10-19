@@ -43,24 +43,7 @@ const About = (): JSX.Element => {
       experience: '10+ years in real estate',
       specialty: 'Luxury Properties & Commercial'
     },
-    {
-      name: 'Michael Chen',
-      role: 'Head of Sales',
-      experience: '12+ years in property sales',
-      specialty: 'Residential & Investment Properties'
-    },
-    {
-      name: 'Emily Rodriguez',
-      role: 'Property Manager',
-      experience: '10+ years in management',
-      specialty: 'Rental Properties & Maintenance'
-    },
-    {
-      name: 'David Kimani',
-      role: 'Land Specialist',
-      experience: '8+ years in land acquisition',
-      specialty: 'Land Development & Planning'
-    }
+    
   ];
 
   return (
@@ -116,12 +99,12 @@ const About = (): JSX.Element => {
                 <div className="w-16 h-16 bg-teal/10 rounded-full flex items-center justify-center mb-6">
                   <Building2 className="h-8 w-8 text-teal" />
                 </div>
-                <h3 className="text-2xl font-medium mb-4">Our Mission</h3>
+                <h3 className="text-xl font-medium mb-4">Our Mission</h3>
                 <p className="text-muted-foreground text-lg mb-6">
                   To make real estate transactions seamless, transparent, and rewarding for 
                   every Kenyan by leveraging technology, expertise, and personalized service.
                 </p>
-                <h3 className="text-2xl font-medium mb-4">Our Vision</h3>
+                <h3 className="text-xl font-medium mb-4">Our Vision</h3>
                 <p className="text-muted-foreground text-lg">
                   To be East Africa's most trusted real estate platform, empowering property 
                   dreams and building sustainable communities.
@@ -135,7 +118,7 @@ const About = (): JSX.Element => {
         <section className="py-16 bg-secondary">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
-              <h2 className="mb-4 font-medium">By The Numbers</h2>
+              <h2 className="text-xl font-medium mb-4">By The Numbers</h2>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                 Our impact and reach in the Kenyan real estate market
               </p>
@@ -162,7 +145,7 @@ const About = (): JSX.Element => {
         <section className="py-16">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
-              <h2 className="mb-4 font-medium">Our Values</h2>
+              <h2 className="text-center mb-2 font-light text-3xl tracking-tight">Our Values</h2>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                 The principles that guide everything we do
               </p>
@@ -192,7 +175,7 @@ const About = (): JSX.Element => {
         <section className="py-16 bg-secondary">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
-              <h2 className="mb-4 font-medium">Meet Our Team</h2>
+              <h2 className="text-center mb-2 font-light text-3xl tracking-tight">Meet Our Team</h2>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                 Experienced professionals dedicated to your real estate success
               </p>
@@ -220,7 +203,7 @@ const About = (): JSX.Element => {
         <section className="py-16">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
-              <h2 className="mb-4 font-medium">Why Choose PristinePrimier?</h2>
+              <h2 className="text-center mb-2 font-light text-3xl tracking-tight">Why Choose PristinePrimier?</h2>
             </div>
 
             <div className="max-w-4xl mx-auto">
@@ -229,7 +212,7 @@ const About = (): JSX.Element => {
                   <div className="flex items-start gap-4">
                     <Award className="h-6 w-6 text-teal mt-1 flex-shrink-0" />
                     <div>
-                      <h3 className="font-medium mb-2">Award-Winning Service</h3>
+                      <h3 className="font-medium mb-2 text-xl">Award-Winning Service</h3>
                       <p className="text-muted-foreground text-sm">
                         Recognized for excellence in customer service and property management
                       </p>
@@ -239,7 +222,7 @@ const About = (): JSX.Element => {
                   <div className="flex items-start gap-4">
                     <Shield className="h-6 w-6 text-teal mt-1 flex-shrink-0" />
                     <div>
-                      <h3 className="font-medium mb-2">Full Legal Compliance</h3>
+                      <h3 className="font-medium mb-2 text-xl">Full Legal Compliance</h3>
                       <p className="text-muted-foreground text-sm">
                         All transactions backed by proper legal documentation and due diligence
                       </p>
@@ -251,7 +234,7 @@ const About = (): JSX.Element => {
                   <div className="flex items-start gap-4">
                     <Target className="h-6 w-6 text-teal mt-1 flex-shrink-0" />
                     <div>
-                      <h3 className="font-medium mb-2">Market Expertise</h3>
+                      <h3 className="font-medium mb-2 text-xl">Market Expertise</h3>
                       <p className="text-muted-foreground text-sm">
                         Deep understanding of Kenyan real estate markets and investment opportunities
                       </p>
@@ -261,7 +244,7 @@ const About = (): JSX.Element => {
                   <div className="flex items-start gap-4">
                     <Heart className="h-6 w-6 text-teal mt-1 flex-shrink-0" />
                     <div>
-                      <h3 className="font-medium mb-2">After-Sales Support</h3>
+                      <h3 className="font-medium mb-2 text-xl">After-Sales Support</h3>
                       <p className="text-muted-foreground text-sm">
                         Comprehensive support even after your transaction is complete
                       </p>
@@ -274,10 +257,10 @@ const About = (): JSX.Element => {
         </section>
 
         {/* CTA Section */}
-        <section className="py-16 bg-accent text-accent-foreground">
+        <section className="py-8 bg-accent text-accent-foreground">
           <div className="container mx-auto px-4 text-center">
-            <h2 className="mb-4 font-medium">Ready to Start Your Real Estate Journey?</h2>
-            <p className="text-lg mb-8 max-w-2xl mx-auto text-accent-foreground/90">
+            <h2 className="text-center mb-2 font-light text-2xl tracking-tight">Ready to Start Your Real Estate Journey?</h2>
+            <p className="text-lg mb-4 max-w-2xl mx-auto text-accent-foreground/90">
               Join thousands of satisfied clients who have found their perfect properties with us
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

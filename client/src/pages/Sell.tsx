@@ -176,10 +176,10 @@ const Sell = () => {
         </section>
 
         {/* CTA Section */}
-        <section className="py-16 bg-accent text-accent-foreground">
+        <section className="py-8 bg-accent text-accent-foreground">
           <div className="container mx-auto px-4 text-center">
-            <h2 className="mb-4 font-medium">Ready to Get Started?</h2>
-            <p className="text-lg mb-8 max-w-2xl mx-auto text-accent-foreground/90">
+            <h2 className="text-center mb-2 font-light text-3xl tracking-tight">Ready to Get Started?</h2>
+            <p className="text-lg mb-4 max-w-2xl mx-auto text-accent-foreground/90">
               Access your seller dashboard to create listings and track your sales
             </p>
             <Button className="bg-[#1f1e1d] hover:bg-[#1f1e1d]/90 text-white">

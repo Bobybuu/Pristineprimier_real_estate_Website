@@ -104,7 +104,7 @@ const Manage = () => {
         <section className="py-16">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
-              <h2 className="mb-4 font-medium">Our Management Services</h2>
+              <h2 className="text-center mb-2 font-light text-3xl tracking-tight">Our Management Services</h2>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                 Everything you need to run your rental property successfully
               </p>
@@ -130,7 +130,7 @@ const Manage = () => {
         <section className="py-16 bg-secondary">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
-              <h2 className="mb-4 font-medium">Management Packages</h2>
+              <h2 className="text-center mb-2 font-light text-3xl tracking-tight">Management Packages</h2>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                 Choose the package that fits your needs
               </p>
@@ -191,7 +191,7 @@ const Manage = () => {
           <div className="container mx-auto px-4">
             <div className="max-w-3xl mx-auto">
               <div className="text-center mb-8">
-                <h2 className="mb-4 font-medium">Request Management Services</h2>
+                <h2 className="text-center mb-2 font-light text-3xl tracking-tight">Request Management Services</h2>
                 <p className="text-muted-foreground text-lg">
                   Tell us about your property and we'll create a custom management plan
                 </p>
@@ -207,10 +207,10 @@ const Manage = () => {
         </section>
 
         {/* Services Link */}
-        <section className="py-16 bg-accent text-accent-foreground">
+        <section className="py-8 bg-accent text-accent-foreground">
           <div className="container mx-auto px-4 text-center">
-            <h2 className="mb-4 font-medium">Need Additional Services?</h2>
-            <p className="text-lg mb-8 max-w-2xl mx-auto text-accent-foreground/90">
+            <h2 className="text-center mb-2 font-light text-3xl tracking-tight">Need Additional Services?</h2>
+            <p className="text-lg mb-4 max-w-2xl mx-auto text-accent-foreground/90">
               Explore our renovation, smart home integration, and other property enhancement services
             </p>
             <Button className="bg-[#1f1e1d] hover:bg-[#1f1e1d]/90 text-white">

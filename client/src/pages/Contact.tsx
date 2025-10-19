@@ -15,7 +15,7 @@ const Contact = (): JSX.Element => {
     {
       icon: Phone,
       title: 'Call Us',
-      description: 'For immediate assistance and urgent inquiries',
+      description: 'For immediate assistance and inquiries',
       details: '+254 743 012 966',
       action: 'Call Now',
       link: 'tel:+254743012966',
@@ -90,18 +90,22 @@ const Contact = (): JSX.Element => {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
+   
 
+
+
+   
       <main>
         {/* Hero Section */}
-        <section className="gradient-hero text-primary-foreground py-20">
-          <div className="container mx-auto px-4 text-center">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-medium mb-6">
+        <section className="gradient-hero text-primary-foreground py-1">
+          <div className="container mx-auto px-4 text-center mb-4">
+            <h1 className="text-center mb-2 font-light text-3xl tracking-tight">
               Get In Touch
             </h1>
-            <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto text-primary-foreground/90">
+            <p className="text-xl md:text-xl mb-4 max-w-xl mx-auto text-primary-foreground/90">
               We're here to help you with all your real estate needs
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-2">
               <div className="flex items-center gap-2 bg-white/20 px-4 py-2 rounded-lg">
                 <Phone className="h-5 w-5" />
                 <span className="font-semibold">+254 743 012 966</span>
@@ -116,9 +120,9 @@ const Contact = (): JSX.Element => {
         {/* Contact Methods */}
         <section className="py-16">
           <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="mb-4 font-medium">Choose How to Reach Us</h2>
-              <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+            <div className="text-center mb-10">
+              <h2 className="text-center mb-2 font-light text-3xl tracking-tight">Choose How to Reach Us</h2>
+              <p className="text-muted-foreground text-lg max-w-xl mx-auto">
                 Multiple ways to connect with our real estate experts
               </p>
             </div>
@@ -171,7 +175,7 @@ const Contact = (): JSX.Element => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
               {/* Contact Form */}
               <div>
-                <h2 className="mb-6 font-medium">Send Us a Message</h2>
+                <h2 className="text-center mb-2 font-light text-3xl tracking-tight">Send Us a Message</h2>
                 {formSubmitted ? (
                   <Card className="bg-green-50 border-green-200">
                     <CardContent className="p-8 text-center">
@@ -212,7 +216,7 @@ const Contact = (): JSX.Element => {
 
               {/* Contact Info */}
               <div>
-                <h2 className="mb-6 font-medium">Visit Our Office</h2>
+                <h2 className="text-center mb-2 font-light text-3xl tracking-tight">Visit Our Office</h2>
                 
                 {/* Office Hours */}
                 <Card className="mb-6">
@@ -298,11 +302,11 @@ const Contact = (): JSX.Element => {
         </section>
 
         {/* Emergency CTA */}
-        <section className="py-12 bg-accent text-accent-foreground">
+        <section className="py-8 bg-accent text-accent-foreground">
           <div className="container mx-auto px-4 text-center">
             <div className="max-w-2xl mx-auto">
-              <h2 className="mb-4 font-medium">Need Immediate Assistance?</h2>
-              <p className="text-lg mb-6 text-accent-foreground/90">
+              <h2 className="text-center mb-2 font-light text-3xl tracking-tight">Need Immediate Assistance?</h2>
+              <p className=" mb-6 text-accent-foreground/90">
                 For urgent property inquiries or emergency support, call us directly
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
