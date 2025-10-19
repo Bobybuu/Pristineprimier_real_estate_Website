@@ -263,14 +263,13 @@ const Buy = () => {
       <Header />
 
       <main className="flex-1">
-        {/* Page Header with Search */}
-        <section className="bg-secondary py-12">
+        {/* Page Header */}
+        <section className="bg-secondary py-1">
           <div className="container mx-auto px-4">
-            <h1 className="text-center mb-6">Properties</h1>
-            <p className="text-center text-muted-foreground text-lg mb-8 max-w-2xl mx-auto">
-              Discover your perfect property in Nairobi and beyond
+            <h1 className="text-center mb-2 font-light text-3xl tracking-tight">Properties</h1>
+            <p className="text-center text-muted-foreground mb-4 max-w-2xl mx-auto">
+              Discover your perfect property in Kenya
             </p>
-            
           </div>
         </section>
 
