@@ -59,10 +59,10 @@ const Sell = () => {
 
       <main>
         {/* Hero Section */}
-        <section className="gradient-hero text-primary-foreground py-20">
-          <div className="container mx-auto px-4 text-center">
-            <h1 className="text-3xl font-medium">Sell Your House with Confidence</h1>
-            <p className="text-xl mb-8 max-w-2xl mx-auto text-primary-foreground/90">
+        <section className="gradient-hero text-primary-foreground py-6">
+          <div className="container mx-auto px-6 text-center">
+            <h1 className="text-center mb-2 font-light text-3xl tracking-tight">Sell Your House with Confidence</h1>
+            <p className="mb-4 max-w-2xl mx-auto text-primary-foreground/90">
               Get the best price for your property with our expert team and proven process
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
