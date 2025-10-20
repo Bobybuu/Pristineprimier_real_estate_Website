@@ -19,6 +19,23 @@ import PropertyLocationMap from '../components/PropertyLocationMap';
 // Tab types
 type TabType = 'overview' | 'details' | 'location' | 'media' | 'documents';
 
+// Image optimization utility
+const optimizeImageUrl = (url: string, width: number = 1200, quality: number = 85): string => {
+  if (!url || url.includes('placeholder')) return url;
+  
+  // If using a CDN that supports image transformations
+  if (url.includes('cloudinary')) {
+    return url.replace('/upload/', `/upload/w_${width},q_${quality},f_auto/`);
+  }
+  
+  if (url.includes('imgix')) {
+    return `${url}?w=${width}&q=${quality}&auto=format&fit=crop`;
+  }
+  
+  // For local images, return as is (consider implementing image optimization on backend)
+  return url;
+};
+
 const PropertyDetails = () => {
   const { id } = useParams<{ id: string }>();
   const [property, setProperty] = useState<Property | null>(null);
@@ -27,6 +44,8 @@ const PropertyDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [imageLoadingStates, setImageLoadingStates] = useState<{[key: number]: boolean}>({});
+  const [imageErrorStates, setImageErrorStates] = useState<{[key: number]: boolean}>({});
 
   useEffect(() => {
     if (id) {
@@ -42,6 +61,14 @@ const PropertyDetails = () => {
       const propertyData = await propertiesAPI.getById(propertyId);
       setProperty(propertyData);
       setIsFavorite(propertyData.is_favorited || false);
+      
+      // Initialize image loading states
+      const images = propertyData.images || [];
+      const loadingStates: {[key: number]: boolean} = {};
+      images.forEach((_, index) => {
+        loadingStates[index] = true;
+      });
+      setImageLoadingStates(loadingStates);
       
       // Increment view count
       await propertiesAPI.incrementPropertyViews(propertyId);
@@ -73,15 +100,41 @@ const PropertyDetails = () => {
     }).format(numericPrice);
   };
 
-  const getImageUrl = (imagePath: string): string => {
-    if (!imagePath) return '';
+  const getImageUrl = (imagePath: string, size: 'large' | 'medium' | 'small' = 'large'): string => {
+    if (!imagePath) return '/placeholder-property.jpg';
+    
+    // Define sizes for different use cases
+    const sizes = {
+      large: 1200,   // Main gallery
+      medium: 600,   // Thumbnails
+      small: 300     // Gallery grid
+    };
     
     if (imagePath.startsWith('http')) {
-      return imagePath;
+      return optimizeImageUrl(imagePath, sizes[size]);
     }
     
     const baseUrl = 'http://localhost:8000';
-    return `${baseUrl}${imagePath}`;
+    const fullUrl = `${baseUrl}${imagePath}`;
+    return optimizeImageUrl(fullUrl, sizes[size]);
+  };
+
+  const handleImageLoad = (index: number) => {
+    setImageLoadingStates(prev => ({
+      ...prev,
+      [index]: false
+    }));
+  };
+
+  const handleImageError = (index: number) => {
+    setImageLoadingStates(prev => ({
+      ...prev,
+      [index]: false
+    }));
+    setImageErrorStates(prev => ({
+      ...prev,
+      [index]: true
+    }));
   };
 
   const handleShare = (platform: 'facebook' | 'twitter' | 'email' | 'whatsapp') => {
@@ -358,8 +411,8 @@ const PropertyDetails = () => {
                 </div>
               </div>
             )}
-        </div>
-      );
+          </div>
+        );
 
       case 'media':
         return (
@@ -391,11 +444,20 @@ const PropertyDetails = () => {
               <h3 className="text-xl font-semibold mb-4">Gallery</h3>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {property.images?.map((image, index) => (
-                  <div key={image.id} className="aspect-square rounded-lg overflow-hidden">
+                  <div key={image.id} className="relative aspect-square rounded-lg overflow-hidden bg-gray-100">
+                    {imageLoadingStates[index] && (
+                      <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
+                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                      </div>
+                    )}
                     <img
-                      src={getImageUrl(image.image)}
+                      src={imageErrorStates[index] ? '/placeholder-property.jpg' : getImageUrl(image.image, 'small')}
                       alt={`Property view ${index + 1}`}
-                      className="w-full h-full object-cover hover:scale-105 transition-transform cursor-pointer"
+                      className={`w-full h-full object-cover transition-opacity duration-300 ${
+                        imageLoadingStates[index] ? 'opacity-0' : 'opacity-100'
+                      }`}
+                      onLoad={() => handleImageLoad(index)}
+                      onError={() => handleImageError(index)}
                     />
                   </div>
                 ))}
@@ -504,16 +566,27 @@ const PropertyDetails = () => {
               <div className="lg:col-span-2">
                 {/* Image Gallery with Slider */}
                 <div className="mb-8">
-                  <div className="relative rounded-xl overflow-hidden mb-4 h-96 bg-gray-100 group">
+                  <div className="relative rounded-xl overflow-hidden mb-4 bg-gray-100 group aspect-[4/3]">
                     {displayImages.length > 0 ? (
-                      <img
-                        src={getImageUrl(displayImages[selectedImage]?.image)}
-                        alt={property.title}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = '/placeholder-property.jpg';
-                        }}
-                      />
+                      <>
+                        {imageLoadingStates[selectedImage] && (
+                          <div className="absolute inset-0 bg-gray-100 flex items-center justify-center z-10">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                          </div>
+                        )}
+                        <img
+                          src={imageErrorStates[selectedImage] ? '/placeholder-property.jpg' : getImageUrl(displayImages[selectedImage]?.image, 'large')}
+                          alt={property.title}
+                          className={`w-full h-full object-contain transition-opacity duration-300 ${
+                            imageLoadingStates[selectedImage] ? 'opacity-0' : 'opacity-100'
+                          }`}
+                          onLoad={() => handleImageLoad(selectedImage)}
+                          onError={() => handleImageError(selectedImage)}
+                          style={{ 
+                            imageRendering: '-webkit-optimize-contrast'
+                          }}
+                        />
+                      </>
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
                         <span className="text-gray-500">No Image Available</span>
@@ -524,7 +597,7 @@ const PropertyDetails = () => {
                     <Button
                       variant="outline"
                       size="icon"
-                      className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm hover:bg-white"
+                      className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm hover:bg-white z-20"
                       onClick={handleFavoriteToggle}
                     >
                       <Heart 
@@ -538,7 +611,7 @@ const PropertyDetails = () => {
                         <Button
                           variant="outline"
                           size="icon"
-                          className="absolute left-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-white/80 backdrop-blur-sm"
+                          className="absolute left-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-white/80 backdrop-blur-sm z-20"
                           onClick={() => setSelectedImage((prev) => (prev === 0 ? displayImages.length - 1 : prev - 1))}
                         >
                           <ChevronLeft className="h-5 w-5" />
@@ -547,14 +620,14 @@ const PropertyDetails = () => {
                         <Button
                           variant="outline"
                           size="icon"
-                          className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-white/80 backdrop-blur-sm"
+                          className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-white/80 backdrop-blur-sm z-20"
                           onClick={() => setSelectedImage((prev) => (prev === displayImages.length - 1 ? 0 : prev + 1))}
                         >
                           <ChevronRight className="h-5 w-5" />
                         </Button>
                         
                         {/* Image Counter */}
-                        <div className="absolute bottom-4 right-4 bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium">
+                        <div className="absolute bottom-4 right-4 bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium z-20">
                           {selectedImage + 1} / {displayImages.length}
                         </div>
                       </>
@@ -568,17 +641,23 @@ const PropertyDetails = () => {
                         <button
                           key={image.id}
                           onClick={() => setSelectedImage(index)}
-                          className={`relative rounded-lg overflow-hidden h-24 transition-all ${
+                          className={`relative rounded-lg overflow-hidden bg-gray-100 aspect-square transition-all ${
                             selectedImage === index ? 'ring-2 ring-blue-500' : 'opacity-70 hover:opacity-100'
                           }`}
                         >
+                          {imageLoadingStates[index] && (
+                            <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                            </div>
+                          )}
                           <img 
-                            src={getImageUrl(image.image)} 
+                            src={imageErrorStates[index] ? '/placeholder-property.jpg' : getImageUrl(image.image, 'medium')} 
                             alt={`View ${index + 1}`} 
-                            className="w-full h-full object-cover"
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).src = '/placeholder-property.jpg';
-                            }}
+                            className={`w-full h-full object-cover transition-opacity duration-300 ${
+                              imageLoadingStates[index] ? 'opacity-0' : 'opacity-100'
+                            }`}
+                            onLoad={() => handleImageLoad(index)}
+                            onError={() => handleImageError(index)}
                           />
                         </button>
                       ))}
