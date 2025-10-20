@@ -171,27 +171,30 @@ const PropertyCard = ({ property, viewMode = 'grid', className = "" }: PropertyC
       <Card className={`bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 overflow-hidden flex flex-col h-full max-h-[85vh] group ${
         isListView ? 'flex-row' : ''
       } ${className}`}>
-        {/* Image Container with Fixed Aspect Ratio */}
-        <div className={`relative overflow-hidden ${
-          isListView 
-            ? 'w-64 h-48 flex-shrink-0' 
-            : 'h-48 md:h-56 lg:h-60'
-        }`}>
-          {imageLoading && !imageError && (
-            <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#f77f77]"></div>
-            </div>
-          )}
-          <img
-            src={imageError ? PLACEHOLDER_IMAGE : imageUrl}
-            alt={property.title}
-            className={`w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 ${
-              imageLoading && !imageError ? 'opacity-0' : 'opacity-100'
-            }`}
-            loading="lazy"
-            onError={handleImageError}
-            onLoad={handleImageLoad}
-          />
+        {/* Improved Image Container */}
+          <div className={`relative overflow-hidden ${
+            isListView 
+              ? 'w-64 aspect-video' 
+              : 'w-full aspect-video'
+          }`}>
+            {imageLoading && !imageError && (
+              <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#f77f77]"></div>
+              </div>
+            )}
+            <img
+              src={imageError ? PLACEHOLDER_IMAGE : imageUrl}
+              alt={property.title}
+              className="w-full h-full object-cover transition-opacity duration-300"
+              style={{ 
+                objectPosition: 'center',
+                imageRendering: imageError ? 'crisp-edges' : 'auto'
+              }}
+              loading="lazy"
+              onError={handleImageError}
+              onLoad={handleImageLoad}
+            />
+
           
           {/* Status Badge */}
           <div className="absolute top-3 left-3">
