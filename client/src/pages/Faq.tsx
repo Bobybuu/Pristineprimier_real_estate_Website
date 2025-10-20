@@ -166,15 +166,15 @@ const Faq = (): JSX.Element => {
 
       <main>
         {/* Hero Section */}
-        <section className="gradient-hero text-primary-foreground py-20">
+        <section className="gradient-hero text-primary-foreground py-1">
           <div className="container mx-auto px-4 text-center">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-medium mb-6">
+            <h1 className="text-center mb-2 font-light text-3xl tracking-tight">
               Frequently Asked Questions
             </h1>
-            <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto text-primary-foreground/90">
+            <p className="text-lg mb-4 max-w-2xl mx-auto text-accent-foreground/90">
               Find quick answers to common questions about real estate in Kenya
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-2">
               <Button 
                 asChild 
                 className="bg-[#f77f77] hover:bg-[#f77f77]/90 text-white border border-[#f77f77]"
@@ -195,7 +195,7 @@ const Faq = (): JSX.Element => {
           </div>
         </section>
 
-        {/* Popular Questions */}
+        {/* Popular Questions 
         <section className="py-12 bg-secondary">
           <div className="container mx-auto px-4">
             <h2 className="text-2xl font-medium mb-8 text-center">Most Popular Questions</h2>
@@ -217,13 +217,13 @@ const Faq = (): JSX.Element => {
               ))}
             </div>
           </div>
-        </section>
+        </section> */}
 
         {/* FAQ Categories */}
-        <section className="py-16">
+        <section className="py-8">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
-              <h2 className="mb-4 font-medium">Browse Questions by Category</h2>
+              <h2 className="text-center mb-2 font-light text-3xl tracking-tight">Browse Questions by Category</h2>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                 Find detailed answers organized by topic
               </p>
@@ -275,14 +275,15 @@ const Faq = (): JSX.Element => {
           </div>
         </section>
 
+
         {/* CTA Section */}
-        <section className="py-16 bg-accent text-accent-foreground">
+        <section className="py-1 bg-accent text-accent-foreground">
           <div className="container mx-auto px-4 text-center">
-            <h2 className="mb-4 font-medium">Still Have Questions?</h2>
-            <p className="text-lg mb-8 max-w-2xl mx-auto text-accent-foreground/90">
+            <h2 className="text-center mb-2 font-light text-3xl tracking-tight">Still Have Questions?</h2>
+            <p className="text-lg mb-4 max-w-2xl mx-auto text-accent-foreground/90">
               Our real estate experts are ready to help you with any questions
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-2">
               <Button 
                 asChild
                 size="lg"

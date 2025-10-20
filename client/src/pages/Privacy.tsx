@@ -79,14 +79,14 @@ const Privacy = (): JSX.Element => {
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Button 
                   onClick={scrollToContent}
-                  className="bg-blue-600 hover:bg-blue-700 text-white border-0 shadow-sm"
+                  className="bg-[#f77f77] hover:bg-[#f77f77]/90 text-white border-0 shadow-sm"
                 >
                   Read Policy
                 </Button>
                 <Button 
                   asChild 
                   variant="outline"
-                  className="border-gray-300 text-gray-700 hover:bg-gray-50 shadow-sm"
+                  className="border-gray-300 text-gray-700 hover:bg-gray-500 shadow-sm"
                 >
                   <Link to="/contact">
                     Contact DPO
@@ -140,14 +140,14 @@ const Privacy = (): JSX.Element => {
             <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6">
               <Card className="bg-white border-gray-200 shadow-sm">
                 <CardContent className="p-6 text-center">
-                  <Mail className="h-8 w-8 text-blue-600 mx-auto mb-4" />
+                  <Mail className="h-8 w-8 text-red-600 mx-auto mb-4" />
                   <h4 className="text-gray-900 font-semibold mb-2">Email DPO</h4>
                   <p className="text-gray-600 text-sm mb-4">
                     For privacy inquiries and data requests
                   </p>
                   <Button 
                     asChild
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
+                    className="bg-[#f77f77] hover:bg-[#f77f77]/90 text-white border border-[#f77f77] shadow-sm w-full"
                   >
                     <a href="mailto:dpo@pristineprimer.com">
                       dpo@pristineprimer.com
@@ -158,7 +158,7 @@ const Privacy = (): JSX.Element => {
 
               <Card className="bg-white border-gray-200 shadow-sm">
                 <CardContent className="p-6 text-center">
-                  <Phone className="h-8 w-8 text-green-600 mx-auto mb-4" />
+                  <Phone className="h-8 w-8 text-red-600 mx-auto mb-4" />
                   <h4 className="text-gray-900 font-semibold mb-2">Call DPO</h4>
                   <p className="text-gray-600 text-sm mb-4">
                     For urgent privacy concerns
@@ -166,7 +166,7 @@ const Privacy = (): JSX.Element => {
                   <Button 
                     asChild
                     variant="outline"
-                    className="w-full border-green-600 text-green-600 hover:bg-green-50 shadow-sm"
+                    className="w-full border-red-600 text-red-600 hover:bg-red-500 shadow-sm"
                   >
                     <a href="tel:+254743012966">
                       +254 743 012 966

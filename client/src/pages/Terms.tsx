@@ -15,7 +15,7 @@ const Terms = (): JSX.Element => {
       id: 'introduction',
       title: 'Introduction & Acceptance',
       icon: FileText,
-      content: 'Welcome to PristinePrimer Real Estate. By using our platform, you agree to these Terms and Conditions governing our real estate services in Kenya.'
+      content: 'Welcome to PristinePrimier Real Estate. By using our platform, you agree to these Terms and Conditions governing our real estate services in Kenya.'
     },
     {
       id: 'user-obligations',
@@ -91,14 +91,14 @@ const Terms = (): JSX.Element => {
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Button 
                   onClick={scrollToContent}
-                  className="bg-teal-600 hover:bg-teal-700 text-white border-0 shadow-sm"
+                  className="bg-[#f77f77] hover:bg-[#f77f77]/90 text-white border-0 shadow-sm"
                 >
                   Read Terms
                 </Button>
                 <Button 
                   asChild 
                   variant="outline"
-                  className="border-gray-300 text-gray-700 hover:bg-gray-50 shadow-sm"
+                  className="border-gray-300 text-gray-700 hover:bg-gray-500 shadow-sm"
                 >
                   <Link to="/contact">
                     Contact Legal
@@ -159,7 +159,7 @@ const Terms = (): JSX.Element => {
                   </p>
                   <Button 
                     asChild
-                    className="w-full bg-teal-600 hover:bg-teal-700 text-white shadow-sm"
+                    className="bg-[#f77f77] hover:bg-[#f77f77]/90 text-white w-full border-0 shadow-sm"
                   >
                     <a href="mailto:legal@pristineprimer.com">
                       legal@pristineprimer.com
@@ -178,7 +178,7 @@ const Terms = (): JSX.Element => {
                   <Button 
                     asChild
                     variant="outline"
-                    className="w-full border-blue-600 text-blue-600 hover:bg-blue-50 shadow-sm"
+                    className="w-full border-blue-600 text-blue-600 hover:bg-blue-500 shadow-sm"
                   >
                     <a href="tel:+254743012966">
                       +254 743 012 966
