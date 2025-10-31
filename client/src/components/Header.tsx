@@ -72,7 +72,7 @@ const Header = () => {
             <img 
               src="/logorealestate.png"  
               alt="PristinePrimier Real Estate" 
-              className="h-16 w-auto"
+              className="h-8 w-auto"
             />
           </Link>
 
