@@ -182,7 +182,7 @@ const Header = () => {
               </div>
               <div className="text-white">
                 <div className="text-xs font-medium opacity-90">Talk to us</div>
-                <div className="text-sm font-semibold">+254 735 216000</div>
+                <div className="text-sm font-semibold">+254 729407573</div>
               </div>
             </div>
 
