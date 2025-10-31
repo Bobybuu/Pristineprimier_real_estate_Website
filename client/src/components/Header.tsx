@@ -77,15 +77,7 @@ const Header = () => {
           </Link>
 
           {/* Desktop - Phone Number (Center) */}
-          <div className="hidden lg:flex items-center gap-2">
-            <div className="bg-white/10 rounded-full p-2">
-              <Phone className="h-4 w-4 text-white" />
-            </div>
-            <div className="text-white">
-              <div className="text-xs font-medium opacity-90">Talk to us</div>
-              <div className="text-sm font-semibold">+254 735 216000</div>
-            </div>
-          </div>
+          
 
           {/* Desktop Navigation & Auth */}
           <div className="hidden lg:flex items-center gap-6">
