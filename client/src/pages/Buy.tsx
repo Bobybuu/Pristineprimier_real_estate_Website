@@ -263,7 +263,7 @@ const Buy = () => {
       <Header />
 
       <main className="flex-1">
-        {/* Page Header */}
+       {/* Page Header */}
         <section className="bg-secondary py-1">
           <div className="container mx-auto px-4">
             <h1 className="text-center mb-2 font-light text-3xl tracking-tight">Properties</h1>
@@ -271,7 +271,7 @@ const Buy = () => {
               Discover your perfect property in Kenya
             </p>
           </div>
-        </section>
+        </section> 
 
         {/* Results Section */}
         <section className="py-8">

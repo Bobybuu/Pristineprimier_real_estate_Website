@@ -172,22 +172,27 @@ const Index = (): JSX.Element => {
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                  {featuredProperties && featuredProperties.length > 0 ? (
-                    featuredProperties.map((property) => (
-                      <PropertyCard key={property.id} property={property} />
-                    ))
-                  ) : (
-                    <div className="col-span-full text-center py-12">
-                      <p className="text-muted-foreground text-lg">
-                        No featured properties available at the moment.
-                      </p>
-                      <p className="text-sm text-muted-foreground mt-2">
-                        Check back soon for new listings!
-                      </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-8">
+                {featuredProperties && featuredProperties.length > 0 ? (
+                  featuredProperties.map((property) => (
+                    <div key={property.id} className="flex">
+                      <PropertyCard 
+                        property={property} 
+                        className="h-full flex flex-col"
+                      />
                     </div>
-                  )}
-                </div>
+                  ))
+                ) : (
+                  <div className="col-span-full text-center py-16">
+                    <p className="text-muted-foreground text-lg">
+                      No featured properties available at the moment.
+                    </p>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      Check back soon for new listings!
+                    </p>
+                  </div>
+                )}
+              </div>
 
                 <div className="text-center mb-3">
                   <Button asChild variant="outline" size="lg">
