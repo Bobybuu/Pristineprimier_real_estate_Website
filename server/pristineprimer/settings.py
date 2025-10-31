@@ -26,6 +26,7 @@ ALLOWED_HOSTS = [
     "main.d35ciakzcz3l11.amplifyapp.com",
     "www.pristineprimier.co.ke",
     "pristineprimier.com",
+    "http://localhost:8081",
 ]
 
 # ---------------------------
@@ -110,6 +111,18 @@ DATABASES = {
 }
 
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'pristineprimer',
+        'USER': 'postgres',
+        'PASSWORD': 'Chrispine9909',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
+}
+
+
 
 # ---------------------------
 # PASSWORD VALIDATION
@@ -173,12 +186,14 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
     "http://localhost:8080",
     "http://127.0.0.1:8080",
-    "http://localhost:5173",  # Vite dev server
+    "http://localhost:5173",  
     "https://main.d35ciakzcz3l11.amplifyapp.com",
     "https://pristineprimier.co.ke",
     "https://www.pristineprimier.com",
     "https://api.pristineprimier.com",
     "https://pristineprimier.com",
+    "http://localhost:8081",
+    "https://www.pristineprimier.co.ke", 
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -190,6 +205,7 @@ CSRF_TRUSTED_ORIGINS = [
     "https://main.d35ciakzcz3l11.amplifyapp.com",
     "https://pristineprimier.co.ke",
     "https://www.pristineprimier.co.ke",
+    "http://localhost:8081",
 ]
 
 # ---------------------------
@@ -297,10 +313,17 @@ LOGGING = {
         },
     },
     'handlers': {
-        'file': {
-            'level': 'DEBUG',
+        #'file': {
+            #'level': 'DEBUG',
+            #'class': 'logging.FileHandler',
+            #'filename': os.path.join(BASE_DIR, 'logs', 'django.log'),
+            
+          'file': {
+            'level': 'INFO',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs', 'django.log'),
+            'filename': BASE_DIR / 'django.log',
+            'formatter': 'verbose',
+          
         },
         'console': {
             'class': 'logging.StreamHandler',
