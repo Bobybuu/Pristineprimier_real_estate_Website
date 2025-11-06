@@ -351,7 +351,7 @@ const Index = (): JSX.Element => {
                   <div className="w-16 h-16 bg-teal/10 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-teal/20 transition-base">
                     <HomeIcon className="h-8 w-8 text-teal" />
                   </div>
-                  <h3 className="text-xl font-semibold mb-2">Buy a House</h3>
+                  <h3 className="text-xl font-semibold mb-2">Buy Property</h3>
                   <p className="text-muted-foreground mb-4">
                     Explore thousands of properties ready for you
                   </p>
@@ -366,7 +366,7 @@ const Index = (): JSX.Element => {
                   <div className="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-accent/20 transition-base">
                     <DollarSign className="h-8 w-8 text-accent" />
                   </div>
-                  <h3 className="text-xl font-semibold mb-2">Sell a House</h3>
+                  <h3 className="text-xl font-semibold mb-2">Sell Property</h3>
                   <p className="text-muted-foreground mb-4">
                     Get the best price for your property
                   </p>
