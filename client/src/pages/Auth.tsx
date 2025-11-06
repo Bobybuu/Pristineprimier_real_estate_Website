@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Home, Mail, Lock, User, Phone, Building2, UserCircle } from 'lucide-react';
+import { Mail, Lock, User, Phone, Building2, UserCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -178,11 +178,17 @@ const Auth = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-secondary p-4">
       <div className="w-full max-w-md">
-        {/* Logo/Header */}
+        {/* Logo/Header - Updated with the same logo as header */}
         <div className="text-center mb-8">
-          <Link to="/" className="inline-flex items-center gap-2 text-2xl font-bold text-primary mb-2">
-            <Home className="h-8 w-8" />
-            PristinePrimier
+          <Link 
+            to="/" 
+            className="inline-flex items-center gap-2 hover:opacity-90 transition-opacity mb-2"
+          >
+            <img 
+              src="/logorealestatee.png"  
+              alt="PristinePrimier Real Estate" 
+              className="h-8 w-auto"
+            />
           </Link>
           <p className="text-muted-foreground">Your trusted real estate partner</p>
         </div>
