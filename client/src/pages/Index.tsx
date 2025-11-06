@@ -69,12 +69,13 @@ const Index = (): JSX.Element => {
     return formatted.replace('KES', 'KSh');
   };
 
-  // Helper function to get image URL safely
-  const getPropertyImageUrl = (property: any): string => {
+  // Helper function to get image URL safely for background
+  const getBackgroundImageUrl = (property: any): string => {
     if (!property.images || property.images.length === 0) {
       return heroImage;
     }
     
+    // Use the first image for background
     const firstImage = property.images[0];
     
     // Handle both string and PropertyImage types
@@ -88,6 +89,34 @@ const Index = (): JSX.Element => {
     }
     
     return heroImage;
+  };
+
+  // Helper function to get thumbnail image URL safely
+  const getThumbnailImageUrl = (property: any): string => {
+    if (!property.images || property.images.length === 0) {
+      return heroImage;
+    }
+    
+    // Use the first image for thumbnail (same as background for consistency)
+    const firstImage = property.images[0];
+    
+    // Handle both string and PropertyImage types
+    if (typeof firstImage === 'string') {
+      return firstImage;
+    }
+    
+    // If it's a PropertyImage object, get the URL
+    if (firstImage && typeof firstImage === 'object' && 'url' in firstImage) {
+      return firstImage.url;
+    }
+    
+    return heroImage;
+  };
+
+  // Function to handle image loading errors
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    const target = e.target as HTMLImageElement;
+    target.src = heroImage;
   };
 
   return (
@@ -104,7 +133,12 @@ const Index = (): JSX.Element => {
           ) : error || heroProperties.length === 0 ? (
             // Fallback to static hero image if no properties available
             <div className="absolute inset-0 flex items-center justify-center">
-              <img src={heroImage} alt="Luxury real estate" className="w-full h-full object-cover" />
+              <img 
+                src={heroImage} 
+                alt="Luxury real estate" 
+                className="w-full h-full object-cover"
+                onError={handleImageError}
+              />
               <div className="absolute inset-0 gradient-overlay" />
               <div className="absolute inset-0 flex items-center justify-center z-10">
                 <div className="container mx-auto px-4 text-center">
@@ -133,11 +167,12 @@ const Index = (): JSX.Element => {
                       index === currentSlide ? 'opacity-100' : 'opacity-0'
                     }`}
                   >
-                    {/* Background Image */}
+                    {/* Background Image - Full property photo */}
                     <img
-                      src={getPropertyImageUrl(property)}
+                      src={getBackgroundImageUrl(property)}
                       alt={property.title}
                       className="w-full h-full min-h-screen md:min-h-screen object-cover"
+                      onError={handleImageError}
                     />
                     <div className="absolute inset-0 gradient-overlay" />
                     
@@ -146,13 +181,14 @@ const Index = (): JSX.Element => {
                       <div className="container mx-auto px-4 w-full">
                         <div className="flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-12 max-w-7xl mx-auto">
                           
-                          {/* Property Image - Hidden on mobile, shown on desktop */}
+                          {/* Property Thumbnail - Hidden on mobile, shown on desktop */}
                           <div className="hidden lg:block lg:w-1/2 xl:w-2/5">
                             <div className="relative rounded-2xl overflow-hidden shadow-2xl transform hover:scale-105 transition-transform duration-300">
                               <img
-                                src={getPropertyImageUrl(property)}
+                                src={getThumbnailImageUrl(property)}
                                 alt={property.title}
                                 className="w-full h-80 lg:h-96 object-cover"
+                                onError={handleImageError}
                               />
                               <div className="absolute top-4 left-4">
                                 <span className="bg-[#f77f77] text-white px-3 py-2 rounded-lg text-sm font-semibold">
@@ -166,6 +202,8 @@ const Index = (): JSX.Element => {
                                   </span>
                                 </div>
                               )}
+                              {/* Image overlay for better text readability */}
+                              <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-black/50 to-transparent" />
                             </div>
                           </div>
 
