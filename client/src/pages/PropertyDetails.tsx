@@ -560,13 +560,14 @@ const PropertyDetails = () => {
 
         {/* Property Content */}
         <section className="py-8">
-          <div className="container mx-auto px-4">
+          <div className="container mx-auto px-4 max-w-7xl">
+            {/* Two Column Layout */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Main Content */}
-              <div className="lg:col-span-2">
-                {/* Image Gallery with Slider */}
-                <div className="mb-8">
-                  <div className="relative rounded-xl overflow-hidden mb-4 bg-gray-100 group aspect-[4/3]">
+              {/* Main Content - Left Side (65%) */}
+              <div className="lg:col-span-2 space-y-8">
+                {/* Image Gallery with Slider - Full Width */}
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                  <div className="relative rounded-xl overflow-hidden bg-gray-100 group aspect-[4/3]">
                     {displayImages.length > 0 ? (
                       <>
                         {imageLoadingStates[selectedImage] && (
@@ -636,39 +637,41 @@ const PropertyDetails = () => {
                   
                   {/* Thumbnail Navigation */}
                   {displayImages.length > 1 && (
-                    <div className="grid grid-cols-4 gap-2">
-                      {displayImages.map((image, index) => (
-                        <button
-                          key={image.id}
-                          onClick={() => setSelectedImage(index)}
-                          className={`relative rounded-lg overflow-hidden bg-gray-100 aspect-square transition-all ${
-                            selectedImage === index ? 'ring-2 ring-blue-500' : 'opacity-70 hover:opacity-100'
-                          }`}
-                        >
-                          {imageLoadingStates[index] && (
-                            <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
-                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-                            </div>
-                          )}
-                          <img 
-                            src={imageErrorStates[index] ? '/placeholder-property.jpg' : getImageUrl(image.image, 'medium')} 
-                            alt={`View ${index + 1}`} 
-                            className={`w-full h-full object-cover transition-opacity duration-300 ${
-                              imageLoadingStates[index] ? 'opacity-0' : 'opacity-100'
+                    <div className="p-4 bg-white border-t border-gray-200">
+                      <div className="grid grid-cols-4 gap-2">
+                        {displayImages.map((image, index) => (
+                          <button
+                            key={image.id}
+                            onClick={() => setSelectedImage(index)}
+                            className={`relative rounded-lg overflow-hidden bg-gray-100 aspect-square transition-all ${
+                              selectedImage === index ? 'ring-2 ring-blue-500' : 'opacity-70 hover:opacity-100'
                             }`}
-                            onLoad={() => handleImageLoad(index)}
-                            onError={() => handleImageError(index)}
-                          />
-                        </button>
-                      ))}
+                          >
+                            {imageLoadingStates[index] && (
+                              <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                              </div>
+                            )}
+                            <img 
+                              src={imageErrorStates[index] ? '/placeholder-property.jpg' : getImageUrl(image.image, 'medium')} 
+                              alt={`View ${index + 1}`} 
+                              className={`w-full h-full object-cover transition-opacity duration-300 ${
+                                imageLoadingStates[index] ? 'opacity-0' : 'opacity-100'
+                              }`}
+                              onLoad={() => handleImageLoad(index)}
+                              onError={() => handleImageError(index)}
+                            />
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
 
                 {/* Property Header */}
-                <div className="mb-8">
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                   <div className="flex items-start justify-between mb-4">
-                    <div>
+                    <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
                         <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
                           property.status === 'sold' || property.status === 'rented' 
@@ -694,7 +697,7 @@ const PropertyDetails = () => {
                         </span>
                       </div>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 ml-4">
                       <Button variant="outline" size="icon" onClick={() => handleShare('whatsapp')}>
                         <span className="text-green-600">💬</span>
                       </Button>
@@ -764,38 +767,43 @@ const PropertyDetails = () => {
                   </div>
                 </div>
 
-                {/* Tab Navigation */}
-                <div className="border-b border-gray-200 mb-8">
-                  <nav className="flex space-x-8">
-                    {[
-                      { id: 'overview', label: 'Overview' },
-                      { id: 'details', label: 'Details & Features' },
-                      { id: 'location', label: 'Location' },
-                      { id: 'media', label: 'Media' },
-                      { id: 'documents', label: 'Documents' },
-                    ].map((tab) => (
-                      <button
-                        key={tab.id}
-                        onClick={() => setActiveTab(tab.id as TabType)}
-                        className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
-                          activeTab === tab.id
-                            ? 'border-blue-500 text-blue-600'
-                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                        }`}
-                      >
-                        {tab.label}
-                      </button>
-                    ))}
-                  </nav>
-                </div>
+                {/* Tab Navigation - COMPACT & CENTERED */}
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                  {/* Compact Tab Container */}
+                  <div className="bg-gray-50 rounded-lg p-2 mb-6">
+                    <nav className="flex justify-center">
+                      <div className="flex flex-wrap justify-center gap-1 bg-white rounded-lg p-1 shadow-sm border border-gray-200">
+                        {[
+                          { id: 'overview', label: 'Overview' },
+                          { id: 'details', label: 'Details & Features' },
+                          { id: 'location', label: 'Location' },
+                          { id: 'media', label: 'Media' },
+                          { id: 'documents', label: 'Documents' },
+                        ].map((tab) => (
+                          <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id as TabType)}
+                            className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 whitespace-nowrap ${
+                              activeTab === tab.id
+                                ? 'bg-blue-600 text-white shadow-sm'
+                                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                            }`}
+                          >
+                            {tab.label}
+                          </button>
+                        ))}
+                      </div>
+                    </nav>
+                  </div>
 
-                {/* Tab Content */}
-                <div className="mb-8">
-                  {renderTabContent()}
+                  {/* Tab Content */}
+                  <div className="min-h-[400px]">
+                    {renderTabContent()}
+                  </div>
                 </div>
 
                 {/* Share Section */}
-                <div className="border-t border-gray-200 pt-8">
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Share This Property</h3>
                   <div className="flex gap-3">
                     <Button variant="outline" size="sm" onClick={() => handleShare('facebook')}>
@@ -814,9 +822,9 @@ const PropertyDetails = () => {
                 </div>
               </div>
 
-              {/* Contact Sidebar */}
+              {/* Contact Sidebar - Right Side (35%) */}
               <div className="lg:col-span-1">
-                <div className="sticky top-20 bg-white border border-gray-200 rounded-xl p-6 shadow-lg">
+                <div className="sticky top-24 bg-white border border-gray-200 rounded-xl p-6 shadow-lg">
                   <h3 className="text-xl font-semibold text-gray-900 mb-4">Interested in this property?</h3>
                   <p className="text-gray-600 text-sm mb-6">
                     Fill out the form below and we'll get in touch with you shortly.
