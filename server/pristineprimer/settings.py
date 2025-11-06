@@ -27,6 +27,7 @@ ALLOWED_HOSTS = [
     "www.pristineprimier.co.ke",
     "pristineprimier.com",
     "http://localhost:8081",
+    "3.22.222.35",
 ]
 
 # ---------------------------
@@ -194,6 +195,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://pristineprimier.com",
     "http://localhost:8081",
     "https://www.pristineprimier.co.ke", 
+    "3.22.222.35",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -206,6 +208,7 @@ CSRF_TRUSTED_ORIGINS = [
     "https://pristineprimier.co.ke",
     "https://www.pristineprimier.co.ke",
     "http://localhost:8081",
+    "http://3.22.222.35",
 ]
 
 
@@ -386,3 +389,9 @@ CACHES = {
 ADMIN_SITE_HEADER = "PristinePrimier Real Estate Administration"
 ADMIN_SITE_TITLE = "PristinePrimier Admin Portal"
 ADMIN_INDEX_TITLE = "Welcome to PristinePrimier Admin"
+# Add these to your ALLOWED_HOSTS
+ALLOWED_HOSTS.extend([
+    '3.22.222.35',  # The IP that's trying to access
+    '18.217.243.193',  # Your EC2 instance IP
+    '172.31.47.183',   # Your private IP
+])
