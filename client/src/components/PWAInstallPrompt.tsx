@@ -14,39 +14,55 @@ const PWAInstallPrompt = () => {
   const [isStandalone, setIsStandalone] = useState(false);
 
   useEffect(() => {
+    console.log('🔍 PWAInstallPrompt mounting...');
+    
     // Check if app is already installed
     if (window.matchMedia('(display-mode: standalone)').matches) {
+      console.log('📱 App already installed (standalone mode)');
       setIsStandalone(true);
       return;
     }
 
     // Check for iOS
     const userAgent = window.navigator.userAgent.toLowerCase();
-    setIsIOS(/iphone|ipad|ipod/.test(userAgent));
+    const isIOSDevice = /iphone|ipad|ipod/.test(userAgent);
+    setIsIOS(isIOSDevice);
+    console.log('📱 Device is iOS:', isIOSDevice);
 
     // Check if prompt was recently dismissed
     const dismissedTime = localStorage.getItem('pwa-prompt-dismissed');
+    console.log('⏰ Dismissed time from localStorage:', dismissedTime);
+    
     if (dismissedTime) {
       const timeDiff = Date.now() - parseInt(dismissedTime);
-      // Show again after 7 days
+      const daysDiff = timeDiff / (1000 * 60 * 60 * 24);
+      console.log('⏰ Days since dismissal:', daysDiff);
+      
       if (timeDiff < 7 * 24 * 60 * 60 * 1000) {
+        console.log('🚫 Prompt dismissed recently, not showing');
         return;
       }
     }
 
-    // Listen for beforeinstallprompt event
+    // 🎯 TEMPORARY FIX: Force show prompt for testing
+    console.log('🔧 TEMPORARY: Forcing prompt to show for testing');
+    setTimeout(() => {
+      console.log('🔄 Setting showPrompt to true');
+      setShowPrompt(true);
+    }, 3000);
+
+    // Listen for beforeinstallprompt event (if it ever fires)
     const handleBeforeInstallPrompt = (e: BeforeInstallPromptEvent) => {
+      console.log('🎯 beforeinstallprompt event caught!', e);
       e.preventDefault();
       setDeferredPrompt(e);
-      // Show prompt after a delay
-      setTimeout(() => setShowPrompt(true), 3000);
     };
 
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt as EventListener);
-
-    // For iOS, show prompt after delay
-    if (isIOS && !dismissedTime) {
-      setTimeout(() => setShowPrompt(true), 5000);
+    if ('beforeinstallprompt' in window) {
+      window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt as EventListener);
+      console.log('👂 Listening for beforeinstallprompt event');
+    } else {
+      console.log('⚠️ beforeinstallprompt not supported in this browser');
     }
 
     return () => {
@@ -55,17 +71,23 @@ const PWAInstallPrompt = () => {
   }, [isIOS]);
 
   const handleInstallClick = async () => {
-    if (!deferredPrompt) return;
-
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    
-    if (outcome === 'accepted') {
-      console.log('User accepted the install prompt');
+    if (deferredPrompt) {
+      // Use the actual install prompt if available
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      
+      if (outcome === 'accepted') {
+        console.log('User accepted the install prompt');
+        setShowPrompt(false);
+      }
+      
+      setDeferredPrompt(null);
+    } else {
+      // Fallback: Show manual installation instructions
+      console.log('Manual installation required');
+      // You could show a modal with installation instructions here
       setShowPrompt(false);
     }
-    
-    setDeferredPrompt(null);
   };
 
   const handleDismiss = () => {
@@ -95,19 +117,21 @@ const PWAInstallPrompt = () => {
             <div className="text-xs text-gray-600 mb-2 flex items-center">
               Tap <Share className="h-3 w-3 inline mx-1" /> then "Add to Home Screen"
             </div>
-          ) : null}
+          ) : (
+            <div className="text-xs text-gray-600 mb-2">
+              Click install to add to your home screen
+            </div>
+          )}
           
           <div className="flex gap-2">
-            {!isIOS && deferredPrompt && (
-              <Button 
-                onClick={handleInstallClick}
-                size="sm" 
-                className="bg-[#f77f77] hover:bg-[#f77f77]/90 text-white text-xs"
-              >
-                <Download className="h-3 w-3 mr-1" />
-                Install
-              </Button>
-            )}
+            <Button 
+              onClick={handleInstallClick}
+              size="sm" 
+              className="bg-[#f77f77] hover:bg-[#f77f77]/90 text-white text-xs"
+            >
+              <Download className="h-3 w-3 mr-1" />
+              Install
+            </Button>
             <Button 
               onClick={handleDismiss}
               variant="outline" 
