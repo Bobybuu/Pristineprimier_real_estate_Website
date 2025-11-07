@@ -1,40 +1,45 @@
-const CACHE_NAME = 'pristine-primier-v1.0.0';
-const urlsToCache = [
-  '/',
-  '/static/js/bundle.js',
-  '/static/css/main.css',
-  '/site.webmanifest',
-  '/logorealestate.png',
-  '/web-app-manifest-192x192.png',
-  '/web-app-manifest-512x512.png'
-];
+const CACHE_NAME = 'pristine-primier-v1.0.1';
 
-// Install event
+// Install event - cache essential files
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
         console.log('Opened cache');
-        return cache.addAll(urlsToCache);
+        return cache.addAll([
+          '/',
+          '/site.webmanifest',
+          '/web-app-manifest-192x192.png',
+          '/web-app-manifest-512x512.png',
+          '/apple-touch-icon.png',
+          '/logorealestate.png'
+        ]);
       })
   );
 });
 
-// Fetch event
+// Fetch event - network first, then cache
 self.addEventListener('fetch', (event) => {
   event.respondWith(
-    caches.match(event.request)
+    fetch(event.request)
       .then((response) => {
-        // Return cached version or fetch from network
-        if (response) {
-          return response;
+        // Cache successful requests
+        if (response.status === 200) {
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseClone);
+          });
         }
-        return fetch(event.request);
+        return response;
+      })
+      .catch(() => {
+        // Fallback to cache if network fails
+        return caches.match(event.request);
       })
   );
 });
 
-// Activate event
+// Activate event - cleanup old caches
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
