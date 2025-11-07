@@ -17,113 +17,125 @@ import Dashboard from "@/pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import Profile from "@/pages/Profile";
 import CreateProperty from "@/pages/CreateProperty";
-import PWAInstallPrompt from "@/components/PWAInstallPrompt"; // Add this import
+import PWAInstallPrompt from "@/components/PWAInstallPrompt"; 
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Faq from '@/pages/Faq';
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
+import { useEffect } from "react"; // 👈 ADD THIS IMPORT
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <AuthProvider>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/buy" element={<Buy />} />
-            <Route path="/property/:id" element={<PropertyDetails />} />
-            <Route path="/sell" element={<Sell />} />
-            <Route path="/manage" element={<Manage />} />
-            <Route path="/rent" element={<Rent />} />
-            <Route path="/services" element={<Services />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/faq" element={<Faq />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/privacy" element={<Privacy />} />
+const App = () => {
+  
+  useEffect(() => {
+    // Check for service worker updates
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.ready.then(registration => {
+        console.log('🔄 Checking for service worker updates...');
+        registration.update();
+      });
+    }
+  }, []);
 
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <AuthProvider>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/buy" element={<Buy />} />
+              <Route path="/property/:id" element={<PropertyDetails />} />
+              <Route path="/sell" element={<Sell />} />
+              <Route path="/manage" element={<Manage />} />
+              <Route path="/rent" element={<Rent />} />
+              <Route path="/services" element={<Services />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/faq" element={<Faq />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/privacy" element={<Privacy />} />
 
+              {/* Protected Routes */}
+              <Route 
+                path="/dashboard/profile" 
+                element={
+                  <ProtectedRoute>
+                    <Profile />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              <Route 
+                path="/dashboard/seller/create" 
+                element={
+                  <ProtectedRoute>
+                    <CreateProperty />
+                  </ProtectedRoute>
+                } 
+              />
 
-            {/* Protected Routes */}
-            <Route 
-              path="/dashboard/profile" 
-              element={
-                <ProtectedRoute>
-                  <Profile />
-                </ProtectedRoute>
-              } 
-            />
+              <Route 
+                path="/dashboard" 
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                } 
+              />
+
+              <Route 
+                path="/create-property" 
+                element={
+                  <ProtectedRoute>
+                    <CreateProperty />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              <Route 
+                path="/dashboard/seller" 
+                element={
+                  <ProtectedRoute requiredRole="seller">
+                    <Dashboard />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              <Route 
+                path="/dashboard/admin" 
+                element={
+                  <ProtectedRoute requiredRole="admin">
+                    <Dashboard />
+                  </ProtectedRoute>
+                } 
+              />
+
+              <Route 
+                path="/profile" 
+                element={
+                  <ProtectedRoute>
+                    <Profile />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
             
-            <Route 
-              path="/dashboard/seller/create" 
-              element={
-                <ProtectedRoute>
-                  <CreateProperty />
-                </ProtectedRoute>
-              } 
-            />
-
-            <Route 
-              path="/dashboard" 
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              } 
-            />
-
-            <Route 
-              path="/create-property" 
-              element={
-                <ProtectedRoute>
-                  <CreateProperty />
-                </ProtectedRoute>
-              } 
-            />
-            
-            <Route 
-              path="/dashboard/seller" 
-              element={
-                <ProtectedRoute requiredRole="seller">
-                  <Dashboard />
-                </ProtectedRoute>
-              } 
-            />
-            
-            <Route 
-              path="/dashboard/admin" 
-              element={
-                <ProtectedRoute requiredRole="admin">
-                  <Dashboard />
-                </ProtectedRoute>
-              } 
-            />
-
-            <Route 
-              path="/profile" 
-              element={
-                <ProtectedRoute>
-                  <Profile />
-                </ProtectedRoute>
-              } 
-            />
-            
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-          
-          {/* PWA Install Prompt - Appears on all pages */}
-          <PWAInstallPrompt />
-        </AuthProvider>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+            {/* PWA Install Prompt - Appears on all pages */}
+            <PWAInstallPrompt />
+          </AuthProvider>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;

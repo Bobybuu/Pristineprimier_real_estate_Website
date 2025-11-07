@@ -142,16 +142,25 @@
     <div id="root"></div>
     
     <!-- Service Worker Registration - Only in Production -->
-    <script>
-      // Only register service worker in production
+   <script>
+  // Only register service worker in production
       if ('serviceWorker' in navigator && !window.location.hostname.includes('localhost') && !window.location.hostname.includes('127.0.0.1')) {
         window.addEventListener('load', function() {
           navigator.serviceWorker.register('/sw.js')
             .then(function(registration) {
-              console.log('ServiceWorker registration successful with scope: ', registration.scope);
+              console.log('✅ ServiceWorker registered with scope:', registration.scope);
+              
+              // Check if service worker is controlling the page
+              if (navigator.serviceWorker.controller) {
+                console.log('✅ Service Worker is controlling the page');
+              } else {
+                console.log('⚠️ Service Worker registered but not controlling. Refreshing...');
+                // Force refresh to let service worker take control
+                window.location.reload();
+              }
             })
             .catch(function(error) {
-              console.log('ServiceWorker registration failed: ', error);
+              console.log('❌ ServiceWorker registration failed:', error);
             });
         });
       }
