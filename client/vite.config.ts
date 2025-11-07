@@ -1,4 +1,4 @@
-import { defineConfig } from "vite";
+import { defineConfig } from "vite"; 
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
@@ -15,4 +15,10 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  // ADD THIS SECTION:
+  publicDir: 'public',
+  build: {
+    outDir: 'dist',
+    copyPublicDir: true // Ensure public files are copied
+  }
 }));
