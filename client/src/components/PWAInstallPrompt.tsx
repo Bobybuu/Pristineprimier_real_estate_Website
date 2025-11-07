@@ -71,23 +71,55 @@ const PWAInstallPrompt = () => {
   }, [isIOS]);
 
   const handleInstallClick = async () => {
+    console.log('🖱️ Install button clicked');
+    
     if (deferredPrompt) {
-      // Use the actual install prompt if available
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      
-      if (outcome === 'accepted') {
-        console.log('User accepted the install prompt');
-        setShowPrompt(false);
+      // Use the browser's install prompt
+      console.log('🚀 Using deferredPrompt.prompt()');
+      try {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log('🎯 User choice:', outcome);
+        
+        if (outcome === 'accepted') {
+          console.log('✅ User accepted installation');
+        } else {
+          console.log('❌ User declined installation');
+        }
+        
+        setDeferredPrompt(null);
+      } catch (error) {
+        console.error('💥 Installation error:', error);
       }
-      
-      setDeferredPrompt(null);
     } else {
       // Fallback: Show manual installation instructions
-      console.log('Manual installation required');
-      // You could show a modal with installation instructions here
-      setShowPrompt(false);
+      console.log('📱 Showing manual installation instructions');
+      
+      if (/android/i.test(navigator.userAgent)) {
+        alert(`To install PristinePrimier:
+        
+1. Tap the 3-dots menu (⋮) in Chrome
+2. Select "Install app" or "Add to Home screen"  
+3. Tap "Install" to add to your home screen
+
+Your app will open like a native application!`);
+      } else if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
+        alert(`To install PristinePrimier:
+        
+1. Tap the Share button (📤) in Safari
+2. Scroll down and tap "Add to Home Screen"
+3. Tap "Add" to install
+
+Your app will open like a native application!`);
+      } else {
+        // Look for install icon in browser UI
+        alert(`PristinePrimier can be installed!
+        
+Look for the install icon in your browser's address bar, or check the browser menu for "Install PristinePrimier".`);
+      }
     }
+    
+    handleDismiss();
   };
 
   const handleDismiss = () => {

@@ -22,6 +22,36 @@ const Index = (): JSX.Element => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
+  // 👇 ADDED: PWA Engagement Triggers
+  useEffect(() => {
+    // Trigger PWA engagement metrics
+    const triggerEngagement = () => {
+      console.log('🎯 Triggering PWA engagement metrics');
+      
+      // These help Chrome recognize your site as "engaging"
+      if ('storage' in navigator && 'estimate' in navigator.storage) {
+        navigator.storage.estimate().then(estimate => {
+          console.log('💾 Storage usage:', estimate);
+        });
+      }
+      
+      // Request notification permission (shows engagement)
+      if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission().then(permission => {
+          console.log('🔔 Notification permission:', permission);
+        });
+      }
+
+      // Trigger other engagement metrics
+      if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+        console.log('✅ Service Worker is controlling the page');
+      }
+    };
+    
+    // Trigger after page load
+    setTimeout(triggerEngagement, 2000);
+  }, []);
+
   // Debug logging
   useEffect(() => {
     console.log('🔍 HomePage Debug Info:');

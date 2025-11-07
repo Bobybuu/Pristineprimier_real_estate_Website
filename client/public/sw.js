@@ -1,36 +1,35 @@
 // public/sw.js 
-const CACHE_NAME = 'pristine-primier-v1.0.3';
+const CACHE_NAME = 'pristine-primier-v1.0.4';
+const urlsToCache = [
+  '/',
+  '/index.html',
+  '/manifest.json',
+  '/web-app-manifest-192x192.png',
+  '/web-app-manifest-512x512.png',
+  '/apple-touch-icon.png',
+  '/logorealestate.png',
+  '/favicon.ico'
+];
 
-// Install event - cache essential files
 self.addEventListener('install', (event) => {
-  console.log('🟢 Service Worker installing');
+  console.log('🟢 Service Worker installing and taking control immediately');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('📦 Caching essential files');
-        return cache.addAll([
-          '/',
-          '/index.html',
-          '/manifest.json',
-          '/web-app-manifest-192x192.png',
-          '/web-app-manifest-512x512.png',
-          '/apple-touch-icon.png',
-          '/logorealestate.png'
-        ]);
+        console.log('📦 Caching app shell');
+        return cache.addAll(urlsToCache);
       })
       .then(() => {
-        console.log('🚀 Skip waiting and activate immediately');
-        return self.skipWaiting(); // Force activation
+        // Force activation immediately
+        return self.skipWaiting();
       })
   );
 });
 
-// Activate event - take control immediately
 self.addEventListener('activate', (event) => {
   console.log('🟢 Service Worker activating and claiming clients');
   event.waitUntil(
     Promise.all([
-      // Clean up old caches
       caches.keys().then((cacheNames) => {
         return Promise.all(
           cacheNames.map((cacheName) => {
@@ -41,40 +40,22 @@ self.addEventListener('activate', (event) => {
           })
         );
       }),
-      // Take control of all open pages immediately
+      // Take control of all clients immediately
       self.clients.claim()
     ])
   );
 });
 
-// Fetch event - network first with cache fallback
 self.addEventListener('fetch', (event) => {
-  // Only handle GET requests
-  if (event.request.method !== 'GET') return;
-
+  // Use cache-first strategy for better PWA recognition
   event.respondWith(
-    fetch(event.request)
+    caches.match(event.request)
       .then((response) => {
-        // If successful, cache the response
-        if (response.status === 200) {
-          const responseToCache = response.clone();
-          caches.open(CACHE_NAME)
-            .then((cache) => {
-              cache.put(event.request, responseToCache);
-            });
+        // Return cached version or fetch from network
+        if (response) {
+          return response;
         }
-        return response;
-      })
-      .catch(() => {
-        // If network fails, try cache
-        return caches.match(event.request)
-          .then((cachedResponse) => {
-            if (cachedResponse) {
-              return cachedResponse;
-            }
-            // If not in cache, you could return a fallback page
-            return new Response('Network error occurred');
-          });
+        return fetch(event.request);
       })
   );
 });
