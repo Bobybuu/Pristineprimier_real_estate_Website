@@ -11,7 +11,7 @@ self.addEventListener('install', (event) => {
         return cache.addAll([
           '/',
           '/index.html',
-          '/site.webmanifest',
+          '/manifest.json',
           '/web-app-manifest-192x192.png',
           '/web-app-manifest-512x512.png',
           '/apple-touch-icon.png',
