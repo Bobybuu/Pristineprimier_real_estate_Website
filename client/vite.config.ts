@@ -15,10 +15,10 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  // ADD THIS SECTION:
+  
   publicDir: 'public',
   build: {
     outDir: 'dist',
-    copyPublicDir: true // Ensure public files are copied
+    copyPublicDir: true 
   }
 }));

@@ -810,10 +810,7 @@ const PropertyDetails = () => {
                       <Facebook className="h-4 w-4 mr-2" />
                       Facebook
                     </Button>
-                    <Button variant="outline" size="sm" onClick={() => handleShare('twitter')}>
-                      <Twitter className="h-4 w-4 mr-2" />
-                      Twitter
-                    </Button>
+                    
                     <Button variant="outline" size="sm" onClick={() => handleShare('whatsapp')}>
                       <span className="mr-2">💬</span>
                       WhatsApp

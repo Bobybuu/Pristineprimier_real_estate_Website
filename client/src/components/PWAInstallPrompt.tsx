@@ -45,7 +45,7 @@ const PWAInstallPrompt = () => {
     }
 
     // 🎯 TEMPORARY FIX: Force show prompt for testing
-    console.log('🔧 TEMPORARY: Forcing prompt to show for testing');
+    
     setTimeout(() => {
       console.log('🔄 Setting showPrompt to true');
       setShowPrompt(true);
