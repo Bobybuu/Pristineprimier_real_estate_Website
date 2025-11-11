@@ -2,29 +2,23 @@
 <html lang="en">
   <head>
 
-    <!-- TEMPORARY FIX  -->
+
+<!-- Cache buster - remove after deployment -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <script>
-  // Immediate cache clearing for existing users
-  if ('serviceWorker' in navigator && 'caches' in window) {
-    window.addEventListener('load', function() {
-      // Clear all service workers
-      navigator.serviceWorker.getRegistrations().then(function(registrations) {
-        registrations.forEach(function(registration) {
-          registration.unregister();
-          console.log('🔄 Service worker unregistered');
-        });
-      });
-      
-      // Clear all caches
-      caches.keys().then(function(cacheNames) {
-        cacheNames.forEach(function(cacheName) {
-          caches.delete(cacheName);
-          console.log('🗑️ Cache deleted:', cacheName);
-        });
-      });
+  // Force clear any cached versions
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(regs => {
+      regs.forEach(reg => reg.unregister());
+    });
+    caches.keys().then(keys => {
+      keys.forEach(key => caches.delete(key));
     });
   }
 </script>
+
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
