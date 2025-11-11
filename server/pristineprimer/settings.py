@@ -101,28 +101,30 @@ TEMPLATES = [
 # ---------------------------
 # DATABASE (PostgreSQL)
 # ---------------------------
-#DATABASES = {
-    #'default': {
-        #'ENGINE': 'django.db.backends.postgresql',
-        #'NAME': 'pristineprimer',
-        #'USER': 'postgres',
-        #'PASSWORD': 'Chrispine9909',
-        #'HOST': 'pristineprimer.czq8ae44qs94.us-east-2.rds.amazonaws.com',
-        #'PORT': '5432',
-    #}
-#}
-
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'pristineprimer',
-        'USER': 'postgres',
+        'USER': 'django_user',
         'PASSWORD': 'Chrispine9909',
         'HOST': 'localhost',
         'PORT': '5432',
     }
 }
+
+
+
+
+#DATABASES = {
+    #'default': {
+       # 'ENGINE': 'django.db.backends.postgresql',
+        #'NAME': 'pristineprimer',
+        #'USER': 'postgres',
+        #'PASSWORD': 'Chrispine9909',
+        #'HOST': 'localhost',
+        #'PORT': '5432',
+   # }
+#}
 
 
 
