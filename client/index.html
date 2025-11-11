@@ -150,28 +150,44 @@
     <!-- Service Worker Registration - Only in Production -->
    <script>
   // Only register service worker in production
-      if ('serviceWorker' in navigator && !window.location.hostname.includes('localhost') && !window.location.hostname.includes('127.0.0.1')) {
-        window.addEventListener('load', function() {
-          navigator.serviceWorker.register('/sw.js')
-            .then(function(registration) {
-              console.log('✅ ServiceWorker registered with scope:', registration.scope);
-              
-              // Check if service worker is controlling the page
-              if (navigator.serviceWorker.controller) {
-                console.log('✅ Service Worker is controlling the page');
-              } else {
-                console.log('⚠️ Service Worker registered but not controlling. Refreshing...');
-                // Force refresh to let service worker take control
-                window.location.reload();
+  if ('serviceWorker' in navigator && !window.location.hostname.includes('localhost') && !window.location.hostname.includes('127.0.0.1')) {
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('/sw.js')
+        .then(function(registration) {
+          console.log('✅ ServiceWorker registered with scope:', registration.scope);
+          
+          // Check for updates
+          registration.addEventListener('updatefound', () => {
+            const newWorker = registration.installing;
+            console.log('🔄 New service worker found:', newWorker);
+            
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                console.log('🔄 New content available; please refresh.');
+                // Optional: Show update notification to user
+                if (confirm('New version available! Refresh to update?')) {
+                  window.location.reload();
+                }
               }
-            })
-            .catch(function(error) {
-              console.log('❌ ServiceWorker registration failed:', error);
             });
+          });
+        })
+        .catch(function(error) {
+          console.log('❌ ServiceWorker registration failed:', error);
         });
+      
+      // Ensure controlled page uses latest content
+      if (navigator.serviceWorker.controller) {
+        console.log('✅ Service Worker is controlling the page');
+        // Force refresh if this is an old service worker
+        navigator.serviceWorker.controller.postMessage({type: 'SKIP_WAITING'});
       }
-    </script>
+    });
     
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
-</html>
+    // Listen for controller change (when new service worker takes over)
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      console.log('🔄 Controller changed, reloading page');
+      window.location.reload();
+    });
+  }
+</script>
