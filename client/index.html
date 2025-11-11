@@ -1,23 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-
-
-<!-- Cache buster - remove after deployment -->
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
-<script>
-  // Force clear any cached versions
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.getRegistrations().then(regs => {
-      regs.forEach(reg => reg.unregister());
-    });
-    caches.keys().then(keys => {
-      keys.forEach(key => caches.delete(key));
-    });
-  }
-</script>
+    <!-- Cache buster - remove after deployment -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <script>
+      // Force clear any cached versions
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(regs => {
+          regs.forEach(reg => reg.unregister());
+        });
+        caches.keys().then(keys => {
+          keys.forEach(key => caches.delete(key));
+        });
+      }
+    </script>
 
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -35,8 +33,6 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 
-
-    
     <meta name="application-name" content="PristinePrimier">
     <meta name="apple-mobile-web-app-title" content="PristinePrimier">
     <meta name="msapplication-starturl" content="/">
@@ -165,47 +161,52 @@
 
     <div id="root"></div>
     
-    <!-- Service Worker Registration - Only in Production -->
-   <script>
-  // Only register service worker in production
-  if ('serviceWorker' in navigator && !window.location.hostname.includes('localhost') && !window.location.hostname.includes('127.0.0.1')) {
-    window.addEventListener('load', function() {
-      navigator.serviceWorker.register('/sw.js')
-        .then(function(registration) {
-          console.log('✅ ServiceWorker registered with scope:', registration.scope);
-          
-          // Check for updates
-          registration.addEventListener('updatefound', () => {
-            const newWorker = registration.installing;
-            console.log('🔄 New service worker found:', newWorker);
-            
-            newWorker.addEventListener('statechange', () => {
-              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                console.log('🔄 New content available; please refresh.');
-                // Optional: Show update notification to user
-                if (confirm('New version available! Refresh to update?')) {
-                  window.location.reload();
-                }
-              }
-            });
-          });
-        })
-        .catch(function(error) {
-          console.log('❌ ServiceWorker registration failed:', error);
-        });
-      
-      // Ensure controlled page uses latest content
-      if (navigator.serviceWorker.controller) {
-        console.log('✅ Service Worker is controlling the page');
-        // Force refresh if this is an old service worker
-        navigator.serviceWorker.controller.postMessage({type: 'SKIP_WAITING'});
-      }
-    });
+    <!-- CRITICAL FIX: This loads your React app -->
+    <script type="module" src="/src/main.tsx"></script>
     
-    // Listen for controller change (when new service worker takes over)
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      console.log('🔄 Controller changed, reloading page');
-      window.location.reload();
-    });
-  }
-</script>
+    <!-- Service Worker Registration - Only in Production -->
+    <script>
+      // Only register service worker in production
+      if ('serviceWorker' in navigator && !window.location.hostname.includes('localhost') && !window.location.hostname.includes('127.0.0.1')) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/sw.js')
+            .then(function(registration) {
+              console.log('✅ ServiceWorker registered with scope:', registration.scope);
+              
+              // Check for updates
+              registration.addEventListener('updatefound', () => {
+                const newWorker = registration.installing;
+                console.log('🔄 New service worker found:', newWorker);
+                
+                newWorker.addEventListener('statechange', () => {
+                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    console.log('🔄 New content available; please refresh.');
+                    // Optional: Show update notification to user
+                    if (confirm('New version available! Refresh to update?')) {
+                      window.location.reload();
+                    }
+                  }
+                });
+              });
+            })
+            .catch(function(error) {
+              console.log('❌ ServiceWorker registration failed:', error);
+            });
+          
+          // Ensure controlled page uses latest content
+          if (navigator.serviceWorker.controller) {
+            console.log('✅ Service Worker is controlling the page');
+            // Force refresh if this is an old service worker
+            navigator.serviceWorker.controller.postMessage({type: 'SKIP_WAITING'});
+          }
+        });
+        
+        // Listen for controller change (when new service worker takes over)
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          console.log('🔄 Controller changed, reloading page');
+          window.location.reload();
+        });
+      }
+    </script>
+  </body>
+</html>
