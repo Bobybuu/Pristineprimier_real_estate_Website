@@ -1,6 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+
+    <!-- TEMPORARY FIX  -->
+<script>
+  // Immediate cache clearing for existing users
+  if ('serviceWorker' in navigator && 'caches' in window) {
+    window.addEventListener('load', function() {
+      // Clear all service workers
+      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        registrations.forEach(function(registration) {
+          registration.unregister();
+          console.log('🔄 Service worker unregistered');
+        });
+      });
+      
+      // Clear all caches
+      caches.keys().then(function(cacheNames) {
+        cacheNames.forEach(function(cacheName) {
+          caches.delete(cacheName);
+          console.log('🗑️ Cache deleted:', cacheName);
+        });
+      });
+    });
+  }
+</script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
