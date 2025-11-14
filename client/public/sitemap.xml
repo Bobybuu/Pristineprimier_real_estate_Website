@@ -1,0 +1,718 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <!-- ===== PRIORITY 1: CORE BUSINESS PAGES ===== -->
+  <url>
+    <loc>https://www.pristineprimier.com/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/buy</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/rent</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://www.pristineprimier.com/sell</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/services</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/manage</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- ===== PRIORITY 2: PROPERTY TYPE CATEGORY PAGES ===== -->
+  <url>
+    <loc>https://www.pristineprimier.com/property/houses-for-sale/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/property/houses-for-rent/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/property/apartments-for-sale/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/property/apartments-for-rent/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/property/land-for-sale/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/property/commercial-for-sale/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/property/offices-to-let/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/property/retail-space/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/property/industrial-properties/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/property/serviced-apartments/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/property/bedsitters/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/property/maisonettes/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/property/bungalows/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/property/agricultural-land/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- ===== PRIORITY 3: NAIROBI CITY & NEIGHBORHOODS ===== -->
+  <url>
+    <loc>https://www.pristineprimier.com/city/nairobi/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Nairobi High-Priority Neighborhoods -->
+  <url>
+    <loc>https://www.pristineprimier.com/city/nairobi/area/westlands/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/nairobi/area/upper-hill/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/nairobi/area/kilimani/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/nairobi/area/kileleshwa/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/nairobi/area/lavington/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/nairobi/area/karen/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/nairobi/area/runda/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/nairobi/area/gigiri/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/nairobi/area/langata/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/nairobi/area/parklands/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/nairobi/area/riverside/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/nairobi/area/ridgeways/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/nairobi/area/spring-valley/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/nairobi/area/south-b/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/nairobi/area/south-c/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/nairobi/area/donholm/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/nairobi/area/embakasi/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/nairobi/area/roysambu/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/nairobi/area/thome/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- ===== PRIORITY 4: MOMBASA & COASTAL REGION ===== -->
+  <url>
+    <loc>https://www.pristineprimier.com/city/mombasa/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/mombasa/area/nyali/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/mombasa/area/bamburi/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/mombasa/area/kisauni/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/mombasa/area/cbd/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/mombasa/area/tudor/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/mombasa/area/likoni/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/kilifi/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/malindi/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- ===== PRIORITY 5: KISUMU & WESTERN KENYA ===== -->
+  <url>
+    <loc>https://www.pristineprimier.com/city/kisumu/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/kisumu/area/milimani/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/kisumu/area/kondele/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/kisumu/area/mamboleo/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/kisumu/area/riat/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- ===== PRIORITY 6: NAKURU & RIFT VALLEY ===== -->
+  <url>
+    <loc>https://www.pristineprimier.com/city/nakuru/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/nakuru/area/milimani/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/nakuru/area/cbd/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/naivasha/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/eldoret/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/eldoret/area/cbd/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/eldoret/area/kapseret/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- ===== PRIORITY 7: SATELLITE TOWNS & COMMUTER BELTS ===== -->
+  <url>
+    <loc>https://www.pristineprimier.com/city/kitengela/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/athi-river/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/syokimau/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/juja/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/ruiru/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/thika/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/kiambu/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- ===== PRIORITY 8: OTHER REGIONAL HUBS ===== -->
+  <url>
+    <loc>https://www.pristineprimier.com/city/meru/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/nyeri/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/nanyuki/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/kisii/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/kakamega/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/bungoma/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/kericho/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/homa-bay/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/lamu/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <!-- ===== PRIORITY 9: LOCATION + PROPERTY TYPE COMBINATIONS (HIGHEST SEO VALUE) ===== -->
+  
+  <!-- Nairobi Westlands Combinations -->
+  <url>
+    <loc>https://www.pristineprimier.com/city/nairobi/area/westlands/type/apartments-for-rent/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/nairobi/area/westlands/type/houses-for-sale/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/nairobi/area/westlands/type/offices-to-let/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/nairobi/area/westlands/type/commercial-for-sale/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Nairobi Upper Hill Combinations -->
+  <url>
+    <loc>https://www.pristineprimier.com/city/nairobi/area/upper-hill/type/offices-to-let/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/nairobi/area/upper-hill/type/apartments-for-rent/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Nairobi Kilimani Combinations -->
+  <url>
+    <loc>https://www.pristineprimier.com/city/nairobi/area/kilimani/type/apartments-for-rent/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/nairobi/area/kilimani/type/houses-for-sale/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Nairobi Karen Combinations -->
+  <url>
+    <loc>https://www.pristineprimier.com/city/nairobi/area/karen/type/houses-for-sale/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/nairobi/area/karen/type/land-for-sale/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Satellite Towns Combinations -->
+  <url>
+    <loc>https://www.pristineprimier.com/city/kitengela/type/land-for-sale/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/ruiru/type/plots-for-sale/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/juja/type/plots-for-sale/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/thika/type/commercial-for-sale/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Mombasa Combinations -->
+  <url>
+    <loc>https://www.pristineprimier.com/city/mombasa/area/nyali/type/houses-for-sale/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/city/mombasa/area/nyali/type/serviced-apartments/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- ===== PRIORITY 10: COMPANY & INFORMATION PAGES ===== -->
+  <url>
+    <loc>https://www.pristineprimier.com/about</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/contact</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/faq</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/terms</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.pristineprimier.com/privacy</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <!-- ===== PRIORITY 11: INDIVIDUAL PROPERTY LISTINGS ===== -->
+  <!-- These will be dynamically generated from your API -->
+  <url>
+    <loc>https://www.pristineprimier.com/property/</loc>
+    <lastmod>2025-11-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+</urlset>
