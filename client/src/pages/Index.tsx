@@ -439,14 +439,14 @@ const Index = (): JSX.Element => {
                   <>
                     <button
                       onClick={prevSlide}
-                      className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/30 hover:border-white/50 text-white p-3 rounded-full transition-all duration-200 shadow-lg hover:shadow-xl z-10"
+                      className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-gray-900 p-3 rounded-full transition-all duration-200 shadow-lg hover:shadow-xl z-10"
                       aria-label="Previous property"
                     >
                       <ChevronLeft className="h-6 w-6" />
                     </button>
                     <button
                       onClick={nextSlide}
-                      className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/30 hover:border-white/50 text-white p-3 rounded-full transition-all duration-200 shadow-lg hover:shadow-xl z-10"
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-gray-900 p-3 rounded-full transition-all duration-200 shadow-lg hover:shadow-xl z-10"
                       aria-label="Next property"
                     >
                       <ChevronRight className="h-6 w-6" />
