@@ -7,6 +7,18 @@ interface PropertyStructuredDataProps {
 
 const PropertyStructuredData: React.FC<PropertyStructuredDataProps> = ({ property }) => {
   
+  // 🔍 DEBUG: Verify execution and property data
+  useEffect(() => {
+    if (!property) return;
+    
+    console.log('🔍 PropertyStructuredData RUNNING with:', {
+      hasImages: property.images?.length > 0,
+      imageCount: property.images?.length,
+      primaryImage: property.primary_image?.image,
+      title: property.title
+    });
+  }, [property]);
+
   useEffect(() => {
     if (!property) return;
 
@@ -88,6 +100,36 @@ const PropertyStructuredData: React.FC<PropertyStructuredDataProps> = ({ propert
       }
     };
 
+    // ✅ ADDED: Update OG Image tags when property has images
+    if (property.images && property.images.length > 0) {
+      const primaryImage = property.primary_image || property.images[0];
+      const imageUrl = getImageUrl(primaryImage.image, 'large');
+      
+      // Add to structured data
+      baseData.image = imageUrl;
+      
+      // Update OG image tag in real-time with delay to ensure DOM is ready
+      setTimeout(() => {
+        const ogImage = document.querySelector('meta[property="og:image"]');
+        const twitterImage = document.querySelector('meta[name="twitter:image"]');
+        
+        if (ogImage) {
+          ogImage.setAttribute('content', imageUrl);
+          console.log('🖼️ Updated OG Image to:', imageUrl);
+        }
+        if (twitterImage) {
+          twitterImage.setAttribute('content', imageUrl);
+          console.log('🖼️ Updated Twitter Image to:', imageUrl);
+        }
+        
+        // Verify the update worked
+        const updatedOG = document.querySelector('meta[property="og:image"]')?.content;
+        console.log('✅ OG Image Update Verified:', updatedOG === imageUrl ? 'SUCCESS' : 'FAILED');
+      }, 100);
+    } else {
+      console.log('🖼️ No property images available for OG update');
+    }
+
     // Add property-specific details
     if (property.property_type !== 'land') {
       if (property.bedrooms) baseData.numberOfRooms = property.bedrooms;
@@ -99,17 +141,6 @@ const PropertyStructuredData: React.FC<PropertyStructuredDataProps> = ({ propert
           "unitCode": "FTK"
         };
       }
-    }
-
-    if (property.images && property.images.length > 0) {
-        const primaryImage = property.primary_image || property.images[0];
-        baseData.image = getImageUrl(primaryImage.image, 'large');
-        
-        // Also update OG image tag
-        const ogImage = document.querySelector('meta[property="og:image"]');
-        if (ogImage) {
-            ogImage.setAttribute('content', getImageUrl(primaryImage.image, 'large'));
-        }
     }
 
     if (property.property_type === 'land' && property.size_acres) {
@@ -128,13 +159,21 @@ const PropertyStructuredData: React.FC<PropertyStructuredDataProps> = ({ propert
     return baseData;
   };
 
-  
-
   const getImageUrl = (imagePath: string, size: 'large' | 'medium' | 'small' = 'large'): string => {
-    if (!imagePath) return '';
-    if (imagePath.startsWith('http')) return imagePath;
+    if (!imagePath) {
+      console.log('🖼️ No image path provided');
+      return '';
+    }
+    
+    if (imagePath.startsWith('http')) {
+      console.log('🖼️ Using full URL:', imagePath);
+      return imagePath;
+    }
+    
     const baseUrl = 'https://www.pristineprimier.com/media/';
-    return `${baseUrl}${imagePath}`;
+    const fullUrl = `${baseUrl}${imagePath}`;
+    console.log('🖼️ Generated media URL:', fullUrl);
+    return fullUrl;
   };
 
   return null;
