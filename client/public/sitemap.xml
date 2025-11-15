@@ -707,7 +707,6 @@
   </url>
 
   <!-- ===== PRIORITY 11: INDIVIDUAL PROPERTY LISTINGS ===== -->
-  <!-- These will be dynamically generated from your API -->
   <url>
     <loc>https://www.pristineprimier.com/property/</loc>
     <lastmod>2025-11-14</lastmod>
