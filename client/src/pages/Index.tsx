@@ -411,7 +411,7 @@ const Index = (): JSX.Element => {
                                   size="lg" 
                                   className="bg-[#f77f77] hover:bg-[#f77f77]/90 text-white font-semibold py-2 px-4 flex-1 text-sm"
                                 >
-                                  <Link to={`/property/${property.id}`}>
+                                  <Link to={`/property/${property.seo_slug || property.id}`}>
                                     View Details
                                   </Link>
                                 </Button>

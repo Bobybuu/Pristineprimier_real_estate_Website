@@ -37,7 +37,8 @@ const optimizeImageUrl = (url: string, width: number = 1200, quality: number = 8
 };
 
 const PropertyDetails = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id, slug } = useParams<{ id?: string; slug?: string }>();
+  const propertyIdOrSlug = id || slug;
   const [property, setProperty] = useState<Property | null>(null);
   const [selectedImage, setSelectedImage] = useState(0);
   const [activeTab, setActiveTab] = useState<TabType>('overview');
@@ -48,37 +49,85 @@ const PropertyDetails = () => {
   const [imageErrorStates, setImageErrorStates] = useState<{[key: number]: boolean}>({});
 
   useEffect(() => {
-    if (id) {
-      loadProperty();
-    }
-  }, [id]);
+  if (propertyIdOrSlug) {
+    loadProperty();
+  }
+}, [propertyIdOrSlug]);
 
-  const loadProperty = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const propertyId = parseInt(id!);
-      const propertyData = await propertiesAPI.getById(propertyId);
-      setProperty(propertyData);
-      setIsFavorite(propertyData.is_favorited || false);
-      
-      // Initialize image loading states
-      const images = propertyData.images || [];
-      const loadingStates: {[key: number]: boolean} = {};
-      images.forEach((_, index) => {
-        loadingStates[index] = true;
-      });
-      setImageLoadingStates(loadingStates);
-      
-      // Increment view count
-      await propertiesAPI.incrementPropertyViews(propertyId);
-    } catch (err: any) {
-      setError(err.message || 'Failed to load property');
-      console.error('Failed to load property:', err);
-    } finally {
-      setLoading(false);
+ const loadProperty = async () => {
+  setLoading(true);
+  setError(null);
+  try {
+    let propertyData;
+    
+    // Check if it's a numeric ID or slug
+    if (propertyIdOrSlug && !isNaN(Number(propertyIdOrSlug))) {
+      // It's a numeric ID
+      propertyData = await propertiesAPI.getById(Number(propertyIdOrSlug));
+    } else {
+      // It's a slug - use the slug endpoint
+      propertyData = await propertiesAPI.getBySlug(propertyIdOrSlug!);
     }
-  };
+    
+    setProperty(propertyData);
+    setIsFavorite(propertyData.is_favorited || false);
+    
+    // Initialize image loading states
+    const images = propertyData.images || [];
+    const loadingStates: {[key: number]: boolean} = {};
+    images.forEach((_, index) => {
+      loadingStates[index] = true;
+    });
+    setImageLoadingStates(loadingStates);
+    
+    // Increment view count
+    await propertiesAPI.incrementPropertyViews(propertyData.id);
+  } catch (err: any) {
+    setError(err.message || 'Failed to load property');
+    console.error('Failed to load property:', err);
+  } finally {
+    setLoading(false);
+  }
+};
+
+  // ADD THIS NEW useEffect FOR SEO META TAGS (after the existing useEffect)
+useEffect(() => {
+  if (property) {
+    // Update document title
+    document.title = property.seo_title || property.title;
+    
+    // Update meta description
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', property.seo_description || property.short_description || property.description.slice(0, 160));
+    }
+    
+    // Add canonical URL
+    let canonicalLink = document.querySelector('link[rel="canonical"]');
+    if (!canonicalLink) {
+      canonicalLink = document.createElement('link');
+      canonicalLink.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonicalLink);
+    }
+    canonicalLink.setAttribute('href', property.canonical_url || window.location.href);
+    
+    // Add Open Graph tags
+    const ogTitle = document.querySelector('meta[property="og:title"]');
+    if (ogTitle) {
+      ogTitle.setAttribute('content', property.seo_title || property.title);
+    }
+    
+    const ogDescription = document.querySelector('meta[property="og:description"]');
+    if (ogDescription) {
+      ogDescription.setAttribute('content', property.seo_description || property.short_description || property.description.slice(0, 160));
+    }
+    
+    const ogUrl = document.querySelector('meta[property="og:url"]');
+    if (ogUrl) {
+      ogUrl.setAttribute('content', property.canonical_url || window.location.href);
+    }
+  }
+}, [property]);
 
   const handleFavoriteToggle = async () => {
     if (!property) return;
@@ -518,7 +567,7 @@ const PropertyDetails = () => {
     );
   }
 
-  if (error || !property) {
+  if (error || !property || !propertyIdOrSlug) {
     return (
       <div className="flex flex-col min-h-screen bg-white">
         <Header />

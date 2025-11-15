@@ -219,9 +219,16 @@ class PropertyApi {
     return this.request('/properties/?featured=true&limit=6');
   }
 
-  async getPropertyById(id: string): Promise<Property> {
-    return this.request(`/properties/${id}/`);
+  async getPropertyById(idOrSlug: string): Promise<Property> {
+  // Check if it's a numeric ID or a slug
+  if (idOrSlug && !isNaN(Number(idOrSlug))) {
+    // It's a numeric ID - use traditional endpoint
+    return this.request(`/properties/${idOrSlug}/`);
+  } else {
+    // It's a slug - use slug endpoint
+    return this.request(`/properties/slug/${idOrSlug}/`);
   }
+}
 
   async updateProperty(id: string, propertyData: Partial<PropertyData>): Promise<Property> {
     return this.request(`/properties/${id}/`, {
@@ -249,6 +256,10 @@ class PropertyApi {
   async getFavorites(): Promise<Property[]> {
     return this.request('/properties/my_favorites/');
   }
+
+  async getPropertyBySlug(slug: string): Promise<Property> {
+  return this.request(`/properties/slug/${slug}/`);
+}
 
   // IMAGE-SPECIFIC ENDPOINTS
   async getPropertyImages(propertyId: string): Promise<PropertyImage[]> {

@@ -93,6 +93,12 @@ export interface Property {
   longitude: string | null;
   landmarks?: string;
   landmarks_list?: string[];
+
+  seo_slug?: string;
+  seo_url?: string;
+  seo_title?: string;
+  seo_description?: string;
+  canonical_url?: string;
   
   // Add to Property interface
   social_media_links?: {

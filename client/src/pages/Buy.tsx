@@ -255,6 +255,51 @@ const Buy = () => {
     }
   }, [error]);
 
+
+  useEffect(() => {
+  // Canonical URL
+  const canonicalUrl = `https://www.pristineprimier.com/buy`;
+  let canonicalLink = document.querySelector('link[rel="canonical"]');
+  if (!canonicalLink) {
+    canonicalLink = document.createElement('link');
+    canonicalLink.setAttribute('rel', 'canonical');
+    document.head.appendChild(canonicalLink);
+  }
+  canonicalLink.setAttribute('href', canonicalUrl);
+
+  // Breadcrumb Schema
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://www.pristineprimier.com/"
+      },
+      {
+        "@type": "ListItem", 
+        "position": 2,
+        "name": "Properties for Sale in Kenya",
+        "item": "https://www.pristineprimier.com/buy"
+      }
+    ]
+  };
+
+  // Remove existing schema if any
+  const existingSchema = document.querySelector('script[type="application/ld+json"]');
+  if (existingSchema) {
+    existingSchema.remove();
+  }
+
+  // Add new schema
+  const script = document.createElement('script');
+  script.type = 'application/ld+json';
+  script.text = JSON.stringify(breadcrumbSchema);
+  document.head.appendChild(script);
+}, []);
+
   // Check if Mapbox token is configured
   const isMapboxConfigured = MAPBOX_ACCESS_TOKEN && MAPBOX_ACCESS_TOKEN !== 'your_mapbox_access_token_here';
 
@@ -508,6 +553,7 @@ const Buy = () => {
                         <PropertyCard 
                           property={property}
                           viewMode={viewMode}
+                          linkTo={`/property/${property.seo_slug || property.id}`}
                         />
                       </div>
                     ))}

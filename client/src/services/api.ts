@@ -380,6 +380,10 @@ export const propertiesAPI = {
     return apiRequest('/properties/my_properties/');
   },
 
+  async getBySlug(slug: string): Promise<Property> {
+  return apiRequest(`/properties/slug/${slug}/`);
+},
+
   // NEW: Advanced Search & Filtering
   async searchAdvanced(params: PropertySearchParams): Promise<PaginatedResponse<Property>> {
     const queryParams = new URLSearchParams();

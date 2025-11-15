@@ -5,6 +5,7 @@ import Footer from '@/components/Footer';
 import ContactForm from '@/components/ContactForm';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { useEffect } from 'react';
 
 const Sell = () => {
   const steps = [
@@ -52,6 +53,50 @@ const Sell = () => {
       description: 'Full legal protection and transparent transaction management.',
     },
   ];
+
+useEffect(() => {
+  // Canonical URL
+  const canonicalUrl = `https://www.pristineprimier.com/sell`;
+  let canonicalLink = document.querySelector('link[rel="canonical"]');
+  if (!canonicalLink) {
+    canonicalLink = document.createElement('link');
+    canonicalLink.setAttribute('rel', 'canonical');
+    document.head.appendChild(canonicalLink);
+  }
+  canonicalLink.setAttribute('href', canonicalUrl);
+
+  // Breadcrumb Schema
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://www.pristineprimier.com/"
+      },
+      {
+        "@type": "ListItem", 
+        "position": 2,
+        "name": "Sell Your Property",
+        "item": "https://www.pristineprimier.com/sell"
+      }
+    ]
+  };
+
+  // Remove existing schema if any
+  const existingSchema = document.querySelector('script[type="application/ld+json"]');
+  if (existingSchema) {
+    existingSchema.remove();
+  }
+
+  // Add new schema
+  const script = document.createElement('script');
+  script.type = 'application/ld+json';
+  script.text = JSON.stringify(breadcrumbSchema);
+  document.head.appendChild(script);
+}, []);
 
   return (
     <div className="flex flex-col min-h-screen">

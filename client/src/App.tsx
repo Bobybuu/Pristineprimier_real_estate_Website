@@ -60,6 +60,8 @@ const App = () => {
               <Route path="/faq" element={<Faq />} />
               <Route path="/terms" element={<Terms />} />
               <Route path="/privacy" element={<Privacy />} />
+              <Route path="/property/:id" element={<PropertyDetails />} />
+              <Route path="/property/:slug" element={<PropertyDetails />} />
 
               {/* Protected Routes */}
               <Route 

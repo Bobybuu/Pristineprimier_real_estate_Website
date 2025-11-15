@@ -10,6 +10,7 @@ interface PropertyCardProps {
   property: Property;
   viewMode?: 'grid' | 'list';
   className?: string;
+  linkTo?: string;
 }
 
 const PropertyCard = ({ property, viewMode = 'grid', className = "" }: PropertyCardProps) => {
