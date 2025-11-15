@@ -15,6 +15,7 @@ import { propertiesAPI } from '@/services/api';
 import { Property, PropertyAmenity, LegalDocument, PropertyMedia } from '@/types/property';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import PropertyLocationMap from '../components/PropertyLocationMap';
+import PropertyStructuredData from '@/components/PropertyStructuredData';
 
 // Tab types
 type TabType = 'overview' | 'details' | 'location' | 'media' | 'documents';
@@ -90,42 +91,73 @@ const PropertyDetails = () => {
   }
 };
 
-  // ADD THIS NEW useEffect FOR SEO META TAGS (after the existing useEffect)
+  // useEffect FOR SEO META TAGS 
 useEffect(() => {
   if (property) {
+    // Generate dynamic SEO content based on property data
+    const seoTitle = property.seo_title || `${property.title} | ${property.property_type === 'sale' ? 'For Sale' : 'For Rent'} | ${property.city}, Kenya | PristinePrimier`;
+    const seoDescription = property.seo_description || property.short_description || 
+      `${property.title} in ${property.city}, Kenya. ${property.description.slice(0, 150)}...`;
+    const seoKeywords = `real estate kenya, property ${property.property_type} kenya, ${property.city} property, ${property.property_type === 'land' ? 'land for sale' : 'house for sale'} kenya`;
+    const canonicalUrl = property.canonical_url || window.location.href;
+
     // Update document title
-    document.title = property.seo_title || property.title;
-    
-    // Update meta description
-    const metaDescription = document.querySelector('meta[name="description"]');
-    if (metaDescription) {
-      metaDescription.setAttribute('content', property.seo_description || property.short_description || property.description.slice(0, 160));
+    document.title = seoTitle;
+
+    // Helper function to update meta tags
+    const updateMetaTag = (name: string, content: string) => {
+      let tag = document.querySelector(`meta[name="${name}"]`) as HTMLMetaElement;
+      if (!tag) {
+        tag = document.createElement('meta');
+        tag.name = name;
+        document.head.appendChild(tag);
+      }
+      tag.content = content;
+    };
+
+    // Helper function to update property tags
+    const updatePropertyTag = (propertyAttr: string, content: string) => {
+      let tag = document.querySelector(`meta[property="${propertyAttr}"]`) as HTMLMetaElement;
+      if (!tag) {
+        tag = document.createElement('meta');
+        tag.setAttribute('property', propertyAttr);
+        document.head.appendChild(tag);
+      }
+      tag.content = content;
+    };
+
+    // Update primary meta tags
+    updateMetaTag('description', seoDescription);
+    updateMetaTag('keywords', seoKeywords);
+
+    // Update Open Graph tags
+    updatePropertyTag('og:title', seoTitle);
+    updatePropertyTag('og:description', seoDescription);
+    updatePropertyTag('og:url', canonicalUrl);
+    updatePropertyTag('og:type', 'product');
+    updatePropertyTag('og:site_name', 'PristinePrimier Real Estate Kenya');
+
+    // Update Twitter tags
+    updatePropertyTag('twitter:card', 'summary_large_image');
+    updatePropertyTag('twitter:title', seoTitle);
+    updatePropertyTag('twitter:description', seoDescription);
+
+    // Update image tags if property has images
+    if (property.images && property.images.length > 0) {
+      const primaryImage = property.primary_image || property.images[0];
+      const imageUrl = getImageUrl(primaryImage.image, 'large');
+      updatePropertyTag('og:image', imageUrl);
+      updatePropertyTag('twitter:image', imageUrl);
     }
-    
-    // Add canonical URL
-    let canonicalLink = document.querySelector('link[rel="canonical"]');
+
+    // Update canonical URL
+    let canonicalLink = document.querySelector('link[rel="canonical"]') as HTMLLinkElement;
     if (!canonicalLink) {
       canonicalLink = document.createElement('link');
-      canonicalLink.setAttribute('rel', 'canonical');
+      canonicalLink.rel = 'canonical';
       document.head.appendChild(canonicalLink);
     }
-    canonicalLink.setAttribute('href', property.canonical_url || window.location.href);
-    
-    // Add Open Graph tags
-    const ogTitle = document.querySelector('meta[property="og:title"]');
-    if (ogTitle) {
-      ogTitle.setAttribute('content', property.seo_title || property.title);
-    }
-    
-    const ogDescription = document.querySelector('meta[property="og:description"]');
-    if (ogDescription) {
-      ogDescription.setAttribute('content', property.seo_description || property.short_description || property.description.slice(0, 160));
-    }
-    
-    const ogUrl = document.querySelector('meta[property="og:url"]');
-    if (ogUrl) {
-      ogUrl.setAttribute('content', property.canonical_url || window.location.href);
-    }
+    canonicalLink.href = canonicalUrl;
   }
 }, [property]);
 
@@ -163,7 +195,7 @@ useEffect(() => {
       return optimizeImageUrl(imagePath, sizes[size]);
     }
     
-    const baseUrl = 'http://localhost:8000';
+    const baseUrl = 'https://www.pristineprimier.com/media/';
     const fullUrl = `${baseUrl}${imagePath}`;
     return optimizeImageUrl(fullUrl, sizes[size]);
   };
@@ -556,6 +588,7 @@ useEffect(() => {
     return (
       <div className="flex flex-col min-h-screen bg-white">
         <Header />
+         {property && <PropertyStructuredData property={property} />}
         <main className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <LoadingSpinner size="lg" />
