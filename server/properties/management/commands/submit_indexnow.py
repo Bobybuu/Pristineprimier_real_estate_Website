@@ -50,9 +50,11 @@ class Command(BaseCommand):
         
         for prop in properties:
             try:
-                absolute_url = prop.get_absolute_url()
-                full_url = f'https://www.pristineprimier.com{absolute_url}'
+                # Generate URL manually - adjust this pattern based on your actual URLs
+                property_url = f"/property/{prop.id}/"
+                full_url = f'https://www.pristineprimier.com{property_url}'
                 urls.append(full_url)
+                self.stdout.write(f'✅ Generated URL for property {prop.id}: {prop.title}')
             except Exception as e:
                 self.stdout.write(
                     self.style.WARNING(f'⚠️ Could not get URL for property {prop.id}: {e}')
