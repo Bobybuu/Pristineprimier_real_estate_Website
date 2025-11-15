@@ -320,9 +320,6 @@ if not DEBUG:
     # Switch to actual SES in production
     EMAIL_BACKEND = 'django_ses.SESBackend'
 
-# ---------------------------
-# LOGGING CONFIGURATION
-# ---------------------------
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -337,40 +334,59 @@ LOGGING = {
         },
     },
     'handlers': {
-        #'file': {
-            #'level': 'DEBUG',
-            #'class': 'logging.FileHandler',
-            #'filename': os.path.join(BASE_DIR, 'logs', 'django.log'),
-            
-          'file': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': BASE_DIR / 'django.log',
-            'formatter': 'verbose',
-          
-        },
         'console': {
+            'level': 'DEBUG',
             'class': 'logging.StreamHandler',
+            'formatter': 'simple',
         },
     },
     'loggers': {
         'django': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console'],
             'level': 'INFO',
             'propagate': True,
         },
         'newsletter': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console'],
             'level': 'INFO',
             'propagate': False,
         },
         'django_ses': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'properties': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'users': {
+            'handlers': ['console'],
             'level': 'INFO',
             'propagate': False,
         },
     },
 }
+
+
+if DEBUG:
+    LOG_DIR = os.path.join(BASE_DIR, 'logs')
+    if not os.path.exists(LOG_DIR):
+        os.makedirs(LOG_DIR)
+    
+    
+    LOGGING['handlers']['file'] = {
+        'level': 'INFO',
+        'class': 'logging.FileHandler',
+        'filename': os.path.join(LOG_DIR, 'django.log'),
+        'formatter': 'verbose',
+    }
+    
+    
+    for logger in LOGGING['loggers'].values():
+        if 'file' not in logger['handlers']:
+            logger['handlers'].append('file')
 
 # ---------------------------
 # FILE UPLOAD SETTINGS

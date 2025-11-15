@@ -1,0 +1,49 @@
+# Environment variables
+.env
+.env.local
+.env.production
+.env.development
+
+# Virtual environment
+venv/
+env/
+ENV/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.python-version
+
+# Django
+*.log
+logs/
+media/
+staticfiles/
+
+# Database
+*.sqlite3
+*.db
+*.dump
+db.sqlite3
+
+# Backup files
+*.backup
+*.bak
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+
+
+# External files (adjust paths as needed)
+../chrispin.txt
+../*.sh
