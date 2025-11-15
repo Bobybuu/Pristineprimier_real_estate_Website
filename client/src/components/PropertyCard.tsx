@@ -168,7 +168,7 @@ const PropertyCard = ({ property, viewMode = 'grid', className = "" }: PropertyC
   const isListView = viewMode === 'list';
 
   return (
-    <Link to={`/property/${property.id}`}>
+    <Link to={`/property/${property.seo_slug || property.id}`}>
       <Card className={`bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 overflow-hidden flex flex-col h-full max-h-[85vh] group ${
         isListView ? 'flex-row' : ''
       } ${className}`}>
