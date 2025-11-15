@@ -44,8 +44,8 @@ class Command(BaseCommand):
     
     def get_property_urls(self):
         """Return URLs for all published properties"""
-        # Use status='active' to get active properties
-        properties = Property.objects.filter(status='active')
+        # Use status='published' to get published properties
+        properties = Property.objects.filter(status='published')
         urls = []
         
         for prop in properties:
