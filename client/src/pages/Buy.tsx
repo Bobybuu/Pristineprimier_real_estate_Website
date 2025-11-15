@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Grid, List, Map } from 'lucide-react';
+import { Grid, Link, List, Map } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SearchBar from '@/components/SearchBar';
@@ -586,6 +586,35 @@ const Buy = () => {
               </div>
             </div>
           </div>
+          {/* Related Properties Section */}
+{!loading && !error && properties.length > 0 && (
+  <div className="mt-12 bg-gray-50 rounded-xl p-6 border">
+    <h3 className="text-xl font-semibold mb-4">Looking to Rent Instead?</h3>
+    <p className="text-gray-600 mb-4">
+      Explore our rental properties in prime locations across Kenya.
+    </p>
+    <div className="flex flex-wrap gap-3">
+      <Link 
+        to="/rent" 
+        className="bg-white px-4 py-2 rounded-lg border hover:bg-blue-50 hover:border-blue-200 transition-colors text-blue-600 font-medium"
+      >
+        Apartments for Rent in Nairobi
+      </Link>
+      <Link 
+        to="/rent" 
+        className="bg-white px-4 py-2 rounded-lg border hover:bg-blue-50 hover:border-blue-200 transition-colors text-blue-600 font-medium"
+      >
+        Houses for Rent in Mombasa
+      </Link>
+      <Link 
+        to="/services" 
+        className="bg-white px-4 py-2 rounded-lg border hover:bg-blue-50 hover:border-blue-200 transition-colors text-blue-600 font-medium"
+      >
+        Property Management Services
+      </Link>
+    </div>
+  </div>
+)}
         </section>
       </main>
 

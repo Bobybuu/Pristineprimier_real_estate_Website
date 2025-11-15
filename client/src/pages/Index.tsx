@@ -541,6 +541,7 @@ const Index = (): JSX.Element => {
                         <PropertyCard 
                           property={property} 
                           className="h-full flex flex-col"
+                          linkTo={`/property/${property.seo_slug || property.id}`}
                         />
                       </div>
                     ))
