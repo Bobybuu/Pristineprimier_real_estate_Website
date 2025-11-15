@@ -1,4 +1,3 @@
-# properties/management/commands/submit_indexnow.py
 import json
 import os
 import subprocess
