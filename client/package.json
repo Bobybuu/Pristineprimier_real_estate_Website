@@ -5,10 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && npm run copy-public",
-    "build:dev": "vite build --mode development && npm run copy-public",
-    "build:secure": "npm audit fix --force && vite build && npm run copy-public",
-    "build:amplify": "npm install --no-audit --no-fund && vite build && npm run copy-public",
+    "build": "vite build && npm run copy-seo-files",
+    "build:dev": "vite build --mode development && npm run copy-seo-files",
+    "build:secure": "npm audit fix --force && vite build && npm run copy-seo-files",
+    "build:amplify": "npm install --no-audit --no-fund && vite build && npm run copy-seo-files",
+    "copy-seo-files": "cp public/sitemap.xml dist/sitemap.xml && cp public/robots.txt dist/robots.txt && cp public/manifest.json dist/manifest.json",
     "copy-public": "cp -r public/* dist/ 2>/dev/null || xcopy public dist /E /I /Y 2>nul || echo 'Copy command not available'",
     "lint": "eslint .",
     "preview": "vite preview"
