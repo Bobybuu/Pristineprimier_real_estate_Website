@@ -16,6 +16,7 @@ import { Property, PropertyAmenity, LegalDocument, PropertyMedia } from '@/types
 import LoadingSpinner from '@/components/LoadingSpinner';
 import PropertyLocationMap from '../components/PropertyLocationMap';
 import PropertyStructuredData from '@/components/PropertyStructuredData';
+import SEOHead from '@/components/SEOHead';
 
 // Tab types
 type TabType = 'overview' | 'details' | 'location' | 'media' | 'documents';
@@ -626,7 +627,17 @@ useEffect(() => {
   return (
     <div className="flex flex-col min-h-screen bg-white">
       <Header />
-
+    {property && (
+      <>
+        <SEOHead 
+          title={`${property.title} | ${property.property_type === 'sale' ? 'For Sale' : 'For Rent'} | ${property.city}, Kenya | PristinePrimier`}
+          description={property.short_description || property.description.slice(0, 160)}
+          keywords={`${property.title}, ${property.city} real estate, ${property.property_type} property kenya`}
+          url={window.location.href}
+        />
+        <PropertyStructuredData property={property} />
+      </>
+    )}
       <main className="flex-1">
         {/* Back Button */}
         <section className="bg-gray-50 py-4 border-b">
