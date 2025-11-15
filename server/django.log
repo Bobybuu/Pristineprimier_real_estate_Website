@@ -2015,3 +2015,80 @@ django.template.exceptions.TemplateDoesNotExist: index.html
 ERROR 2025-11-08 12:47:55,201 basehttp 18404 31984 "GET /favicon.ico HTTP/1.1" 500 92877
 INFO 2025-11-08 12:48:23,067 basehttp 18404 21212 "OPTIONS /api/auth/me/ HTTP/1.1" 200 0
 INFO 2025-11-08 12:48:23,069 basehttp 18404 25744 "OPTIONS /api/properties/5/ HTTP/1.1" 200 0
+INFO 2025-11-14 18:54:35,125 autoreload 29048 27172 Watching for file changes with StatReloader
+INFO 2025-11-14 18:54:44,238 basehttp 29048 23448 "OPTIONS /api/properties/?featured=true&limit=6 HTTP/1.1" 200 0
+INFO 2025-11-14 18:54:44,260 basehttp 29048 25192 "OPTIONS /api/auth/me/ HTTP/1.1" 200 0
+INFO 2025-11-14 18:54:44,615 basehttp 29048 8424 "GET /api/auth/me/ HTTP/1.1" 200 32
+INFO 2025-11-14 18:54:44,998 basehttp 29048 29108 "GET /api/properties/?featured=true&limit=6 HTTP/1.1" 200 6233
+WARNING 2025-11-14 18:54:45,261 log 29048 29108 Not Found: /media/property_images/2025/10/30/1117893ad16b86a246792f3c01641b13.png
+WARNING 2025-11-14 18:54:45,315 basehttp 29048 29108 "GET /media/property_images/2025/10/30/1117893ad16b86a246792f3c01641b13.png HTTP/1.1" 404 3479
+INFO 2025-11-14 18:54:45,614 basehttp 29048 8424 "GET /media/property_images/2025/10/18/images_5.jpeg HTTP/1.1" 200 11615
+INFO 2025-11-14 18:54:45,660 basehttp 29048 23720 "GET /media/property_images/ChatGPT_Image_Sep_13_2025_02_47_02_PM_obfB0IH.png HTTP/1.1" 200 2462478
+INFO 2025-11-14 18:54:45,781 basehttp 29048 28004 "GET /media/property_images/delivery-man-on-motorcycle-with-package-vector.jpg HTTP/1.1" 200 72060
+INFO 2025-11-14 18:55:23,061 basehttp 29048 25192 "OPTIONS /api/properties/5/ HTTP/1.1" 200 0
+INFO 2025-11-14 18:55:23,518 basehttp 29048 23720 "GET /api/properties/5/ HTTP/1.1" 200 4745
+INFO 2025-11-14 18:55:23,529 basehttp 29048 25192 "OPTIONS /api/properties/5/increment-views/ HTTP/1.1" 200 0
+INFO 2025-11-14 18:55:23,751 basehttp 29048 23720 "GET /api/properties/5/increment-views/ HTTP/1.1" 200 18
+INFO 2025-11-14 18:55:23,810 basehttp 29048 23720 "GET /media/property_images/2025/10/18/download_4.jpeg HTTP/1.1" 200 11102
+INFO 2025-11-14 18:58:48,610 autoreload 26248 5124 Watching for file changes with StatReloader
+INFO 2025-11-14 18:58:53,789 basehttp 26248 19324 "GET /api/auth/csrf/ HTTP/1.1" 200 81
+INFO 2025-11-14 18:58:53,796 basehttp 26248 19324 "GET /api/auth/csrf/ HTTP/1.1" 200 81
+INFO 2025-11-14 18:58:54,352 basehttp 26248 9824 "OPTIONS /api/properties/?featured=true&limit=6 HTTP/1.1" 200 0
+INFO 2025-11-14 18:58:54,408 basehttp 26248 28552 "OPTIONS /api/auth/me/ HTTP/1.1" 200 0
+INFO 2025-11-14 18:58:59,865 basehttp 26248 18700 "GET /api/properties/?featured=true&limit=6 HTTP/1.1" 200 6233
+WARNING 2025-11-14 18:58:59,977 log 26248 18700 Not Found: /media/property_images/2025/10/30/1117893ad16b86a246792f3c01641b13.png
+WARNING 2025-11-14 18:59:00,011 basehttp 26248 18700 "GET /media/property_images/2025/10/30/1117893ad16b86a246792f3c01641b13.png HTTP/1.1" 404 3479
+INFO 2025-11-14 18:59:02,672 basehttp 26248 10856 "GET /api/properties/5/ HTTP/1.1" 200 4745
+INFO 2025-11-14 18:59:02,897 basehttp 26248 10856 "GET /api/properties/5/increment-views/ HTTP/1.1" 200 18
+INFO 2025-11-14 19:01:56,484 autoreload 11736 11840 Watching for file changes with StatReloader
+INFO 2025-11-14 19:02:10,230 basehttp 11736 2016 "OPTIONS /api/properties/slug/apartment-23-westlands-rd-nairobi-6/ HTTP/1.1" 200 0
+INFO 2025-11-14 19:02:10,259 basehttp 11736 16728 "GET /api/auth/me/ HTTP/1.1" 200 32
+INFO 2025-11-14 19:02:10,677 basehttp 11736 16728 "GET /api/properties/slug/apartment-23-westlands-rd-nairobi-6/ HTTP/1.1" 200 6802
+INFO 2025-11-14 19:02:10,719 basehttp 11736 2016 "OPTIONS /api/properties/6/increment-views/ HTTP/1.1" 200 0
+INFO 2025-11-14 19:02:10,900 basehttp 11736 16728 "GET /api/properties/6/increment-views/ HTTP/1.1" 200 18
+WARNING 2025-11-14 19:02:10,967 log 11736 16728 Not Found: /media/property_images/2025/10/30/1117893ad16b86a246792f3c01641b13.png
+WARNING 2025-11-14 19:02:10,967 log 11736 27904 Not Found: /media/property_images/2025/10/30/c9ff0c23-92cf-4cd9-9dec-ecf53f603257-525x328-1.jpeg
+WARNING 2025-11-14 19:02:10,969 basehttp 11736 16728 "GET /media/property_images/2025/10/30/1117893ad16b86a246792f3c01641b13.png HTTP/1.1" 404 3479
+WARNING 2025-11-14 19:02:10,970 basehttp 11736 27904 "GET /media/property_images/2025/10/30/c9ff0c23-92cf-4cd9-9dec-ecf53f603257-525x328-1.jpeg HTTP/1.1" 404 3539
+INFO 2025-11-14 21:51:14,757 basehttp 11736 6756 "OPTIONS /api/properties/slug/apartment-23-westlands-rd-nairobi-6/ HTTP/1.1" 200 0
+INFO 2025-11-14 21:51:14,690 basehttp 11736 19504 "OPTIONS /api/auth/me/ HTTP/1.1" 200 0
+INFO 2025-11-14 21:51:15,405 basehttp 11736 10064 "GET /api/auth/me/ HTTP/1.1" 200 32
+INFO 2025-11-14 21:51:16,754 basehttp 11736 11300 "GET /api/properties/slug/apartment-23-westlands-rd-nairobi-6/ HTTP/1.1" 200 6802
+INFO 2025-11-14 21:51:16,788 basehttp 11736 19504 "OPTIONS /api/properties/6/increment-views/ HTTP/1.1" 200 0
+INFO 2025-11-14 21:51:17,447 basehttp 11736 11300 "GET /api/properties/6/increment-views/ HTTP/1.1" 200 18
+WARNING 2025-11-14 21:51:17,587 log 11736 11300 Not Found: /media/property_images/2025/10/30/1117893ad16b86a246792f3c01641b13.png
+WARNING 2025-11-14 21:51:17,602 log 11736 10064 Not Found: /media/property_images/2025/10/30/c9ff0c23-92cf-4cd9-9dec-ecf53f603257-525x328-1.jpeg
+WARNING 2025-11-14 21:51:17,620 basehttp 11736 11300 "GET /media/property_images/2025/10/30/1117893ad16b86a246792f3c01641b13.png HTTP/1.1" 404 3479
+WARNING 2025-11-14 21:51:17,634 basehttp 11736 10064 "GET /media/property_images/2025/10/30/c9ff0c23-92cf-4cd9-9dec-ecf53f603257-525x328-1.jpeg HTTP/1.1" 404 3539
+INFO 2025-11-14 21:52:01,757 basehttp 11736 19504 "OPTIONS /api/properties/?featured=true&limit=6 HTTP/1.1" 200 0
+INFO 2025-11-14 21:52:03,276 basehttp 11736 18768 "GET /api/properties/?featured=true&limit=6 HTTP/1.1" 200 6233
+WARNING 2025-11-14 21:52:03,467 log 11736 18768 Not Found: /media/property_images/2025/10/30/1117893ad16b86a246792f3c01641b13.png
+WARNING 2025-11-14 21:52:03,521 basehttp 11736 18768 "GET /media/property_images/2025/10/30/1117893ad16b86a246792f3c01641b13.png HTTP/1.1" 404 3479
+WARNING 2025-11-14 21:52:47,266 log 11736 11432 Not Found: /api/contact/config/
+WARNING 2025-11-14 21:52:47,280 basehttp 11736 11432 "GET /api/contact/config/ HTTP/1.1" 404 33635
+INFO 2025-11-14 22:08:26,704 basehttp 11736 30412 "OPTIONS /api/properties/slug/land-riverside-gardens-nairobi-5/ HTTP/1.1" 200 0
+INFO 2025-11-14 22:08:27,661 basehttp 11736 25640 "GET /api/properties/slug/land-riverside-gardens-nairobi-5/ HTTP/1.1" 200 4745
+INFO 2025-11-14 22:08:27,691 basehttp 11736 30412 "OPTIONS /api/properties/5/increment-views/ HTTP/1.1" 200 0
+INFO 2025-11-14 22:08:28,215 basehttp 11736 25640 "GET /api/properties/5/increment-views/ HTTP/1.1" 200 18
+INFO 2025-11-14 22:08:40,660 basehttp 11736 25640 "GET /api/properties/?featured=true&limit=6 HTTP/1.1" 200 6233
+WARNING 2025-11-14 22:08:40,869 log 11736 25640 Not Found: /media/property_images/2025/10/30/1117893ad16b86a246792f3c01641b13.png
+WARNING 2025-11-14 22:08:40,886 basehttp 11736 25640 "GET /media/property_images/2025/10/30/1117893ad16b86a246792f3c01641b13.png HTTP/1.1" 404 3479
+INFO 2025-11-14 22:08:47,213 basehttp 11736 30412 "OPTIONS /api/properties/1/ HTTP/1.1" 200 0
+INFO 2025-11-14 22:08:47,743 basehttp 11736 20104 "GET /api/properties/1/ HTTP/1.1" 200 2457
+INFO 2025-11-14 22:08:47,758 basehttp 11736 30412 "OPTIONS /api/properties/1/increment-views/ HTTP/1.1" 200 0
+INFO 2025-11-14 22:08:48,014 basehttp 11736 20104 "GET /api/properties/1/increment-views/ HTTP/1.1" 200 18
+INFO 2025-11-14 22:08:48,650 basehttp 11736 20104 "GET /media/property_images/ChatGPT_Image_Sep_13_2025_02_47_02_PM.png HTTP/1.1" 200 2462478
+INFO 2025-11-14 22:08:51,521 basehttp 11736 20104 "GET /api/properties/?featured=true&limit=6 HTTP/1.1" 200 6233
+WARNING 2025-11-14 22:08:51,642 log 11736 20104 Not Found: /media/property_images/2025/10/30/1117893ad16b86a246792f3c01641b13.png
+WARNING 2025-11-14 22:08:51,644 basehttp 11736 20104 "GET /media/property_images/2025/10/30/1117893ad16b86a246792f3c01641b13.png HTTP/1.1" 404 3479
+INFO 2025-11-14 22:08:54,366 basehttp 11736 22712 "GET /api/properties/slug/apartment-23-westlands-rd-nairobi-6/ HTTP/1.1" 200 6802
+INFO 2025-11-14 22:08:54,812 basehttp 11736 22712 "GET /api/properties/6/increment-views/ HTTP/1.1" 200 18
+WARNING 2025-11-14 22:08:54,912 log 11736 22712 Not Found: /media/property_images/2025/10/30/1117893ad16b86a246792f3c01641b13.png
+WARNING 2025-11-14 22:08:54,915 log 11736 19348 Not Found: /media/property_images/2025/10/30/c9ff0c23-92cf-4cd9-9dec-ecf53f603257-525x328-1.jpeg
+WARNING 2025-11-14 22:08:54,936 basehttp 11736 22712 "GET /media/property_images/2025/10/30/1117893ad16b86a246792f3c01641b13.png HTTP/1.1" 404 3479
+WARNING 2025-11-14 22:08:54,996 basehttp 11736 19348 "GET /media/property_images/2025/10/30/c9ff0c23-92cf-4cd9-9dec-ecf53f603257-525x328-1.jpeg HTTP/1.1" 404 3539
+INFO 2025-11-14 22:09:18,858 basehttp 11736 29644 "GET /api/properties/?featured=true&limit=6 HTTP/1.1" 200 6233
+WARNING 2025-11-14 22:09:18,957 log 11736 29644 Not Found: /media/property_images/2025/10/30/1117893ad16b86a246792f3c01641b13.png
+WARNING 2025-11-14 22:09:18,962 basehttp 11736 29644 "GET /media/property_images/2025/10/30/1117893ad16b86a246792f3c01641b13.png HTTP/1.1" 404 3479
+INFO 2025-11-14 23:00:42,096 autoreload 11736 11840 C:\Users\User1\Documents\PayedProjects\Pristineprimier_real_estate_Website\server\pristineprimer\settings.py changed, reloading.
+INFO 2025-11-14 23:00:48,559 autoreload 26544 15024 Watching for file changes with StatReloader

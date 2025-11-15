@@ -97,7 +97,9 @@ class PropertyListSerializer(serializers.ModelSerializer):
     amenities_preview = serializers.SerializerMethodField()
     price_display = serializers.CharField(source='get_price_display', read_only=True)
     location_display = serializers.SerializerMethodField()
-    #is_favorited = serializers.SerializerMethodField()
+    # SEO Fields
+    seo_slug = serializers.SerializerMethodField()
+    seo_url = serializers.SerializerMethodField()
     
     class Meta:
         model = Property
@@ -113,15 +115,18 @@ class PropertyListSerializer(serializers.ModelSerializer):
             'water_supply_types', 'has_borehole', 'has_piped_water',
             'electricity_availability', 'has_sewer_system', 'has_drainage', 'internet_availability',
             'primary_image', 'seller_name', 'amenities_preview', 
-            'created_at', 'featured', 'views_count', #'is_favorited'
+            'created_at', 'featured', 'views_count', 
+            # SEO Fields
+            'seo_slug', 'seo_url'
         ]
     
-    #def get_is_favorited(self, obj):
-        #"""Check if the current user has favorited this property"""
-       # request = self.context.get('request')
-        #if request and request.user.is_authenticated:
-        #    return obj.favorites.filter(user=request.user).exists()
-        #return False
+    def get_seo_slug(self, obj):
+        """Return generated SEO slug"""
+        return obj.generate_seo_slug()
+    
+    def get_seo_url(self, obj):
+        """Return full SEO URL path"""
+        return obj.get_seo_url()
     
     def get_primary_image(self, obj):
         # First try PropertyMedia, then fall back to PropertyImage for backward compatibility
@@ -170,6 +175,13 @@ class PropertySerializer(serializers.ModelSerializer):
     water_supply_types = serializers.ListField(source='get_water_supply_types', read_only=True)
     is_land_property = serializers.BooleanField(read_only=True)
     
+    # SEO Fields
+    seo_slug = serializers.SerializerMethodField()
+    seo_url = serializers.SerializerMethodField()
+    seo_title = serializers.SerializerMethodField()
+    seo_description = serializers.SerializerMethodField()
+    canonical_url = serializers.SerializerMethodField()
+    
     # Write-only fields for creation/updates
     amenity_ids = serializers.ListField(
         child=serializers.DictField(),
@@ -213,11 +225,14 @@ class PropertySerializer(serializers.ModelSerializer):
             'images', 'media', 'amenities', 'documents', 'contact_info',
             
             # Metadata
-            'is_favorited', 'featured', 'views_count', 'inquiry_count',
+            'featured', 'views_count', 'inquiry_count',
             'created_at', 'updated_at', 'published_at',
             
             # Computed Properties
             'is_land_property',
+            
+            # SEO Fields
+            'seo_slug', 'seo_url', 'seo_title', 'seo_description', 'canonical_url',
             
             # Write-only fields
             'amenity_ids'
@@ -226,6 +241,26 @@ class PropertySerializer(serializers.ModelSerializer):
             'seller', 'created_at', 'updated_at', 'published_at', 
             'views_count', 'inquiry_count'
         ]
+    
+    def get_seo_slug(self, obj):
+        """Return generated SEO slug"""
+        return obj.generate_seo_slug()
+    
+    def get_seo_url(self, obj):
+        """Return full SEO URL path"""
+        return obj.get_seo_url()
+    
+    def get_seo_title(self, obj):
+        """Return SEO-optimized page title"""
+        return obj.seo_title
+    
+    def get_seo_description(self, obj):
+        """Return SEO-optimized meta description"""
+        return obj.seo_description
+    
+    def get_canonical_url(self, obj):
+        """Return canonical URL for SEO"""
+        return obj.get_canonical_url()
     
     def create(self, validated_data):
         amenity_data = validated_data.pop('amenity_ids', [])
@@ -356,12 +391,16 @@ class FavoriteSerializer(serializers.ModelSerializer):
     property_type = serializers.CharField(source='property.property_type', read_only=True)
     property_image = serializers.SerializerMethodField()
     price_display = serializers.CharField(source='property.get_price_display', read_only=True)
+    # SEO Fields
+    seo_slug = serializers.CharField(source='property.generate_seo_slug', read_only=True)
+    seo_url = serializers.CharField(source='property.get_seo_url', read_only=True)
     
     class Meta:
         model = Favorite
         fields = [
             'id', 'property', 'property_title', 'property_price', 'price_display',
-            'property_city', 'property_type', 'property_image', 'created_at'
+            'property_city', 'property_type', 'property_image', 
+            'seo_slug', 'seo_url', 'created_at'
         ]
     
     def get_property_image(self, obj):
@@ -384,6 +423,9 @@ class InquirySerializer(serializers.ModelSerializer):
     property_image = serializers.SerializerMethodField()
     status_display = serializers.CharField(source='get_status_display', read_only=True)
     source_display = serializers.CharField(source='get_source_display', read_only=True)
+    # SEO Fields
+    seo_slug = serializers.SerializerMethodField()
+    seo_url = serializers.SerializerMethodField()
     
     class Meta:
         model = Inquiry
@@ -391,11 +433,23 @@ class InquirySerializer(serializers.ModelSerializer):
             'id', 'property', 'property_title', 'property_price', 'property_city', 'property_image',
             'name', 'email', 'phone', 'message', 'inquiry_type', 'source', 'source_display',
             'preferred_date', 'budget_range', 'status', 'status_display',
-            'internal_notes', 'assigned_agent', 'created_at', 'updated_at'
+            'internal_notes', 'assigned_agent', 'created_at', 'updated_at',
+            # SEO Fields
+            'seo_slug', 'seo_url'
         ]
         read_only_fields = [
             'user', 'created_at', 'updated_at', 'assigned_agent'
         ]
+    
+    def get_seo_slug(self, obj):
+        if obj.property:
+            return obj.property.generate_seo_slug()
+        return None
+    
+    def get_seo_url(self, obj):
+        if obj.property:
+            return obj.property.get_seo_url()
+        return None
     
     def get_property_image(self, obj):
         if obj.property:

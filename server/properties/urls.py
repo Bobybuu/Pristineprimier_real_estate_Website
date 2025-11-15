@@ -1,5 +1,5 @@
 # properties/urls.py
-from django.urls import path, include
+from django.urls import path, include, re_path
 from rest_framework.routers import DefaultRouter
 from .views import (
     PropertyViewSet, InquiryViewSet, AmenityViewSet, 
@@ -24,6 +24,31 @@ router.register(r'admin/properties', AdminPropertyViewSet, basename='admin-prope
 urlpatterns = [
     path('', include(router.urls)),
     
+    # === SEO SLUG-BASED PROPERTY ENDPOINTS ===
+    # Support both ID and slug-based URLs for property details
+    path('properties/<str:pk>/', 
+         PropertyViewSet.as_view({'get': 'retrieve'}), 
+         name='property-detail-slug'),
+    
+    # Alternative slug-specific endpoint
+    path('properties/slug/<str:slug>/', 
+         PropertyViewSet.as_view({'get': 'by_slug'}), 
+         name='property-by-slug'),
+    
+    # === SLUG-BASED PROPERTY ACTIONS ===
+    path('properties/<str:pk>/similar/', 
+         PropertyViewSet.as_view({'get': 'similar'}), 
+         name='property-similar-slug'),
+    path('properties/<str:pk>/favorite/', 
+         PropertyViewSet.as_view({'post': 'favorite'}), 
+         name='property-favorite-slug'),
+    path('properties/<str:pk>/inquire/', 
+         PropertyViewSet.as_view({'post': 'inquire'}), 
+         name='property-inquire-slug'),
+    path('properties/<str:pk>/increment-views/', 
+         PropertyViewSet.as_view({'get': 'increment_views'}), 
+         name='property-increment-views-slug'),
+    
     # === PROPERTY MANAGEMENT ENDPOINTS ===
     path('create/', create_property_simple, name='create-property'),
     path('my_properties/', my_properties, name='my-properties'),
@@ -47,7 +72,7 @@ urlpatterns = [
          PropertyViewSet.as_view({'get': 'stats'}), 
          name='property-stats-overview'),
     
-    # === INDIVIDUAL PROPERTY ACTIONS ===
+    # === INDIVIDUAL PROPERTY ACTIONS (ID-based - KEEP FOR BACKWARD COMPATIBILITY) ===
     path('properties/<int:pk>/similar/', 
          PropertyViewSet.as_view({'get': 'similar'}), 
          name='property-similar'),
@@ -90,8 +115,13 @@ urlpatterns = [
          AdminPropertyViewSet.as_view({'post': 'reject'}), 
          name='admin-property-reject'),
     
-    
-    
+    # === ADMIN SLUG-BASED ENDPOINTS ===
+    path('admin/properties/<str:pk>/approve/', 
+         AdminPropertyViewSet.as_view({'post': 'approve'}), 
+         name='admin-property-approve-slug'),
+    path('admin/properties/<str:pk>/reject/', 
+         AdminPropertyViewSet.as_view({'post': 'reject'}), 
+         name='admin-property-reject-slug'),
 ]
 
 

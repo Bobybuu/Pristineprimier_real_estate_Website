@@ -53,7 +53,7 @@ class PropertyViewSet(viewsets.ModelViewSet):
         queryset = Property.objects.all()
         
         # For public endpoints, only show published properties
-        if self.action in ['list', 'retrieve', 'map_data', 'similar', 'search']:
+        if self.action in ['list', 'retrieve', 'map_data', 'similar', 'search', 'by_slug']:
             queryset = queryset.filter(status='published')
         
         # Handle featured filter
@@ -75,7 +75,7 @@ class PropertyViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(property_type=property_type)
         
         # Sellers can see their own draft/pending properties in non-public actions
-        if self.request.user.is_authenticated and self.action not in ['list', 'retrieve', 'map_data', 'similar', 'search']:
+        if self.request.user.is_authenticated and self.action not in ['list', 'retrieve', 'map_data', 'similar', 'search', 'by_slug']:
             user_properties = Property.objects.filter(seller=self.request.user)
             queryset = queryset | user_properties
         
@@ -84,7 +84,7 @@ class PropertyViewSet(viewsets.ModelViewSet):
             queryset = queryset.select_related('seller').prefetch_related(
                 'media', 'images', 'amenities__amenity'
             )
-        elif self.action == 'retrieve':
+        elif self.action in ['retrieve', 'by_slug']:
             queryset = queryset.select_related('seller', 'agent', 'contact_info').prefetch_related(
                 'media', 'images', 'amenities__amenity', 'documents'
             )
@@ -102,8 +102,101 @@ class PropertyViewSet(viewsets.ModelViewSet):
             return PropertyMapSerializer
         return PropertyDetailSerializer
     
+    def get_object(self):
+        """
+        Override to support both ID-based and slug-based lookup
+        Handles both /property/123/ and /property/seo-slug-here/
+        """
+        # Get the primary key from URL
+        pk = self.kwargs.get('pk')
+        
+        # Check if it's a numeric ID or a slug
+        if pk and pk.isdigit():
+            # Traditional ID-based lookup
+            queryset = self.filter_queryset(self.get_queryset())
+            obj = get_object_or_404(queryset, pk=pk)
+        else:
+            # Slug-based lookup - extract ID from the end of the slug
+            slug_parts = pk.split('-') if pk else []
+            
+            # Find the numeric ID at the end of the slug
+            property_id = None
+            for part in reversed(slug_parts):
+                if part.isdigit():
+                    property_id = part
+                    break
+            
+            if property_id:
+                queryset = self.filter_queryset(self.get_queryset())
+                obj = get_object_or_404(queryset, pk=property_id)
+                
+                # Verify the slug matches what we expect
+                expected_slug = obj.generate_seo_slug()
+                if pk != expected_slug:
+                    # If slug doesn't match, we could redirect to correct URL
+                    # For now, we'll still return the property but log the mismatch
+                    pass
+            else:
+                # No valid ID found in slug
+                raise serializers.ValidationError("Invalid property URL")
+        
+        # May raise a permission denied
+        self.check_object_permissions(self.request, obj)
+        return obj
+    
     def perform_create(self, serializer):
         serializer.save(seller=self.request.user)
+    
+    @action(detail=False, methods=['get'], url_path='slug/(?P<slug>[^/.]+)')
+    def by_slug(self, request, slug=None):
+        """
+        Alternative endpoint for slug-based property lookup
+        Example: /api/properties/slug/3-bedroom-apartment-westlands-nairobi-1234/
+        """
+        if not slug:
+            return Response(
+                {'error': 'Slug parameter required'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Extract ID from slug
+        slug_parts = slug.split('-')
+        property_id = None
+        
+        # Find the numeric ID at the end of the slug
+        for part in reversed(slug_parts):
+            if part.isdigit():
+                property_id = part
+                break
+        
+        if not property_id:
+            return Response(
+                {'error': 'Invalid property slug'}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        try:
+            # Get the property by ID
+            property_obj = get_object_or_404(
+                self.get_queryset(), 
+                pk=property_id
+            )
+            
+            # Verify slug matches expected format
+            expected_slug = property_obj.generate_seo_slug()
+            if slug != expected_slug:
+                # Optional: Redirect to correct slug
+                # For now, we return the property anyway
+                pass
+            
+            serializer = self.get_serializer(property_obj)
+            return Response(serializer.data)
+            
+        except Property.DoesNotExist:
+            return Response(
+                {'error': 'Property not found'}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
     
     @action(detail=False, methods=['get'])
     def map_data(self, request):

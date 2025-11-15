@@ -4,6 +4,7 @@ from django.conf import settings
 from django.core.validators import MinValueValidator
 from decimal import Decimal
 import json
+from django.utils.text import slugify
 
 class Property(models.Model):
     PROPERTY_TYPES = [
@@ -155,6 +156,92 @@ class Property(models.Model):
     
     def __str__(self):
         return f"{self.title} - ${self.price}"
+    
+    def generate_seo_slug(self):
+        """Generate SEO-friendly slug like '3-bedroom-apartment-westlands-nairobi-1234'"""
+        # Clean the title and create base slug
+        base_slug = slugify(self.title)
+        
+        # Extract bedroom count if available
+        bedroom_info = ""
+        if self.bedrooms:
+            bedroom_info = f"{self.bedrooms}-bedroom"
+        
+        # Get property type for slug
+        prop_type = self.get_property_type_display().lower().replace(' ', '-')
+        if self.property_type == 'rental':
+            prop_type = 'for-rent'
+        elif self.property_type == 'sale':
+            prop_type = 'for-sale'
+        
+        # Get location info
+        city_slug = slugify(self.city)
+        area_slug = ""
+        
+        # Extract area from address or use city
+        if self.address:
+            # Try to extract neighborhood from address
+            address_parts = self.address.split(',')
+            if len(address_parts) > 1:
+                area_slug = slugify(address_parts[0])
+            else:
+                area_slug = slugify(self.address)
+        
+        # If no area found, use city
+        if not area_slug:
+            area_slug = city_slug
+        
+        # Build the SEO slug
+        parts = []
+        if bedroom_info:
+            parts.append(bedroom_info)
+        
+        parts.extend([
+            prop_type,
+            area_slug,
+            city_slug,
+            str(self.id)
+        ])
+        
+        return '-'.join(parts)
+    
+    def get_seo_url(self):
+        """Return the full SEO-friendly URL"""
+        return f"/property/{self.generate_seo_slug()}/"
+    
+    def get_canonical_url(self):
+        """Return canonical URL for SEO"""
+        return f"https://www.pristineprimier.com{self.get_seo_url()}"
+    
+    @property
+    def seo_title(self):
+        """Generate SEO-optimized title like BuyRentKenya"""
+        bedroom_info = f"{self.bedrooms}-Bedroom " if self.bedrooms else ""
+        prop_type_display = self.get_property_type_display()
+        
+        if self.property_type == 'rental':
+            action = "for Rent"
+        elif self.property_type == 'sale':
+            action = "for Sale"
+        else:
+            action = prop_type_display
+        
+        area = self.address.split(',')[0] if self.address and ',' in self.address else self.city
+        
+        return f"{bedroom_info}{self.get_property_type_display()} {action} in {area}, {self.city} | PristinePrimier"
+    
+    @property
+    def seo_description(self):
+        """Generate SEO-optimized meta description"""
+        bedroom_info = f"{self.bedrooms} bedroom " if self.bedrooms else ""
+        price_info = f"Ksh {self.price:,.0f}"
+        
+        if self.property_type == 'rental':
+            price_info += " per month"
+        elif self.property_type == 'sale':
+            price_info += ""
+        
+        return f"{bedroom_info}{self.get_property_type_display()} {self.get_property_type_display().lower()} in {self.city}. {price_info}. {self.short_description}"
     
     def get_landmarks_list(self):
         """Return landmarks as a list"""
