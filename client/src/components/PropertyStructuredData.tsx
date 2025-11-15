@@ -101,6 +101,17 @@ const PropertyStructuredData: React.FC<PropertyStructuredDataProps> = ({ propert
       }
     }
 
+    if (property.images && property.images.length > 0) {
+        const primaryImage = property.primary_image || property.images[0];
+        baseData.image = getImageUrl(primaryImage.image, 'large');
+        
+        // Also update OG image tag
+        const ogImage = document.querySelector('meta[property="og:image"]');
+        if (ogImage) {
+            ogImage.setAttribute('content', getImageUrl(primaryImage.image, 'large'));
+        }
+    }
+
     if (property.property_type === 'land' && property.size_acres) {
       baseData.additionalProperty = {
         "@type": "PropertyValue",
@@ -116,6 +127,8 @@ const PropertyStructuredData: React.FC<PropertyStructuredDataProps> = ({ propert
 
     return baseData;
   };
+
+  
 
   const getImageUrl = (imagePath: string, size: 'large' | 'medium' | 'small' = 'large'): string => {
     if (!imagePath) return '';
