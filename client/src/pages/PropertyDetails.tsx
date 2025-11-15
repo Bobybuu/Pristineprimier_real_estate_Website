@@ -20,7 +20,11 @@ import SEOHead from '@/components/SEOHead';
 
 // Tab types
 type TabType = 'overview' | 'details' | 'location' | 'media' | 'documents';
-
+declare global {
+  interface Window {
+    testProperty?: any; // Temporary for testing
+  }
+}
 // Image optimization utility
 const optimizeImageUrl = (url: string, width: number = 1200, quality: number = 85): string => {
   if (!url || url.includes('placeholder')) return url;
@@ -92,6 +96,7 @@ const PropertyDetails = () => {
   }
 };
 
+
   // useEffect FOR SEO META TAGS 
 useEffect(() => {
   if (property) {
@@ -159,6 +164,20 @@ useEffect(() => {
       document.head.appendChild(canonicalLink);
     }
     canonicalLink.href = canonicalUrl;
+  }
+}, [property]);
+
+useEffect(() => {
+  if (property) {
+    console.log('🏠 PROPERTY DATA LOADED:', {
+      title: property.title,
+      images: property.images?.length || 0,
+      firstImage: property.images?.[0]?.image,
+      hasPrimary: !!property.primary_image
+    });
+    
+    // Make property available for testing (optional)
+    window.testProperty = property;
   }
 }, [property]);
 

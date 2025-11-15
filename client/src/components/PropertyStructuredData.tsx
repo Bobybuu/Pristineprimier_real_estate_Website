@@ -110,20 +110,21 @@ const PropertyStructuredData: React.FC<PropertyStructuredDataProps> = ({ propert
       
       // Update OG image tag in real-time with delay to ensure DOM is ready
       setTimeout(() => {
-        const ogImage = document.querySelector('meta[property="og:image"]');
-        const twitterImage = document.querySelector('meta[name="twitter:image"]');
+        // ✅ FIXED: Cast to HTMLMetaElement to access content property
+        const ogImage = document.querySelector('meta[property="og:image"]') as HTMLMetaElement;
+        const twitterImage = document.querySelector('meta[name="twitter:image"]') as HTMLMetaElement;
         
         if (ogImage) {
-          ogImage.setAttribute('content', imageUrl);
+          ogImage.content = imageUrl;
           console.log('🖼️ Updated OG Image to:', imageUrl);
         }
         if (twitterImage) {
-          twitterImage.setAttribute('content', imageUrl);
+          twitterImage.content = imageUrl;
           console.log('🖼️ Updated Twitter Image to:', imageUrl);
         }
         
         // Verify the update worked
-        const updatedOG = document.querySelector('meta[property="og:image"]')?.content;
+        const updatedOG = (document.querySelector('meta[property="og:image"]') as HTMLMetaElement)?.content;
         console.log('✅ OG Image Update Verified:', updatedOG === imageUrl ? 'SUCCESS' : 'FAILED');
       }, 100);
     } else {
