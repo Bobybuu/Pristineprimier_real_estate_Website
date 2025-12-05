@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Shield, Lock, Eye, User, Mail, Phone, ChevronDown, ChevronUp } from 'lucide-react';
+import { Shield, Lock, Eye, User, Mail, Phone, ChevronDown, ChevronUp, Gavel, TicketCheckIcon, TicketCheck } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -14,7 +14,7 @@ const Privacy = (): JSX.Element => {
     {
       id: 'introduction',
       title: 'Introduction & Scope',
-      icon: Shield,
+      icon: Gavel,
       content: 'PristinePrimer Real Estate is committed to protecting your privacy and personal information in compliance with Kenyan Data Protection Act, 2019.'
     },
     {
@@ -38,7 +38,7 @@ const Privacy = (): JSX.Element => {
     {
       id: 'user-rights',
       title: 'Your Rights & Choices',
-      icon: Shield,
+      icon: TicketCheck,
       content: 'You have rights to access, correct, and delete your personal data. Contact our DPO to exercise these rights under Kenyan law.'
     }
   ];
@@ -66,8 +66,8 @@ const Privacy = (): JSX.Element => {
         <section className="relative py-16 bg-white border-b border-gray-200">
           <div className="container mx-auto px-4 text-center">
             <div className="max-w-2xl mx-auto">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6 border border-blue-200">
-                <Lock className="h-8 w-8 text-blue-600" />
+              <div className="w-16 h-16  rounded-full flex items-center justify-center mx-auto mb-6 border border-blue-200">
+                <Lock className="h-8 w-8" />
               </div>
               <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
                 Privacy Policy
@@ -110,8 +110,8 @@ const Privacy = (): JSX.Element => {
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                          <section.icon className="h-5 w-5 text-blue-600" />
+                        <div className="w-10 h-10  rounded-full flex items-center justify-center">
+                          <section.icon className="h-5 w-5" />
                         </div>
                         <h3 className="text-lg font-semibold text-gray-900">
                           {section.title}
