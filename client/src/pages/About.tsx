@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Building2, Users, Target, Award, Shield, Heart, Scale, PartyPopper, Speech } from 'lucide-react';
+import { Building2, Users, Target, Award, Shield, Heart, Scale, PartyPopper, Speech, HandHelpingIcon, BadgeDollarSign, Gavel } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -220,7 +220,7 @@ const About = (): JSX.Element => {
                   </div>
                   
                   <div className="flex items-start gap-4">
-                    <Shield className="h-6 w-6 text-teal mt-1 flex-shrink-0" />
+                    <Gavel className="h-6 w-6  mt-1 flex-shrink-0" />
                     <div>
                       <h3 className="font-medium mb-2 text-xl">Full Legal Compliance</h3>
                       <p className="text-muted-foreground text-sm">
@@ -232,7 +232,7 @@ const About = (): JSX.Element => {
 
                 <div className="space-y-6">
                   <div className="flex items-start gap-4">
-                    <Target className="h-6 w-6 text-teal mt-1 flex-shrink-0" />
+                    <BadgeDollarSign className="h-6 w-6  mt-1 flex-shrink-0" />
                     <div>
                       <h3 className="font-medium mb-2 text-xl">Market Expertise</h3>
                       <p className="text-muted-foreground text-sm">
@@ -242,7 +242,7 @@ const About = (): JSX.Element => {
                   </div>
                   
                   <div className="flex items-start gap-4">
-                    <Heart className="h-6 w-6 text-teal mt-1 flex-shrink-0" />
+                    <HandHelpingIcon className="h-6 w-6  mt-1 flex-shrink-0" />
                     <div>
                       <h3 className="font-medium mb-2 text-xl">After-Sales Support</h3>
                       <p className="text-muted-foreground text-sm">
