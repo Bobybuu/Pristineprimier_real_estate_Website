@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Building2, Users, Target, Award, Shield, Heart } from 'lucide-react';
+import { Building2, Users, Target, Award, Shield, Heart, Scale, PartyPopper, Speech } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -15,12 +15,12 @@ const About = (): JSX.Element => {
 
   const values = [
     {
-      icon: Shield,
+      icon: Scale,
       title: 'Trust & Integrity',
       description: 'We build lasting relationships based on transparency and ethical practices in every transaction.'
     },
     {
-      icon: Target,
+      icon: PartyPopper,
       title: 'Excellence',
       description: 'Committed to delivering exceptional service and results that exceed client expectations.'
     },
@@ -30,7 +30,7 @@ const About = (): JSX.Element => {
       description: 'Your goals are our priority. We listen, understand, and deliver personalized solutions.'
     },
     {
-      icon: Heart,
+      icon: Speech,
       title: 'Community',
       description: 'Dedicated to building better communities through responsible real estate development.'
     }
@@ -156,8 +156,8 @@ const About = (): JSX.Element => {
                 <Card key={index} className="hover:shadow-elegant transition-smooth">
                   <CardContent className="p-6">
                     <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 bg-teal/10 rounded-full flex items-center justify-center flex-shrink-0">
-                        <value.icon className="h-6 w-6 text-teal" />
+                      <div className="w-12 h-12  rounded-full flex items-center justify-center flex-shrink-0">
+                        <value.icon className="h-6 w-6" />
                       </div>
                       <div>
                         <h3 className="text-xl font-medium mb-2">{value.title}</h3>
