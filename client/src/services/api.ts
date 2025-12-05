@@ -84,7 +84,7 @@ async function apiRequest(endpoint: string, options: RequestInit = {}) {
       ...(csrfToken && { 'X-CSRFToken': csrfToken }),
       ...options.headers,
     },
-    credentials: 'include', // This is crucial for session authentication
+    credentials: 'include',
     ...options,
   };
 

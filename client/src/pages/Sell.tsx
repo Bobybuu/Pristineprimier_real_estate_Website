@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { CheckCircle, ArrowRight, TrendingUp, Users, Shield, Clock } from 'lucide-react';
+import { CheckCircle, ArrowRight, TrendingUp, Users, Lock, AlarmClock } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ContactForm from '@/components/ContactForm';
@@ -38,7 +38,7 @@ const Sell = () => {
       description: 'Strategic pricing and marketing to get you the best possible price.',
     },
     {
-      icon: Clock,
+      icon: AlarmClock,
       title: 'Fast Sales',
       description: 'Average sale time of 30 days with our proven marketing strategies.',
     },
@@ -48,7 +48,7 @@ const Sell = () => {
       description: 'Work with experienced agents who know your market inside out.',
     },
     {
-      icon: Shield,
+      icon: Lock,
       title: 'Secure Process',
       description: 'Full legal protection and transparent transaction management.',
     },

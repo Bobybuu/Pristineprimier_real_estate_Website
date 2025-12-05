@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { CheckCircle, Shield, DollarSign, Wrench, Users, FileCheck, ArrowRight } from 'lucide-react';
+import { CheckCircle, Shield, DollarSign, Wrench, Users, FileCheck, HandCoins } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ContactForm from '@/components/ContactForm';
@@ -10,7 +10,7 @@ import { useEffect } from 'react';
 const Manage = () => {
   const services = [
     {
-      icon: DollarSign,
+      icon: HandCoins,
       title: 'Rent Collection',
       description: 'Automated rent collection and payment processing. On-time payments guaranteed.',
     },
