@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Shield, FileText, UserCheck, Home, DollarSign, Building2, Clock, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { Shield, FileText, UserCheck, Home, Banknote, Building2, Clock, AlertCircle, ChevronDown, ChevronUp, Scale } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -32,7 +32,7 @@ const Terms = (): JSX.Element => {
     {
       id: 'transactions',
       title: 'Transactions & Fees',
-      icon: DollarSign,
+      icon: Banknote,
       content: 'Sales commission: 2-5%, Rental fee: 1 month rent, Property management: 8-12% monthly. All payments in Kenyan Shillings.'
     },
     {
@@ -78,8 +78,8 @@ const Terms = (): JSX.Element => {
         <section className="relative py-16 bg-white border-b border-gray-200">
           <div className="container mx-auto px-4 text-center">
             <div className="max-w-2xl mx-auto">
-              <div className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-6 border border-teal-200">
-                <Shield className="h-8 w-8 text-teal-600" />
+              <div className="w-16 h-16  rounded-full flex items-center justify-center mx-auto mb-6 border border-teal-200">
+                <Scale className="h-8 w-8" />
               </div>
               <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
                 Terms & Conditions
@@ -122,8 +122,8 @@ const Terms = (): JSX.Element => {
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
-                          <section.icon className="h-5 w-5 text-teal-600" />
+                        <div className="w-10 h-10  rounded-full flex items-center justify-center">
+                          <section.icon className="h-5 w-5" />
                         </div>
                         <h3 className="text-lg font-semibold text-gray-900">
                           {section.title}
