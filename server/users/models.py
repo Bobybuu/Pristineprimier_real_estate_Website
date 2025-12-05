@@ -40,7 +40,7 @@ class UserProfile(models.Model):
     # Notification preferences (enhanced)
     email_notifications = models.BooleanField(default=True)
     sms_notifications = models.BooleanField(default=False)
-    notification_preferences = models.JSONField(default=dict, blank=True)  # Added this
+    notification_preferences = models.JSONField(default=dict, blank=True)
     
     # Buyer preferences (for buyers)
     preferred_locations = models.JSONField(default=list, blank=True)

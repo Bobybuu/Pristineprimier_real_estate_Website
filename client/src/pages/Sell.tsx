@@ -135,8 +135,8 @@ useEffect(() => {
               {benefits.map((benefit, index) => (
                 <Card key={index} className="hover:shadow-elegant transition-smooth">
                   <CardContent className="p-6 text-center">
-                    <div className="w-16 h-16 bg-teal/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <benefit.icon className="h-8 w-8 text-teal" />
+                    <div className="w-16 h-16  rounded-full flex items-center justify-center mx-auto mb-4">
+                      <benefit.icon className="h-8 w-8 " />
                     </div>
                     <h3 className="text-lg font-medium mb-2">{benefit.title}</h3>
                     <p className="text-muted-foreground text-sm">{benefit.description}</p>
@@ -197,19 +197,19 @@ useEffect(() => {
                 <h3 className="font-medium mb-4">What happens after you submit?</h3>
                 <ul className="space-y-3">
                   <li className="flex items-start gap-2">
-                    <CheckCircle className="h-5 w-5 text-teal mt-0.5 flex-shrink-0" />
+                    <CheckCircle className="h-5 w-5  mt-0.5 flex-shrink-0" />
                     <span className="text-muted-foreground">
                       Receive an instant online estimate based on current market data
                     </span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <CheckCircle className="h-5 w-5 text-teal mt-0.5 flex-shrink-0" />
+                    <CheckCircle className="h-5 w-5  mt-0.5 flex-shrink-0" />
                     <span className="text-muted-foreground">
                       A local agent will contact you within 24 hours for a detailed assessment
                     </span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <CheckCircle className="h-5 w-5 text-teal mt-0.5 flex-shrink-0" />
+                    <CheckCircle className="h-5 w-5  mt-0.5 flex-shrink-0" />
                     <span className="text-muted-foreground">
                       Get a comprehensive market analysis and pricing strategy
                     </span>
