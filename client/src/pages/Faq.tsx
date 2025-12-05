@@ -21,7 +21,7 @@ const Faq = (): JSX.Element => {
   const faqCategories = [
     {
       title: 'Buying Properties',
-      icon: '🏠',
+      icon: '',
       questions: [
         {
           question: 'How do I schedule a site visit?',
@@ -43,7 +43,7 @@ const Faq = (): JSX.Element => {
     },
     {
       title: 'Selling Properties',
-      icon: '💰',
+      icon: '',
       questions: [
         {
           question: 'How can I list my property for sale on your website?',
@@ -65,7 +65,7 @@ const Faq = (): JSX.Element => {
     },
     {
       title: 'Rental Properties',
-      icon: '🔑',
+      icon: '',
       questions: [
         {
           question: 'What is included in the rental price?',
@@ -87,7 +87,7 @@ const Faq = (): JSX.Element => {
     },
     {
       title: 'Property Management',
-      icon: '🏢',
+      icon: '',
       questions: [
         {
           question: 'What services are included in property management?',
@@ -109,7 +109,7 @@ const Faq = (): JSX.Element => {
     },
     {
       title: 'Land & Commercial Properties',
-      icon: '📊',
+      icon: '',
       questions: [
         {
           question: 'How do I verify land ownership?',
@@ -131,7 +131,7 @@ const Faq = (): JSX.Element => {
     },
     {
       title: 'General Questions',
-      icon: '❓',
+      icon: '',
       questions: [
         {
           question: 'Are your agents licensed and certified?',
