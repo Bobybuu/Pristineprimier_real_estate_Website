@@ -1,6 +1,6 @@
 // public/sw.js
-const CACHE_NAME = 'pristine-primier-v1.0.6';
-const STATIC_CACHE = 'pristine-primier-static-v1.0.6';
+const CACHE_NAME = 'pristine-primier-v1.0.7';
+const STATIC_CACHE = 'pristine-primier-static-v1.0.7';
 
 // Caching Static assets that don't change often
 const staticAssetsToCache = [
