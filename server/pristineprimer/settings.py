@@ -20,6 +20,7 @@ ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
     "18.217.243.193",
+    "148.230.122.84",
     "pristineprimier.co.ke",
     "www.pristineprimier.com",
     'api.pristineprimier.com',
