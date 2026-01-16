@@ -27,7 +27,8 @@ class User(AbstractUser):
     bio = models.TextField(blank=True)
     
     def __str__(self):
-        return f"{self.username} ({self.get_user_type_display()})"
+        user_type_display = dict(self.USER_TYPES).get(self.user_type, self.user_type)
+        return f"{self.username} ({user_type_display})"
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
@@ -103,7 +104,8 @@ class UserActivity(models.Model):
         verbose_name_plural = 'User activities'
     
     def __str__(self):
-        return f"{self.user.username} - {self.get_activity_type_display()} - {self.created_at}"
+        activity_display = dict(self.ACTIVITY_TYPES).get(self.activity_type, self.activity_type)
+        return f"{self.user.username} - {activity_display} - {self.created_at}"
 
 class SavedSearch(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='saved_searches')
